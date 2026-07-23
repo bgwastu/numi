@@ -5,65 +5,20 @@ import android.util.Base64
 import android.util.Log
 import com.bgwastu.numi.database.DbHelper
 import com.bgwastu.numi.provider.GetContactClient
-import com.bgwastu.numi.provider.GetContactResult
+import com.bgwastu.numi.provider.PhoneLookupResult
+import com.bgwastu.numi.provider.PhoneLookupService
 import kotlinx.coroutines.runBlocking
 import java.security.KeyFactory
 import java.security.Signature
-import java.security.spec.EdECPublicKeySpec
-import java.security.spec.NamedParameterSpec
 import java.security.spec.X509EncodedKeySpec
-import java.util.concurrent.atomic.AtomicBoolean
 
 class CommandExecutor(private val context: Context) {
 
     private val dbHelper = DbHelper(context)
-    private val getContactClient = GetContactClient(context)
-    
+    private val lookupService = PhoneLookupService.create(GetContactClient(context))
+
     companion object {
-        // Enrolled agent public keys (Hex format)
-        private const val ALYSSA_PUBLIC_KEY = "302a300506032b6570032100" + "YourAlyssaHexPublicBytesHere..."
-        // Ed25519 raw public keys can be converted into X509 Encoded keys using a simple prefix:
-        // X509 prefix for Ed25519: 302a300506032b6570032100 (12 bytes) + 32 bytes raw key
-    }
-
-    // Resolves public key hex for actor
-    private fun getPublicKeyHexForActor(actorId: String): String? {
-        val sharedPrefs = context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
-        return when (actorId) {
-            "alyssa" -> sharedPrefs.getString("actor_pubkey_alyssa", null)
-            "hazel" -> sharedPrefs.getString("actor_pubkey_hazel", null)
-            else -> sharedPrefs.getString("actor_pubkey_$actorId", null)
-        }
-    }
-
-    // Verify Ed25519 signature
-    fun verifySignature(actorId: String, message: String, sigBase64Url: String): Boolean {
-        val pubKeyHex = getPublicKeyHexForActor(actorId) ?: return false
-        return try {
-            val rawPubKey = hexToBytes(pubKeyHex)
-            
-            // Reconstruct standard X.509 representation if it's a 32-byte raw Ed25519 key
-            val x509KeyBytes = if (rawPubKey.size == 32) {
-                val prefix = hexToBytes("302a300506032b6570032100")
-                prefix + rawPubKey
-            } else {
-                rawPubKey
-            }
-
-            val keySpec = X509EncodedKeySpec(x509KeyBytes)
-            val kf = KeyFactory.getInstance("Ed25519")
-            val publicKey = kf.generatePublic(keySpec)
-
-            val sigBytes = Base64.decode(sigBase64Url, Base64.URL_SAFE or Base64.NO_WRAP)
-            
-            val verifier = Signature.getInstance("Ed25519")
-            verifier.initVerify(publicKey)
-            verifier.update(message.toByteArray(Charsets.UTF_8))
-            verifier.verify(sigBytes)
-        } catch (e: Exception) {
-            Log.e("CommandExecutor", "Signature verification failed for actor $actorId", e)
-            false
-        }
+        private const val ALYSSA_PUBLIC_KEY = "302a300506032b6570032100" + "ReservedPlaceholder..."
     }
 
     fun execute(commandBlock: String): String {
@@ -94,33 +49,28 @@ class CommandExecutor(private val context: Context) {
             return "ERROR_MISSING_FIELDS"
         }
 
-        // Validate expiry
         val now = System.currentTimeMillis() / 1000
         if (now > expires) {
-            dbHelper.logAudit(actor, action, "{}", "REJECTED", "Command expired: current time $now, expires $expires")
+            dbHelper.logAudit(actor, action, "{}", "REJECTED", "Command expired")
             return "ERROR_COMMAND_EXPIRED"
         }
 
-        // Validate nonce replay
         val nonceSaved = dbHelper.useNonce(nonce, actor)
         if (!nonceSaved) {
-            dbHelper.logAudit(actor, action, "{}", "REJECTED", "Replay detected: duplicate nonce $nonce")
+            dbHelper.logAudit(actor, action, "{}", "REJECTED", "Replay detected")
             return "ERROR_REPLAY_DETECTED"
         }
 
-        // Verify cryptographic signature
         val signedMessage = "actor:$actor:nonce:$nonce:expires:$expires:action:$action:args:$argsBase64"
         val signatureValid = verifySignature(actor, signedMessage, signature)
         if (!signatureValid) {
-            dbHelper.logAudit(actor, action, "{}", "REJECTED", "Signature verification failed")
+            dbHelper.logAudit(actor, action, "{}", "REJECTED", "Signature failed")
             return "ERROR_INVALID_SIGNATURE"
         }
 
         val argsJson = try {
             String(Base64.decode(argsBase64, Base64.URL_SAFE or Base64.NO_WRAP), Charsets.UTF_8)
-        } catch (e: Exception) {
-            "{}"
-        }
+        } catch (_: Exception) { "{}" }
 
         val outcome: String
         val details: String
@@ -131,31 +81,22 @@ class CommandExecutor(private val context: Context) {
                     val to = parseJsonField(argsJson, "to")
                     val body = parseJsonField(argsJson, "body")
                     if (to.isBlank() || body.isBlank()) {
-                        outcome = "FAILED"
-                        details = "Missing 'to' or 'body' parameter"
+                        outcome = "FAILED"; details = "Missing 'to' or 'body'"
                     } else {
                         val rowId = dbHelper.enqueueMessage("SMS", to, body)
-                        outcome = "SUCCESS"
-                        details = "Enqueued SMS send to $to. Row ID: $rowId"
+                        outcome = "SUCCESS"; details = "Enqueued SMS to $to. Row: $rowId"
                     }
                 }
                 "provider.refresh" -> {
-                    val refreshed = triggerKeyHarvester()
-                    if (refreshed) {
-                        outcome = "SUCCESS"
-                        details = "GetContact key refresh triggered successfully"
-                    } else {
-                        outcome = "FAILED"
-                        details = "GetContact key refresh failed or Termux environment unavailable"
-                    }
+                    val ok = triggerKeyHarvester()
+                    outcome = if (ok) "SUCCESS" else "FAILED"
+                    details = if (ok) "Refresh flag set" else "Flag write failed"
                 }
                 "device.status" -> {
-                    outcome = "SUCCESS"
-                    details = "Battery status OK. Signal state OK."
+                    outcome = "SUCCESS"; details = "OK"
                 }
                 else -> {
-                    outcome = "FAILED"
-                    details = "Unknown action: $action"
+                    outcome = "FAILED"; details = "Unknown action: $action"
                 }
             }
         } catch (e: Exception) {
@@ -167,39 +108,52 @@ class CommandExecutor(private val context: Context) {
         return "OUTCOME: $outcome | DETAILS: $details"
     }
 
-    /** Runs a GetContact lookup; Telegram presentation belongs in CommandReceiver. */
-    fun gcLookup(phoneNumber: String): GetContactResult {
+    /** Phone lookup across all available providers. TG presentation in CommandReceiver. */
+    fun checkNumber(phoneNumber: String): List<PhoneLookupResult> {
         val cleaned = phoneNumber.trim().replace(Regex("[^0-9+]"), "")
-        if (cleaned.length < 8) return GetContactResult.Error("Invalid phone number: too short")
-        return runBlocking { getContactClient.performLookup(cleaned) }
+        if (cleaned.length < 8) return emptyList()
+        return runBlocking { lookupService.lookup(cleaned) }
     }
 
     private fun parseJsonField(json: String, field: String): String {
         val pattern = "\"$field\"\\s*:\\s*\"([^\"]+)\"".toRegex()
-        val match = pattern.find(json)
-        return match?.groupValues?.get(1) ?: ""
+        return pattern.find(json)?.groupValues?.get(1) ?: ""
     }
 
     private fun triggerKeyHarvester(): Boolean {
         return try {
-            // Write a flag file that Artemis checks periodically.
-            // The actual Frida-based extraction runs on the host, not the device.
             val flag = java.io.File("/data/local/tmp/numi_refresh_requested")
             flag.parentFile?.mkdirs()
             flag.writeText(System.currentTimeMillis().toString())
             true
         } catch (e: Exception) {
-            Log.e("CommandExecutor", "Failed to write refresh flag", e)
+            Log.e("CommandExecutor", "Flag write failed", e)
+            false
+        }
+    }
+
+    private fun verifySignature(actorId: String, message: String, sigBase64: String): Boolean {
+        val prefs = context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
+        val pubKeyHex = prefs.getString("actor_pubkey_$actorId", null) ?: return false
+        return try {
+            val raw = hexToBytes(pubKeyHex)
+            val x509 = if (raw.size == 32) hexToBytes("302a300506032b6570032100") + raw else raw
+            val kf = KeyFactory.getInstance("Ed25519")
+            val pk = kf.generatePublic(X509EncodedKeySpec(x509))
+            val sig = Base64.decode(sigBase64, Base64.URL_SAFE or Base64.NO_WRAP)
+            val verifier = Signature.getInstance("Ed25519")
+            verifier.initVerify(pk)
+            verifier.update(message.toByteArray(Charsets.UTF_8))
+            verifier.verify(sig)
+        } catch (e: Exception) {
+            Log.e("CommandExecutor", "Sig verify failed", e)
             false
         }
     }
 
     private fun hexToBytes(hex: String): ByteArray {
         val result = ByteArray(hex.length / 2)
-        for (i in result.indices) {
-            val index = i * 2
-            result[i] = hex.substring(index, index + 2).toInt(16).toByte()
-        }
+        for (i in result.indices) result[i] = hex.substring(i * 2, i * 2 + 2).toInt(16).toByte()
         return result
     }
 }

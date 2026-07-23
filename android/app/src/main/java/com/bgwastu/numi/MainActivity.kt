@@ -139,7 +139,7 @@ fun NumiScreen() {
                     Text("Commands", style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(8.dp))
                     CommandRow("/status", "Device battery, network, SIM status")
-                    CommandRow("/gc <number>", "GetContact phone number lookup")
+                    CommandRow("/check <number>", "Phone number lookup (GetContact + more)")
                     CommandRow("/send <number> <msg>", "Send SMS via device SIM")
                     CommandRow("/refresh", "Refresh GetContact credentials")
                 }

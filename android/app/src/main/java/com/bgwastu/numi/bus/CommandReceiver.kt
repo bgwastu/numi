@@ -9,7 +9,7 @@ import com.bgwastu.numi.bus.TelegramActionStore
 import com.bgwastu.numi.device.DeviceStatusProvider
 import com.bgwastu.numi.device.SimInfo
 import com.bgwastu.numi.network.TelegramSender
-import com.bgwastu.numi.provider.GetContactResult
+import com.bgwastu.numi.provider.PhoneLookupResult
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -58,7 +58,7 @@ class CommandReceiver(
             try {
                 val commands = JSONArray().apply {
                     put(JSONObject().apply { put("command", "status"); put("description", "Device status — battery, network, SIMs") })
-                    put(JSONObject().apply { put("command", "gc"); put("description", "GetContact lookup for a phone number") })
+                    put(JSONObject().apply { put("command", "check"); put("description", "Phone number lookup (GetContact + more)") })
                     put(JSONObject().apply { put("command", "send"); put("description", "Send SMS via device") })
                     put(JSONObject().apply { put("command", "refresh"); put("description", "Refresh GetContact credentials") })
                 }
@@ -238,20 +238,18 @@ args: e30=
                 return
             }
 
-            // -- /gc <number> command — GetContact lookup --
-            val gcMatch = Regex("""^/(?:gc|lookup|analyze)\s+(.+)$""", RegexOption.IGNORE_CASE).find(text)
-            if (gcMatch != null) {
-                val number = gcMatch.groupValues[1].trim()
-                Log.d("CommandReceiver", "GC lookup requested from chat $chatId")
-                dispatchGetContactReply(chatId, number)
+            // -- /check <number> command — phone number lookup --
+            val checkMatch = Regex("""^/(?:check|gc|lookup|analyze)\s+(.+)$""", RegexOption.IGNORE_CASE).find(text)
+            if (checkMatch != null) {
+                val number = checkMatch.groupValues[1].trim()
+                dispatchPhoneLookup(chatId, number)
                 return
             }
 
             // -- Plain phone number auto-detect --
             val phoneClean = text.trim().replace(Regex("[^0-9+]"), "")
             if (phoneClean.length in 8..15 && phoneClean.all { it.isDigit() || it == '+' }) {
-                Log.d("CommandReceiver", "Auto GC lookup requested from chat $chatId")
-                dispatchGetContactReply(chatId, phoneClean)
+                dispatchPhoneLookup(chatId, phoneClean)
             }
         }
 
@@ -374,52 +372,45 @@ args: e30=
             sendTelegram("answerCallbackQuery", body)
         }
 
-        private fun dispatchGetContactReply(chatId: String, phoneNumber: String) {
+        private fun dispatchPhoneLookup(chatId: String, phoneNumber: String) {
             Thread {
                 try {
-                    when (val result = executor.gcLookup(phoneNumber)) {
-                        is GetContactResult.Error -> {
-                            sendText(chatId, "❌ Lookup failed: ${result.message}")
-                        }
-                        is GetContactResult.Success -> {
-                            val profileSummary = buildProfileSummary(result)
-                            val imageSent = result.profileImageUrl?.let { imageUrl ->
-                                sendPhoto(chatId, imageUrl, profileSummary)
-                            } ?: false
-                            if (!imageSent) {
-                                // A missing or expired image must not suppress the lookup results.
-                                sendText(chatId, profileSummary)
-                            }
+                    val results = executor.checkNumber(phoneNumber)
+                    if (results.isEmpty()) {
+                        sendText(chatId, "❌ No results found for this number (or no providers available).")
+                        return@Thread
+                    }
+                    for (result in results) {
+                        val header = buildLookupHeader(result)
+                        val imageSent = result.profileImageUrl?.let { url ->
+                            sendPhoto(chatId, url, header)
+                        } ?: false
+                        if (!imageSent) sendText(chatId, header)
 
-                            if (result.tags.isEmpty()) {
-                                sendText(chatId, "📭 No tags found for this number.")
-                            } else {
-                                val chunks = buildTagChunks(result)
-                                for (chunk in chunks) {
-                                    if (!sendText(chatId, chunk)) {
-                                        Log.e("CommandReceiver", "Stopped tag delivery after a Telegram send failure")
-                                        break
-                                    }
-                                }
+                        if (result.tags.isEmpty()) {
+                            sendText(chatId, "📭 No tags from ${result.provider}.")
+                        } else {
+                            val chunks = buildTagChunks(result)
+                            for (chunk in chunks) {
+                                if (!sendText(chatId, chunk)) break
                             }
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("CommandReceiver", "Failed to process GetContact lookup", e)
+                    Log.e("CommandReceiver", "Lookup failed", e)
                     sendText(chatId, "❌ Lookup failed due to an internal error")
                 }
             }.start()
         }
 
-        private fun buildProfileSummary(result: GetContactResult.Success): String = buildString {
-            appendLine("📞 Number analysis")
+        private fun buildLookupHeader(result: PhoneLookupResult): String = buildString {
+            appendLine("📞 ${result.provider} lookup")
             appendLine("Number: ${result.displayNumber}")
             result.displayName?.takeIf { it.isNotBlank() }?.let { appendLine("Name: $it") }
-            append("Tags: ${result.tags.size} (full list follows)")
+            append("Tags: ${result.tags.size}")
         }
 
-        /** Telegram allows 4096 chars for text. Leave margin for headers and API changes. */
-        private fun buildTagChunks(result: GetContactResult.Success): List<String> {
+        private fun buildTagChunks(result: PhoneLookupResult): List<String> {
             val maxChars = 3_800
             val headerAllowance = 80
             val maxLinePartChars = maxChars - headerAllowance
