@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -56,7 +57,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling-preview)
+    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
     // Room SQLite
@@ -67,7 +68,7 @@ dependencies {
     // Ktor Client
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.content-negotiation)
+    implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
 
     testImplementation(libs.junit)
