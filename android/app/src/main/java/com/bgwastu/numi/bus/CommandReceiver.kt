@@ -23,6 +23,7 @@ class CommandReceiver(
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
+        socketTimeout = 30_000 // 30s for long-poll
     }
     
     private val dbHelper = DbHelper(context)

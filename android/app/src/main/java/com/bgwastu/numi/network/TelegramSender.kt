@@ -22,6 +22,7 @@ class TelegramSender(private val botToken: String) {
                 prettyPrint = true
             })
         }
+        socketTimeout = 30_000
     }
 
     @Serializable
