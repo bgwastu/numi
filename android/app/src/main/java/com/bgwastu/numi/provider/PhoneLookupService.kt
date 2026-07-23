@@ -1,5 +1,6 @@
 package com.bgwastu.numi.provider
 
+import android.content.Context
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -8,15 +9,8 @@ import kotlinx.coroutines.coroutineScope
 class PhoneLookupService(private val providers: List<PhoneLookupProvider>) {
 
     companion object {
-        fun create(getContact: GetContactClient): PhoneLookupService {
-            val gc = object : PhoneLookupProvider {
-                override val name = "GetContact"
-                override fun isAvailable() = getContact.isAvailable()
-                override suspend fun lookup(phoneNumber: String): Result<PhoneLookupResult> {
-                    return getContact.performLookup(phoneNumber)
-                }
-            }
-            return PhoneLookupService(listOf(gc))
+        fun create(context: Context): PhoneLookupService {
+            return PhoneLookupService(listOf(GetContactLookupProvider(context)))
         }
     }
 

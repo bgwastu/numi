@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Base64
 import android.util.Log
 import com.bgwastu.numi.database.DbHelper
-import com.bgwastu.numi.provider.GetContactClient
 import com.bgwastu.numi.provider.PhoneLookupResult
 import com.bgwastu.numi.provider.PhoneLookupService
 import kotlinx.coroutines.runBlocking
@@ -15,7 +14,7 @@ import java.security.spec.X509EncodedKeySpec
 class CommandExecutor(private val context: Context) {
 
     private val dbHelper = DbHelper(context)
-    private val lookupService = PhoneLookupService.create(GetContactClient(context))
+    private val lookupService = PhoneLookupService.create(context)
 
     companion object {
         private const val ALYSSA_PUBLIC_KEY = "302a300506032b6570032100" + "ReservedPlaceholder..."
