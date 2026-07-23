@@ -2,6 +2,7 @@ package com.bgwastu.numi.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -16,13 +17,16 @@ import android.util.Log
 class TelegramSender(private val botToken: String) {
 
     private val client = HttpClient(OkHttp) {
+        install(HttpTimeout) {
+            socketTimeoutMillis = 30_000
+            requestTimeoutMillis = 35_000
+        }
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
                 prettyPrint = true
             })
         }
-        socketTimeout = 30_000
     }
 
     @Serializable

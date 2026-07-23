@@ -6,6 +6,7 @@ import com.bgwastu.numi.database.DbHelper
 import com.bgwastu.numi.network.TelegramSender
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -20,10 +21,13 @@ class CommandReceiver(
     private val replySender: TelegramSender
 ) {
     private val client = HttpClient(OkHttp) {
+        install(HttpTimeout) {
+            socketTimeoutMillis = 30_000
+            requestTimeoutMillis = 35_000
+        }
         install(ContentNegotiation) {
             json(Json { ignoreUnknownKeys = true })
         }
-        socketTimeout = 30_000 // 30s for long-poll
     }
     
     private val dbHelper = DbHelper(context)
