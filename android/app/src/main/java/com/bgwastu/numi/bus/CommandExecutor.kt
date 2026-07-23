@@ -5,6 +5,8 @@ import android.util.Base64
 import android.util.Log
 import com.bgwastu.numi.database.DbHelper
 import com.bgwastu.numi.provider.GetContactClient
+import com.bgwastu.numi.provider.GetContactResult
+import kotlinx.coroutines.runBlocking
 import java.security.KeyFactory
 import java.security.Signature
 import java.security.spec.EdECPublicKeySpec
@@ -15,6 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class CommandExecutor(private val context: Context) {
 
     private val dbHelper = DbHelper(context)
+    private val getContactClient = GetContactClient(context)
     
     companion object {
         // Enrolled agent public keys (Hex format)
@@ -162,6 +165,46 @@ class CommandExecutor(private val context: Context) {
 
         dbHelper.logAudit(actor, action, argsJson, outcome, details)
         return "OUTCOME: $outcome | DETAILS: $details"
+    }
+
+    fun gcLookup(phoneNumber: String): String {
+        val cleaned = phoneNumber.trim().replace(Regex("[^0-9+]"), "")
+        if (cleaned.length < 8) return "❌ Invalid phone number: too short"
+
+        val result = runBlocking {
+            getContactClient.performLookup(cleaned)
+        }
+
+        return when (result) {
+            is GetContactResult.Success -> {
+                val sb = StringBuilder()
+                sb.appendLine("📞 *Number Analysis*")
+                sb.appendLine("`${result.displayNumber}`")
+                if (!result.displayName.isNullOrBlank()) {
+                    sb.appendLine("👤 *Name:* ${result.displayName}")
+                }
+                sb.appendLine()
+
+                if (result.tags.isEmpty()) {
+                    sb.appendLine("📭 No tags found for this number.")
+                } else {
+                    sb.appendLine("🏷️ *Tags (${result.tags.size}):*")
+                    val limited = result.tags.take(20)
+                    for ((i, tag) in limited.withIndex()) {
+                        val tagName = tag.name.ifBlank { tag.tag }
+                        val count = if (tag.count > 0) " (${tag.count}x)" else ""
+                        sb.appendLine("${i + 1}. `$tagName`$count")
+                    }
+                    if (result.tags.size > 20) {
+                        sb.appendLine("*...and ${result.tags.size - 20} more*")
+                    }
+                }
+                sb.toString()
+            }
+            is GetContactResult.Error -> {
+                "❌ Lookup failed: ${result.message}"
+            }
+        }
     }
 
     private fun parseJsonField(json: String, field: String): String {

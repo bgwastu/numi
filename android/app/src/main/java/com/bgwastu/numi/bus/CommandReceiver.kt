@@ -145,28 +145,47 @@ class CommandReceiver(
             val chatId = chat.optLong("id", 0).toString()
             val text = message.optString("text", "")
 
+            // Numi signed commands
             if (text.startsWith("NUMI_CMD v1")) {
                 Log.d("CommandReceiver", "Received Numi cmd from chat $chatId")
-                // Run executor in background
-                Thread {
-                    try {
-                        val outcome = executor.execute(text)
-                        val receipt = "\uD83E\uDD16 *Command Receipt*\n*Status:* `$outcome`"
-                        // Fire-and-forget reply
-                        val replyUrl = "https://api.telegram.org/bot$botToken/sendMessage"
-                        val replyObj = JSONObject().apply {
-                            put("chat_id", chatId)
-                            put("text", receipt)
-                            put("parse_mode", "Markdown")
-                        }
-                        val replyBody = replyObj.toString().toRequestBody(JSON_MEDIA_TYPE)
-                        val replyReq = Request.Builder().url(replyUrl).post(replyBody).build()
-                        pollingClient.newCall(replyReq).execute()
-                    } catch (e: Exception) {
-                        Log.e("CommandReceiver", "Failed to process command", e)
-                    }
-                }.start()
+                dispatchReply(chatId) { executor.execute(text) }
+                return
             }
+
+            // /gc <number> command — GetContact lookup
+            val gcMatch = Regex("^/(?:gc|lookup|analyze)\\s+(.+)$", RegexOption.IGNORE_CASE).find(text)
+            if (gcMatch != null) {
+                val number = gcMatch.groupValues[1].trim()
+                Log.d("CommandReceiver", "GC lookup for $number from chat $chatId")
+                dispatchReply(chatId) { executor.gcLookup(number) }
+                return
+            }
+
+            // Plain phone number — auto-detect and lookup
+            val phoneClean = text.trim().replace(Regex("[^0-9+]"), "")
+            if (phoneClean.length in 8..15 && phoneClean.all { it.isDigit() || it == '+' }) {
+                Log.d("CommandReceiver", "Auto GC lookup for $phoneClean from chat $chatId")
+                dispatchReply(chatId) { executor.gcLookup(phoneClean) }
+            }
+        }
+
+        private fun dispatchReply(chatId: String, block: () -> String) {
+            Thread {
+                try {
+                    val result = block()
+                    val replyUrl = "https://api.telegram.org/bot$botToken/sendMessage"
+                    val replyObj = JSONObject().apply {
+                        put("chat_id", chatId)
+                        put("text", result)
+                        put("parse_mode", "Markdown")
+                    }
+                    val replyBody = replyObj.toString().toRequestBody(JSON_MEDIA_TYPE)
+                    val replyReq = Request.Builder().url(replyUrl).post(replyBody).build()
+                    pollingClient.newCall(replyReq).execute()
+                } catch (e: Exception) {
+                    Log.e("CommandReceiver", "Failed to process command", e)
+                }
+            }.start()
         }
     }
 }
