@@ -55,14 +55,22 @@ class GetContactClient(private val context: Context) {
         }
     }
 
-    suspend fun performLookup(phoneNumber: String, deviceToken: String, deviceId: String): String {
+    suspend fun performLookup(phoneNumber: String): String {
         val creds = getCredentials() ?: return "ERROR_NO_CREDENTIALS"
-        
+
         val aesKey = creds.aes_key
         val hmacKey = creds.hmac_key
-        
+        val deviceToken = creds.device_token
+        val deviceId = creds.device_id
+
         if (aesKey.isBlank() || hmacKey.isBlank()) {
             return "ERROR_INVALID_KEYS"
+        }
+        if (deviceToken.isBlank()) {
+            return "ERROR_NO_TOKEN"
+        }
+        if (deviceId.isBlank()) {
+            return "ERROR_NO_DEVICE_ID"
         }
 
         // Construct request payload
@@ -122,5 +130,7 @@ class GetContactClient(private val context: Context) {
 data class GetContactCredentials(
     val aes_key: String,
     val hmac_key: String,
+    val device_token: String = "",
+    val device_id: String = "",
     val updated_at: Long
 )
