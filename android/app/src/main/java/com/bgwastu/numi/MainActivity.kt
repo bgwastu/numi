@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.bgwastu.numi.provider.GetContactCredentialExtractor
 import com.bgwastu.numi.queue.OutboxService
+import com.bgwastu.numi.util.RootChecker
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,6 +88,7 @@ fun NumiScreen() {
                     StatusRow("Service", "Running ✓")
                     StatusRow("Bot", if (savedToken.isNotBlank()) "Configured ✓" else "Not configured ✗")
                     StatusRow("GetContact", if (hasCredentials) "Installed ✓" else "Not installed ✗")
+                    StatusRow("Root", if (RootChecker.isRootAvailable()) "Available ✓" else "Denied ✗ — check KernelSU")
                     StatusRow("Battery", if (isBatteryExempt) "Unrestricted ✓" else "Optimized — tap to fix") {
                         if (!isBatteryExempt) {
                             val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
