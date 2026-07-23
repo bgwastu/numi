@@ -60,21 +60,29 @@ class GetContactClient(private val context: Context) {
     private fun refreshCredentials() {
         Thread {
             try {
-                Log.i("GetContactClient", "Running credential auto-refresh...")
-                val cmds = listOf(
-                    "am force-stop $GC_PKG",
-                    "rm -f $GC_DATA/files/datastore/tokens.preferences_pb",
-                    "monkey -p $GC_PKG -c android.intent.category.LAUNCHER 1"
-                )
-                for (cmd in cmds) {
-                    Runtime.getRuntime().exec(arrayOf("su", "-c", cmd)).waitFor()
-                    Thread.sleep(1500)
-                }
-                Thread.sleep(4000) // Wait for app to generate new token
-                GetContactCredentialExtractor.extractAndSave(context)
-                Log.i("GetContactClient", "Credential auto-refresh complete")
+                Log.i("GetContactClient", "Auto-refresh: force-stopping GetContact...")
+                val p1 = Runtime.getRuntime().exec(arrayOf("su", "-c", "am force-stop $GC_PKG"))
+                val out1 = p1.inputStream.bufferedReader().readText()
+                p1.waitFor()
+                Log.i("GetContactClient", "Force-stop result: exit=${p1.exitValue()}, out=$out1")
+
+                Thread.sleep(1000)
+                Log.i("GetContactClient", "Auto-refresh: deleting stale token...")
+                val p2 = Runtime.getRuntime().exec(arrayOf("su", "-c", "rm -f $GC_DATA/files/datastore/tokens.preferences_pb"))
+                p2.waitFor()
+                Log.i("GetContactClient", "Token delete: exit=${p2.exitValue()}")
+
+                Thread.sleep(500)
+                Log.i("GetContactClient", "Auto-refresh: launching GetContact...")
+                val p3 = Runtime.getRuntime().exec(arrayOf("su", "-c", "monkey -p $GC_PKG -c android.intent.category.LAUNCHER 1"))
+                p3.waitFor()
+                Log.i("GetContactClient", "Launch: exit=${p3.exitValue()}")
+
+                Thread.sleep(5000) // Wait for app to fully init and generate new token
+                val ok = GetContactCredentialExtractor.extractAndSave(context)
+                Log.i("GetContactClient", "Auto-refresh: extraction result = $ok")
             } catch (e: Exception) {
-                Log.e("GetContactClient", "Auto-refresh failed", e)
+                Log.e("GetContactClient", "Auto-refresh failed: ${e.message}", e)
             }
         }.start()
     }
