@@ -185,8 +185,10 @@ class OutboxService : Service() {
             Notification.Builder(this)
         }
         return builder
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("Numi Outbox Daemon")
             .setContentText("Gateway is running...")
+            .setOngoing(true)
             .build()
     }
 }
