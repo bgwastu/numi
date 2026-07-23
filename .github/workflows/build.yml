@@ -21,7 +21,7 @@ jobs:
           cache: 'gradle'
 
       - name: Grant Execute Permission to Gradlew
-        run: chmod +x android/gradlew
+        run: chmod +x gradlew
         working-directory: android
 
       - name: Build Debug APK
