@@ -1,0 +1,27 @@
+# Gradle files
+.gradle
+/local.properties
+/android/local.properties
+/android/.gradle
+/android/app/build
+/android/build
+
+# IDE files
+.idea
+*.iml
+.vscode
+
+# System/OS
+.DS_Store
+Thumbs.db
+
+# Output APKs/build artifacts
+*.apk
+*.aar
+
+# Keys/Secrets
+*.jks
+*.keystore
+*.json
+!/android/gradle/libs.versions.toml
+!/android/app/src/main/assets/
