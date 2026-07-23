@@ -42,12 +42,8 @@ class OutboxService : Service() {
     override fun onCreate() {
         super.onCreate()
         dbHelper = DbHelper(this)
-        telegramSender = TelegramSender(BOT_TOKEN)
-        
-        // Start Command Receiver long-polling
-        commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
-        commandReceiver?.start()
-        
+        telegramSender = TelegramSender("") // Will be updated in onStartCommand
+
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
         startPolling()
@@ -150,6 +146,11 @@ class OutboxService : Service() {
         if (token != null && chat != null) {
             updateConfig(token, chat)
             telegramSender = TelegramSender(BOT_TOKEN)
+
+            // Start/restart Command Receiver with the real token
+            commandReceiver?.stop()
+            commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
+            commandReceiver?.start()
         }
         return START_STICKY
     }
