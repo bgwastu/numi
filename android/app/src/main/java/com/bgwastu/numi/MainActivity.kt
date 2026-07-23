@@ -3,6 +3,9 @@ package com.bgwastu.numi
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
@@ -18,11 +21,21 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.bgwastu.numi.provider.GetContactCredentialExtractor
 import com.bgwastu.numi.queue.OutboxService
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Auto-start the foreground service when app opens
+        startForegroundService(Intent(this, OutboxService::class.java))
+
+        // Kick off credential extraction in background
+        Thread {
+            GetContactCredentialExtractor.extractAndSave(this)
+        }.start()
+
         setContent {
             MaterialTheme(colorScheme = darkColorScheme()) {
                 NumiScreen()
@@ -38,12 +51,14 @@ fun NumiScreen() {
 
     var botToken by remember { mutableStateOf(prefs.getString("BOT_TOKEN", "") ?: "") }
     var targetChatId by remember { mutableStateOf(prefs.getString("TARGET_CHAT_ID", "") ?: "") }
+    var hasCredentials by remember { mutableStateOf(GetContactCredentialExtractor.isGetContactInstalled(context)) }
 
     val savedToken = prefs.getString("BOT_TOKEN", "") ?: ""
     val savedChatId = prefs.getString("TARGET_CHAT_ID", "") ?: ""
-
     val isDirty = botToken != savedToken || targetChatId != savedChatId
-    val isFormValid = botToken.isNotBlank() && targetChatId.isNotBlank()
+
+    val pm = context.getSystemService(PowerManager::class.java)
+    val isBatteryExempt = pm.isIgnoringBatteryOptimizations(context.packageName)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -57,30 +72,29 @@ fun NumiScreen() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // ── Header ──
-            Text(
-                text = "Numi",
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "SMS gateway · GetContact · Telegram bot",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Text("Numi", style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.primary)
+            Text("SMS gateway · GetContact · Telegram bot",
+                style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-            // ── Status Card ──
+            // ── Live Status ──
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Status", style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(8.dp))
-                    StatusRow("Service", if (savedToken.isNotBlank()) "Configured" else "Not configured")
-                    StatusRow("Bot token", if (savedToken.isNotBlank()) "✓ Set" else "✗ Missing")
-                    StatusRow("Target chat", if (savedChatId.isNotBlank()) "✓ $savedChatId" else "✗ Missing")
+                    StatusRow("Service", "Running ✓")
+                    StatusRow("Bot", if (savedToken.isNotBlank()) "Configured ✓" else "Not configured ✗")
+                    StatusRow("GetContact", if (hasCredentials) "Installed ✓" else "Not installed ✗")
+                    StatusRow("Battery", if (isBatteryExempt) "Unrestricted ✓" else "Optimized — tap to fix") {
+                        if (!isBatteryExempt) {
+                            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                                data = Uri.parse("package:${context.packageName}")
+                            }
+                            context.startActivity(intent)
+                        }
+                    }
                 }
             }
 
@@ -88,10 +102,8 @@ fun NumiScreen() {
             Text("Configuration", style = MaterialTheme.typography.titleMedium)
 
             OutlinedTextField(
-                value = botToken,
-                onValueChange = { botToken = it },
-                label = { Text("Bot Token") },
-                modifier = Modifier.fillMaxWidth(),
+                value = botToken, onValueChange = { botToken = it },
+                label = { Text("Bot Token") }, modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -99,17 +111,15 @@ fun NumiScreen() {
             )
 
             OutlinedTextField(
-                value = targetChatId,
-                onValueChange = { targetChatId = it },
-                label = { Text("Target Chat ID") },
-                modifier = Modifier.fillMaxWidth(),
+                value = targetChatId, onValueChange = { targetChatId = it },
+                label = { Text("Target Chat ID") }, modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 supportingText = { Text("Your Telegram user ID") }
             )
 
-            // ── Save button (only when dirty) ──
-            AnimatedVisibility(visible = isDirty && isFormValid) {
+            // Save button only when dirty
+            AnimatedVisibility(visible = isDirty) {
                 Button(
                     onClick = {
                         prefs.edit()
@@ -123,18 +133,24 @@ fun NumiScreen() {
                         context.startForegroundService(intent)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = isFormValid
-                ) {
-                    Text("Save & Restart Service")
-                }
+                    enabled = botToken.isNotBlank() && targetChatId.isNotBlank()
+                ) { Text("Save & Restart") }
+            }
+
+            // ── GetContact Refresh ──
+            if (hasCredentials) {
+                OutlinedButton(
+                    onClick = {
+                        Thread { GetContactCredentialExtractor.extractAndSave(context) }.start()
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) { Text("Refresh GetContact Credentials") }
             }
 
             // ── Commands ──
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Commands", style = MaterialTheme.typography.titleMedium)
@@ -150,43 +166,34 @@ fun NumiScreen() {
 }
 
 @Composable
-private fun StatusRow(label: String, value: String) {
+private fun StatusRow(label: String, value: String, onClick: (() -> Unit)? = null) {
+    val color = if (value.contains("✗")) MaterialTheme.colorScheme.error
+                else if (value.contains("✓")) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurfaceVariant
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(label, style = MaterialTheme.typography.bodyMedium)
-        Text(
-            value,
-            style = MaterialTheme.typography.bodyMedium,
-            fontFamily = FontFamily.Monospace,
-            color = if (value.startsWith("✗")) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        if (onClick != null) {
+            TextButton(onClick = onClick, contentPadding = PaddingValues(0.dp)) {
+                Text(value, style = MaterialTheme.typography.bodyMedium, fontFamily = FontFamily.Monospace, color = color)
+            }
+        } else {
+            Text(value, style = MaterialTheme.typography.bodyMedium, fontFamily = FontFamily.Monospace, color = color)
+        }
     }
 }
 
 @Composable
 private fun CommandRow(command: String, description: String) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 3.dp),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            command,
-            style = MaterialTheme.typography.bodyMedium,
-            fontFamily = FontFamily.Monospace,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.widthIn(min = 130.dp)
-        )
-        Text(
-            description,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Text(command, style = MaterialTheme.typography.bodyMedium, fontFamily = FontFamily.Monospace,
+            color = MaterialTheme.colorScheme.primary, modifier = Modifier.widthIn(min = 140.dp))
+        Text(description, style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

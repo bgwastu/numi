@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Base64
 import android.util.Log
 import com.bgwastu.numi.database.DbHelper
+import com.bgwastu.numi.provider.GetContactCredentialExtractor
 import com.bgwastu.numi.provider.PhoneLookupResult
 import com.bgwastu.numi.provider.PhoneLookupService
 import kotlinx.coroutines.runBlocking
@@ -117,16 +118,18 @@ class CommandExecutor(private val context: Context) {
     private fun parseJsonField(json: String, field: String): String {
         val pattern = "\"$field\"\\s*:\\s*\"([^\"]+)\"".toRegex()
         return pattern.find(json)?.groupValues?.get(1) ?: ""
-    }
-
     private fun triggerKeyHarvester(): Boolean {
         return try {
-            val flag = java.io.File("/data/local/tmp/numi_refresh_requested")
-            flag.parentFile?.mkdirs()
-            flag.writeText(System.currentTimeMillis().toString())
-            true
+            val ok = GetContactCredentialExtractor.extractAndSave(context)
+            if (ok) {
+                // Also write flag for Artemis as a backup signal
+                val flag = java.io.File("/data/local/tmp/numi_refresh_requested")
+                flag.parentFile?.mkdirs()
+                flag.writeText(System.currentTimeMillis().toString())
+            }
+            ok
         } catch (e: Exception) {
-            Log.e("CommandExecutor", "Flag write failed", e)
+            Log.e("CommandExecutor", "Credential extraction failed", e)
             false
         }
     }
