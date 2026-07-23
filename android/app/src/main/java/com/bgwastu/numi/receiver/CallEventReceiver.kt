@@ -95,7 +95,7 @@ class CallEventReceiver : Service() {
             TelephonyManager.CALL_STATE_IDLE -> {
                 if (ringingNumber != null) {
                     val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
-                    val chatId = prefs.getString("target_chat_id", null)
+                    val chatId = prefs.getString("TARGET_CHAT_ID", null)
                     if (chatId != null) {
                         val msgId = sender.sendTelegram(
                             "sendMessage",

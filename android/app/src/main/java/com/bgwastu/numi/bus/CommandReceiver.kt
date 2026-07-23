@@ -153,7 +153,7 @@ class CommandReceiver(
             val chatId = chat.optLong("id", 0).toString()
 
             // OWNER GATE — only respond to the configured target chat
-            val targetChatId = prefs.getString("target_chat_id", null)
+            val targetChatId = prefs.getString("TARGET_CHAT_ID", null)
                 ?: return  // not configured yet → silent
             if (chatId != targetChatId) return
 
@@ -216,7 +216,7 @@ args: e30=
         private fun handleCallback(callback: JSONObject) {
             val chat = callback.optJSONObject("message")?.optJSONObject("chat") ?: return
             val chatId = chat.optLong("id", 0).toString()
-            val targetChatId = prefs.getString("target_chat_id", null) ?: return
+            val targetChatId = prefs.getString("TARGET_CHAT_ID", null) ?: return
             if (chatId != targetChatId) return
 
             val data = callback.optString("data", "")
