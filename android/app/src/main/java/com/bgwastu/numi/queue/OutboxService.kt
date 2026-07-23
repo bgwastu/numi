@@ -147,10 +147,11 @@ class OutboxService : Service() {
             updateConfig(token, chat)
             telegramSender = TelegramSender(BOT_TOKEN)
 
-            // Start/restart Command Receiver with the real token
-            commandReceiver?.stop()
-            commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
-            commandReceiver?.start()
+            // Only create receiver if not already running
+            if (commandReceiver == null) {
+                commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
+                commandReceiver?.start()
+            }
         }
         return START_STICKY
     }
