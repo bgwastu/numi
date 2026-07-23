@@ -23,6 +23,7 @@ class OutboxService : Service() {
     
     private lateinit var dbHelper: DbHelper
     private lateinit var telegramSender: TelegramSender
+    private var commandReceiver: com.bgwastu.numi.bus.CommandReceiver? = null
     private val isRunning = AtomicBoolean(false)
     private var pollJob: Job? = null
 
@@ -42,6 +43,11 @@ class OutboxService : Service() {
         super.onCreate()
         dbHelper = DbHelper(this)
         telegramSender = TelegramSender(BOT_TOKEN)
+        
+        // Start Command Receiver long-polling
+        commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
+        commandReceiver?.start()
+        
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
         startPolling()
@@ -153,6 +159,7 @@ class OutboxService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         isRunning.set(false)
+        commandReceiver?.stop()
         pollJob?.cancel()
         serviceJob.cancel()
         telegramSender.close()
