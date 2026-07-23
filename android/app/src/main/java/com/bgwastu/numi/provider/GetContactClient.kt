@@ -37,10 +37,7 @@ class GetContactClient(private val context: Context) {
 
     private fun getCredentials(): GetContactCredentials? {
         val file = File(context.filesDir, "providers/getcontact.json")
-        if (!file.exists()) {
-            Log.e("GetContactClient", "GetContact credentials file is absent")
-            return null
-        }
+        if (!file.exists()) return null
         return try {
             jsonParser.decodeFromString<GetContactCredentials>(file.readText())
         } catch (e: Exception) {
@@ -48,6 +45,8 @@ class GetContactClient(private val context: Context) {
             null
         }
     }
+
+    fun isAvailable(): Boolean = getCredentials() != null
 
     /**
      * Searches profile metadata, then calls number-detail for the actual tag list.

@@ -13,13 +13,7 @@ class GetContactLookupProvider(private val context: Context) : PhoneLookupProvid
 
     private val client by lazy { GetContactClient(context) }
 
-    override fun isAvailable(): Boolean {
-        return try {
-            client.loadCredentials() != null
-        } catch (_: Exception) {
-            false
-        }
-    }
+    override fun isAvailable(): Boolean = client.isAvailable()
 
     override suspend fun lookup(phoneNumber: String): Result<PhoneLookupResult> {
         return try {
