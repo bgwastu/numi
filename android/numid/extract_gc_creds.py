@@ -118,24 +118,16 @@ def extract_token():
     return None
 
 
-def run_frida_harvester(timeout=25):
-    """Run Frida to capture AES and HMAC keys from GetContact runtime."""
-    print("[*] Running Frida key harvester...")
+def run_frida_harvester(timeout=30):
+    """Spawn GetContact with Frida to capture AES, HMAC, Token, Device ID."""
+    print("[*] Running Frida key harvester (spawn mode)...")
 
-    pid = get_pid()
-    if pid is None:
-        print("  [!] GetContact is not running. Launching...")
-        adb_shell(f"monkey -p {GC_PACKAGE} -c android.intent.category.LAUNCHER 1")
-        time.sleep(4)
-        pid = get_pid()
-        if pid is None:
-            print("  [!] Failed to launch GetContact")
-            return None, None
+    # Kill existing GetContact first
+    adb_shell(f"am force-stop {GC_PACKAGE}")
+    time.sleep(1)
 
-    print(f"  [+] Attaching Frida to PID {pid}...")
     harvester_path = HARVESTER_JS
     if not os.path.exists(harvester_path):
-        # Try default path
         harvester_path = os.path.join(
             os.path.dirname(__file__), "gc_harvester.js"
         )
@@ -143,17 +135,21 @@ def run_frida_harvester(timeout=25):
             print("  [!] gc_harvester.js not found")
             return None, None, None, None
 
+    print(f"  [+] Spawning {GC_PACKAGE} with Frida...")
+    env = os.environ.copy()
+    env["FRIDA_SPAWN_TIMEOUT"] = "30000"  # 30 seconds
     frida_cmd = [
         "frida", "-H", FRIDA_TARGET,
-        "-p", str(pid),
-        "-l", harvester_path, "--no-pause"
+        "-f", GC_PACKAGE,
+        "-l", harvester_path
     ]
 
     proc = subprocess.Popen(
         frida_cmd,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        text=True
+        text=True,
+        env=env
     )
 
     aes_key = None
@@ -281,17 +277,11 @@ def main():
 
     # 1. Extract Device ID from SharedPreferences
     device_id = extract_device_id()
-    if not device_id:
-        print("[!] Critical: Device ID is required")
-        sys.exit(1)
 
-    # 2. Extract Token from DataStore
-    token = extract_token()
-    if not token:
-        print("[!] Critical: Token is required")
-        sys.exit(1)
+    # 2. Try static Token extraction (optional — Frida captures at runtime)
+    static_token = extract_token()
 
-    # 3. Extract AES + HMAC keys + Token + Device ID via Frida
+    # 3. Extract all credentials via Frida (runtime capture)
     aes_key, hmac_key, frida_token, frida_devid = None, None, None, None
     if not no_frida:
         aes_key, hmac_key, frida_token, frida_devid = run_frida_harvester()
@@ -300,10 +290,16 @@ def main():
     else:
         print("[*] Skipping Frida (--no-frida)")
 
-    # 4. Use Frida result if available, otherwise fall back to static extraction
-    #    (token and device ID from static files are fallback only)
-    final_token = frida_token or token or ""
+    # 4. Assemble: Frida capture preferred, static fallback
+    final_token = frida_token or static_token or ""
     final_devid = frida_devid or device_id or ""
+
+    if not final_token:
+        print("[!] Token not captured. Make sure GetContact is logged in and network active.")
+        sys.exit(1)
+    if not final_devid:
+        print("[!] Device ID not captured.")
+        sys.exit(1)
 
     # 5. Save credentials
     creds = save_credentials(aes_key, hmac_key, final_token, final_devid)
