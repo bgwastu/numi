@@ -42,11 +42,24 @@ class OutboxService : Service() {
     override fun onCreate() {
         super.onCreate()
         dbHelper = DbHelper(this)
-        telegramSender = TelegramSender("") // Will be updated in onStartCommand
+        telegramSender = TelegramSender("")
+
+        // Read persistent config
+        val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
+        updateConfig(
+            prefs.getString("BOT_TOKEN", "") ?: "",
+            prefs.getString("TARGET_CHAT_ID", "") ?: ""
+        )
 
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
         startPolling()
+
+        // Create CommandReceiver if we have a token
+        if (BOT_TOKEN.isNotBlank()) {
+            commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
+            commandReceiver?.start()
+        }
     }
 
     private fun startPolling() {
@@ -147,11 +160,17 @@ class OutboxService : Service() {
             updateConfig(token, chat)
             telegramSender = TelegramSender(BOT_TOKEN)
 
-            // Only create receiver if not already running
-            if (commandReceiver == null) {
-                commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
-                commandReceiver?.start()
-            }
+            // Persist config
+            getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
+                .edit()
+                .putString("BOT_TOKEN", token)
+                .putString("TARGET_CHAT_ID", chat)
+                .apply()
+
+            // Create/recreate CommandReceiver with new token
+            commandReceiver?.stop()
+            commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
+            commandReceiver?.start()
         }
         return START_STICKY
     }
