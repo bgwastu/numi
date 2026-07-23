@@ -19,15 +19,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
-/**
- * Background service that detects incoming calls and notifies Telegram.
- * Runs call-state monitoring only while the foreground service is active;
- * closes when Numi stops (the foreground notification shields it).
- */
 class CallEventReceiver : Service() {
 
     private val isRunning = AtomicBoolean(false)
-    private var phoneStateListener: Any? = null
+    private var telephonyListener: Any? = null
     private var lastState: Int = TelephonyManager.CALL_STATE_IDLE
     private var ringingNumber: String? = null
 
@@ -37,7 +32,7 @@ class CallEventReceiver : Service() {
         if (!isRunning.compareAndSet(false, true)) return START_STICKY
 
         val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
-        val token = prefs.getString("bot_token", null)
+        val token = prefs.getString("BOT_TOKEN", null)
         if (token.isNullOrBlank()) {
             Log.e("CallEventReceiver", "Cannot start without bot_token")
             stopSelf()
@@ -47,85 +42,34 @@ class CallEventReceiver : Service() {
         val sender = TelegramSender(token)
         val actionStore = TelegramActionStore(this)
         val telephony = getSystemService(TelephonyManager::class.java)
+        val handler = CallHandler(this, sender, actionStore)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val callback = object : TelephonyCallback(), TelephonyCallback.CallStateListener {
                 override fun onCallStateChanged(state: Int) {
-                    handleCallState(state, telephony, sender, actionStore)
+                    handler.onCallStateChanged(state)
                 }
             }
             telephony.registerTelephonyCallback(mainExecutor, callback)
-            phoneStateListener = callback
+            telephonyListener = callback
         } else {
             @Suppress("DEPRECATION")
             val listener = object : PhoneStateListener() {
                 override fun onCallStateChanged(state: Int, phoneNumber: String?) {
-                    handleCallState(state, telephony, sender, actionStore)
+                    handler.onCallStateChanged(state)
                 }
             }
             telephony.listen(listener, PhoneStateListener.LISTEN_CALL_STATE)
-            phoneStateListener = listener
+            telephonyListener = listener
         }
 
         return START_STICKY
     }
 
-    private fun handleCallState(
-        state: Int,
-        telephony: TelephonyManager,
-        sender: TelegramSender,
-        actionStore: TelegramActionStore
-    ) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.e("CallEventReceiver", "Cannot read phone state without permission")
-            return
-        }
-
-        val wasIdle = lastState == TelephonyManager.CALL_STATE_IDLE
-        lastState = state
-
-        when (state) {
-            TelephonyManager.CALL_STATE_RINGING -> {
-                if (wasIdle) {
-                    // Incoming or outgoing? On Android we can't distinguish without
-                    // additional call-log heuristics, so we report conservatively.
-                    ringingNumber = System.currentTimeMillis().toString()
-                }
-            }
-            TelephonyManager.CALL_STATE_IDLE -> {
-                if (ringingNumber != null) {
-                    val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
-                    val chatId = prefs.getString("TARGET_CHAT_ID", null)
-                    if (chatId != null) {
-                        GlobalScope.launch {
-                            val sent = sender.sendMessage(chatId, "📞 Call ended — ring followed by idle")
-                            if (sent) {
-                                // Store a reply target so the owner can reply with SMS text
-                                // (caller number unknown — reply target created for manual SMS)
-                                actionStore.saveReplyTarget(
-                                    System.currentTimeMillis().toInt(),
-                                    ReplyTarget(
-                                        phoneNumber = "", // unknown caller — reply manual
-                                        subscriptionId = null,
-                                        source = "incoming_call"
-                                    )
-                                )
-                            }
-                        }
-                        }
-                    }
-                    ringingNumber = null
-                }
-            }
-        }
-    }
-
     override fun onDestroy() {
         isRunning.set(false)
         val telephony = getSystemService(TelephonyManager::class.java)
-        when (val listener = phoneStateListener) {
+        when (val listener = telephonyListener) {
             is TelephonyCallback -> telephony.unregisterTelephonyCallback(listener)
             is PhoneStateListener -> {
                 @Suppress("DEPRECATION")
@@ -133,5 +77,33 @@ class CallEventReceiver : Service() {
             }
         }
         super.onDestroy()
+    }
+
+    private inner class CallHandler(
+        private val service: CallEventReceiver,
+        private val sender: TelegramSender,
+        private val actionStore: TelegramActionStore
+    ) {
+        fun onCallStateChanged(state: Int) {
+            if (ContextCompat.checkSelfPermission(
+                    service, Manifest.permission.READ_PHONE_STATE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+
+            if (lastState == TelephonyManager.CALL_STATE_RINGING &&
+                state == TelephonyManager.CALL_STATE_IDLE
+            ) {
+                val prefs = service.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
+                val chatId = prefs.getString("TARGET_CHAT_ID", null)
+                if (chatId != null) {
+                    GlobalScope.launch {
+                        sender.sendMessage(chatId, "📞 Call ended — ring followed by idle")
+                    }
+                }
+            }
+            lastState = state
+        }
     }
 }
