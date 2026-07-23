@@ -109,11 +109,12 @@ class CommandReceiver(
                         for (i in 0 until updates.length()) {
                             val update = updates.getJSONObject(i)
                             val updateId = update.optLong("update_id", 0)
+                            handleUpdate(update)
+                            // Save offset AFTER handling so a crash restarts cleanly
                             if (updateId > offset) {
                                 offset = updateId + 1
                                 saveOffset()
                             }
-                            handleUpdate(update)
                         }
                         retryMs = MIN_RETRY_MS
                     }

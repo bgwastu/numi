@@ -118,21 +118,15 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         return db.insert(TABLE_AUDIT, null, values)
     }
 
-    // Check and save nonce (returns false if already exists)
+    // Check and save nonce (returns false if already exists). Uses atomic INSERT OR IGNORE.
     fun useNonce(nonce: String, actorId: String): Boolean {
         val db = this.writableDatabase
-        val checkQuery = "SELECT 1 FROM $TABLE_NONCES WHERE $COL_NONCE = ?"
-        val cursor = db.rawQuery(checkQuery, arrayOf(nonce))
-        val exists = cursor.moveToFirst()
-        cursor.close()
-        if (exists) return false
-
         val values = ContentValues().apply {
             put(COL_NONCE, nonce)
             put(COL_ACTOR, actorId)
             put(COL_CREATED_AT, System.currentTimeMillis())
         }
-        val result = db.insert(TABLE_NONCES, null, values)
+        val result = db.insertWithOnConflict(TABLE_NONCES, null, values, SQLiteDatabase.CONFLICT_IGNORE)
         return result != -1L
     }
 }
