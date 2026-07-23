@@ -5,8 +5,6 @@ import android.util.Base64
 import android.util.Log
 import com.bgwastu.numi.database.DbHelper
 import com.bgwastu.numi.provider.GetContactClient
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.security.KeyFactory
 import java.security.Signature
 import java.security.spec.EdECPublicKeySpec
@@ -65,10 +63,10 @@ class CommandExecutor(private val context: Context) {
         }
     }
 
-    suspend fun execute(commandBlock: String): String = withContext(Dispatchers.IO) {
+    fun execute(commandBlock: String): String {
         val lines = commandBlock.split("\n").map { it.trim() }
         if (lines.size < 6 || !lines[0].startsWith("NUMI_CMD v1")) {
-            return@withContext "ERROR_INVALID_CMD_FORMAT"
+            return "ERROR_INVALID_CMD_FORMAT"
         }
 
         var actor = ""
@@ -90,21 +88,21 @@ class CommandExecutor(private val context: Context) {
         }
 
         if (actor.isBlank() || nonce.isBlank() || expires == 0L || action.isBlank() || signature.isBlank()) {
-            return@withContext "ERROR_MISSING_FIELDS"
+            return "ERROR_MISSING_FIELDS"
         }
 
         // Validate expiry
         val now = System.currentTimeMillis() / 1000
         if (now > expires) {
             dbHelper.logAudit(actor, action, "{}", "REJECTED", "Command expired: current time $now, expires $expires")
-            return@withContext "ERROR_COMMAND_EXPIRED"
+            return "ERROR_COMMAND_EXPIRED"
         }
 
         // Validate nonce replay
         val nonceSaved = dbHelper.useNonce(nonce, actor)
         if (!nonceSaved) {
             dbHelper.logAudit(actor, action, "{}", "REJECTED", "Replay detected: duplicate nonce $nonce")
-            return@withContext "ERROR_REPLAY_DETECTED"
+            return "ERROR_REPLAY_DETECTED"
         }
 
         // Verify cryptographic signature
@@ -112,24 +110,21 @@ class CommandExecutor(private val context: Context) {
         val signatureValid = verifySignature(actor, signedMessage, signature)
         if (!signatureValid) {
             dbHelper.logAudit(actor, action, "{}", "REJECTED", "Signature verification failed")
-            return@withContext "ERROR_INVALID_SIGNATURE"
+            return "ERROR_INVALID_SIGNATURE"
         }
 
-        // Parse arguments JSON
         val argsJson = try {
             String(Base64.decode(argsBase64, Base64.URL_SAFE or Base64.NO_WRAP), Charsets.UTF_8)
         } catch (e: Exception) {
             "{}"
         }
 
-        // Execute action
         val outcome: String
         val details: String
-        
+
         try {
             when (action) {
                 "sms.send" -> {
-                    // Extract to/body from argsJson
                     val to = parseJsonField(argsJson, "to")
                     val body = parseJsonField(argsJson, "body")
                     if (to.isBlank() || body.isBlank()) {
@@ -142,7 +137,6 @@ class CommandExecutor(private val context: Context) {
                     }
                 }
                 "provider.refresh" -> {
-                    // Trigger key harvester
                     val refreshed = triggerKeyHarvester()
                     if (refreshed) {
                         outcome = "SUCCESS"
@@ -163,11 +157,11 @@ class CommandExecutor(private val context: Context) {
             }
         } catch (e: Exception) {
             dbHelper.logAudit(actor, action, argsJson, "FAILED", e.toString())
-            return@withContext "ERROR_EXECUTION_EXCEPTION: ${e.message}"
+            return "ERROR_EXECUTION_EXCEPTION: ${e.message}"
         }
 
         dbHelper.logAudit(actor, action, argsJson, outcome, details)
-        return@withContext "OUTCOME: $outcome | DETAILS: $details"
+        return "OUTCOME: $outcome | DETAILS: $details"
     }
 
     private fun parseJsonField(json: String, field: String): String {
