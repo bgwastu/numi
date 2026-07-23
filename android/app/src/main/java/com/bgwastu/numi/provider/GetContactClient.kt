@@ -104,7 +104,7 @@ class GetContactClient(private val context: Context) {
 
             val bodyText = response.bodyAsText()
             if (response.status.value == 200) {
-                parseResponse(bodyText, aesKey)
+                parseResponse(bodyText, aesKey, phoneNumber)
             } else {
                 Log.e("GetContactClient", "API error ${response.status.value}: $bodyText")
                 GetContactResult.Error("HTTP ${response.status.value}")
@@ -115,7 +115,7 @@ class GetContactClient(private val context: Context) {
         }
     }
 
-    private fun parseResponse(bodyText: String, aesKey: String): GetContactResult {
+    private fun parseResponse(bodyText: String, aesKey: String, phoneNumber: String): GetContactResult {
         return try {
             val root = jsonParser.parseToJsonElement(bodyText).jsonObject
 
@@ -123,12 +123,12 @@ class GetContactClient(private val context: Context) {
             val meta = root["meta"]?.jsonObject
             val httpStatus = meta?.get("httpStatusCode")?.jsonPrimitive?.intOrNull
             if (httpStatus != null && httpStatus != 200) {
-                val errorMsg = meta["errorMessage"]?.jsonPrimitive?.contentOrNull ?: "Unknown error"
+                val errorMsg = meta["errorMessage"]?.jsonPrimitive?.content ?: "Unknown error"
                 return GetContactResult.Error("$errorMsg (code: $httpStatus)")
             }
 
             // Decrypt data
-            val encryptedData = root["data"]?.jsonPrimitive?.contentOrNull
+            val encryptedData = root["data"]?.jsonPrimitive?.content
             if (encryptedData == null) {
                 return GetContactResult.Error("No data in response")
             }
@@ -150,17 +150,17 @@ class GetContactClient(private val context: Context) {
                 val tags = mutableListOf<GetContactTag>()
                 for (item in items) {
                     val obj = item.jsonObject
-                    val name = obj["name"]?.jsonPrimitive?.contentOrNull ?: ""
-                    val tag = obj["tag"]?.jsonPrimitive?.contentOrNull ?: ""
-                    val category = obj["category"]?.jsonPrimitive?.contentOrNull ?: ""
+                    val name = obj["name"]?.jsonPrimitive?.content ?: ""
+                    val tag = obj["tag"]?.jsonPrimitive?.content ?: ""
+                    val category = obj["category"]?.jsonPrimitive?.content ?: ""
                     val count = obj["count"]?.jsonPrimitive?.intOrNull ?: 0
                     tags.add(GetContactTag(name, tag, category, count))
                 }
 
                 // Profile info
                 val profile = dataObj["profile"]?.jsonObject
-                val displayNumber = profile?.get("displayNumber")?.jsonPrimitive?.contentOrNull ?: phoneNumber
-                val displayName = profile?.get("displayName")?.jsonPrimitive?.contentOrNull
+                val displayNumber = profile?.get("displayNumber")?.jsonPrimitive?.content ?: phoneNumber
+                val displayName = profile?.get("displayName")?.jsonPrimitive?.content
 
                 return GetContactResult.Success(
                     tags = tags,
@@ -170,8 +170,8 @@ class GetContactClient(private val context: Context) {
             } else {
                 // Check for "no result" / profile-only response
                 val profile = decrypted["result"]?.jsonObject?.get("profile")?.jsonObject
-                val displayNumber = profile?.get("displayNumber")?.jsonPrimitive?.contentOrNull ?: phoneNumber
-                val displayName = profile?.get("displayName")?.jsonPrimitive?.contentOrNull
+                val displayNumber = profile?.get("displayNumber")?.jsonPrimitive?.content ?: phoneNumber
+                val displayName = profile?.get("displayName")?.jsonPrimitive?.content
                 val tagCount = profile?.get("tagCount")?.jsonPrimitive?.intOrNull ?: 0
 
                 return GetContactResult.Success(
