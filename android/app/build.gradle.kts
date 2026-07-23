@@ -62,6 +62,9 @@ dependencies {
 
     // Room SQLite
     implementation(libs.room.runtime)
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation(libs.room.ktx)
     annotationProcessor(libs.room.compiler) // KSP can be configured later
 

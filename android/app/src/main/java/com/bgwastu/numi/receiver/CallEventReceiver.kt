@@ -15,6 +15,8 @@ import androidx.core.content.ContextCompat
 import com.bgwastu.numi.bus.ReplyTarget
 import com.bgwastu.numi.bus.TelegramActionStore
 import com.bgwastu.numi.network.TelegramSender
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -97,18 +99,21 @@ class CallEventReceiver : Service() {
                     val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
                     val chatId = prefs.getString("TARGET_CHAT_ID", null)
                     if (chatId != null) {
-                        val sent = sender.sendMessage(chatId, "📞 Call ended — ring followed by idle")
-                        if (sent) {
-                            // Store a reply target so the owner can reply with SMS text
-                            // (caller number unknown — reply target created for manual SMS)
-                            actionStore.saveReplyTarget(
-                                System.currentTimeMillis().toInt(),
-                                ReplyTarget(
-                                    phoneNumber = "", // unknown caller — reply manual
-                                    subscriptionId = null,
-                                    source = "incoming_call"
+                        GlobalScope.launch {
+                            val sent = sender.sendMessage(chatId, "📞 Call ended — ring followed by idle")
+                            if (sent) {
+                                // Store a reply target so the owner can reply with SMS text
+                                // (caller number unknown — reply target created for manual SMS)
+                                actionStore.saveReplyTarget(
+                                    System.currentTimeMillis().toInt(),
+                                    ReplyTarget(
+                                        phoneNumber = "", // unknown caller — reply manual
+                                        subscriptionId = null,
+                                        source = "incoming_call"
+                                    )
                                 )
-                            )
+                            }
+                        }
                         }
                     }
                     ringingNumber = null
