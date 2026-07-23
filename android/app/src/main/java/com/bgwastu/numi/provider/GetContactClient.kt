@@ -205,3 +205,12 @@ sealed class GetContactResult {
 
     data class Error(val message: String) : GetContactResult()
 }
+
+@kotlinx.serialization.Serializable
+data class GetContactCredentials(
+    val aes_key: String,
+    val hmac_key: String,
+    val device_token: String = "",
+    val device_id: String = "",
+    val updated_at: Long
+)
