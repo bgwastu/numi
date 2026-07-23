@@ -4,119 +4,168 @@ import android.content.Context
 import android.util.Log
 import com.bgwastu.numi.database.DbHelper
 import com.bgwastu.numi.network.TelegramSender
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.*
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.IOException
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 class CommandReceiver(
     private val context: Context,
     private val botToken: String,
     private val replySender: TelegramSender
 ) {
-    private val client = HttpClient(OkHttp) {
-        install(HttpTimeout) {
-            socketTimeoutMillis = 30_000
-            requestTimeoutMillis = 35_000
-        }
-        install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
-        }
-    }
-    
     private val dbHelper = DbHelper(context)
     private val executor = CommandExecutor(context)
-    private val job = SupervisorJob()
-    private val scope = CoroutineScope(Dispatchers.IO + job)
-    
+    private val isRunning = AtomicBoolean(false)
+    private var pollingThread: Thread? = null
     private var offset = 0L
-    private var isPolling = false
+
+    // Separate client for long-polling with a high read timeout (> 60s poll timeout)
+    private val pollingClient = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(65, TimeUnit.SECONDS)
+        .writeTimeout(15, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
+        .build()
 
     init {
-        // Read offset from shared preferences
-        val sharedPrefs = context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
-        offset = sharedPrefs.getLong("telegram_offset", 0L)
+        offset = context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
+            .getLong("telegram_offset", 0L)
     }
 
     fun start() {
-        if (isPolling) return
-        isPolling = true
-        scope.launch {
-            while (isActive && isPolling) {
-                if (botToken.isBlank()) {
-                    delay(5000)
-                    continue
-                }
-                try {
-                    pollTelegramUpdates()
-                } catch (e: Exception) {
-                    Log.e("CommandReceiver", "Error polling updates", e)
-                    delay(5000) // Backoff on error
-                }
-                delay(2000) // Poll every 2 seconds
-            }
-        }
+        if (!isRunning.compareAndSet(false, true)) return
+        pollingThread = Thread(PollRunnable())
+        pollingThread?.start()
     }
 
     fun stop() {
-        isPolling = false
-        job.cancel()
-        client.close()
+        isRunning.set(false)
+        pollingThread?.interrupt()
     }
 
-    private suspend fun pollTelegramUpdates() {
-        val url = "https://api.telegram.org/bot$botToken/getUpdates?offset=$offset&timeout=10"
-        val response = client.get(url)
-        val bodyText = response.bodyAsText()
-        
-        if (response.status.value != 200) {
-            Log.e("CommandReceiver", "getUpdates returned status: ${response.status.value}")
-            return
+    private fun saveOffset() {
+        context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
+            .edit()
+            .putLong("telegram_offset", offset)
+            .apply()
+    }
+
+    private inner class PollRunnable : Runnable {
+        private val MIN_RETRY_MS = 1000L
+        private val MAX_RETRY_MS = 30000L
+        private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
+
+        override fun run() {
+            Log.d("CommandReceiver", "Polling thread started")
+            var retryMs = MIN_RETRY_MS
+            var firstRequest = true
+
+            while (isRunning.get()) {
+                if (botToken.isBlank()) {
+                    Log.w("CommandReceiver", "Bot token is empty, waiting...")
+                    sleepWithCheck(5000)
+                    continue
+                }
+
+                try {
+                    val url = "https://api.telegram.org/bot$botToken/getUpdates"
+                    val bodyObj = JSONObject().apply {
+                        put("offset", offset)
+                        put("timeout", if (firstRequest) 0 else 60)
+                    }
+                    val body = bodyObj.toString().toRequestBody(JSON_MEDIA_TYPE)
+                    val request = Request.Builder().url(url).post(body).build()
+
+                    pollingClient.newCall(request).execute().use { response ->
+                        if (!response.isSuccessful) {
+                            Log.e("CommandReceiver", "Poll error HTTP ${response.code}")
+                            sleepWithCheck(retryMs)
+                            retryMs = (retryMs * 2).coerceAtMost(MAX_RETRY_MS)
+                            return@use
+                        }
+
+                        val resultStr = response.body?.string() ?: return@use
+                        val resultObj = JSONObject(resultStr)
+                        if (!resultObj.optBoolean("ok", false)) {
+                            Log.e("CommandReceiver", "Poll API returned not ok")
+                            sleepWithCheck(retryMs)
+                            retryMs = (retryMs * 2).coerceAtMost(MAX_RETRY_MS)
+                            return@use
+                        }
+
+                        val updates = resultObj.optJSONArray("result") ?: JSONArray()
+                        for (i in 0 until updates.length()) {
+                            val update = updates.getJSONObject(i)
+                            val updateId = update.optLong("update_id", 0)
+                            if (updateId > offset) {
+                                offset = updateId + 1
+                                saveOffset()
+                            }
+                            if (firstRequest) {
+                                Log.d("CommandReceiver", "Drain: update_id=$updateId")
+                                continue
+                            }
+                            handleUpdate(update)
+                        }
+                        firstRequest = false
+                        retryMs = MIN_RETRY_MS
+                    }
+                } catch (e: IOException) {
+                    if (!isRunning.get()) break
+                    Log.e("CommandReceiver", "Poll IO error: ${e.message}")
+                    sleepWithCheck(retryMs)
+                    retryMs = (retryMs * 2).coerceAtMost(MAX_RETRY_MS)
+                } catch (e: Exception) {
+                    if (!isRunning.get()) break
+                    Log.e("CommandReceiver", "Poll unexpected error", e)
+                    sleepWithCheck(retryMs)
+                    retryMs = (retryMs * 2).coerceAtMost(MAX_RETRY_MS)
+                }
+            }
+            Log.d("CommandReceiver", "Polling thread stopped")
         }
 
-        val jsonElement = Json.parseToJsonElement(bodyText)
-        val ok = jsonElement.jsonObject["ok"]?.jsonPrimitive?.boolean ?: false
-        if (!ok) return
+        private fun sleepWithCheck(ms: Long) {
+            try {
+                Thread.sleep(ms)
+            } catch (_: InterruptedException) {
+                Thread.currentThread().interrupt()
+            }
+        }
 
-        val result = jsonElement.jsonObject["result"]?.jsonArray ?: return
-        for (update in result) {
-            val updateId = update.jsonObject["update_id"]?.jsonPrimitive?.long ?: continue
-            offset = updateId + 1
-            
-            // Persist offset
-            context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
-                .edit()
-                .putLong("telegram_offset", offset)
-                .apply()
+        private fun handleUpdate(update: JSONObject) {
+            val message = update.optJSONObject("message") ?: return
+            val chat = message.optJSONObject("chat") ?: return
+            val chatId = chat.optLong("id", 0).toString()
+            val text = message.optString("text", "")
 
-            val message = update.jsonObject["message"]
-            if (message != null) {
-                val chatId = message.jsonObject["chat"]?.jsonObject?.get("id")?.jsonPrimitive?.long?.toString() ?: continue
-                val text = message.jsonObject["text"]?.jsonPrimitive?.content ?: continue
-                
-                // If it's a signed Numi command, process it
-                if (text.startsWith("NUMI_CMD v1")) {
-                    Log.d("CommandReceiver", "Received potential Numi command from chat $chatId")
-                    
-                    scope.launch {
+            if (text.startsWith("NUMI_CMD v1")) {
+                Log.d("CommandReceiver", "Received Numi cmd from chat $chatId")
+                // Run executor in background
+                Thread {
+                    try {
                         val outcome = executor.execute(text)
-                        
-                        // Format response message
-                        val receipt = """
-                            🤖 *Command Receipt*
-                            *Status:* `$outcome`
-                        """.trimIndent()
-                        
-                        // Reply to the same chat
-                        replySender.sendMessage(chatId, receipt)
+                        val receipt = "\uD83E\uDD16 *Command Receipt*\n*Status:* `$outcome`"
+                        // Fire-and-forget reply
+                        val replyUrl = "https://api.telegram.org/bot$botToken/sendMessage"
+                        val replyObj = JSONObject().apply {
+                            put("chat_id", chatId)
+                            put("text", receipt)
+                            put("parse_mode", "Markdown")
+                        }
+                        val replyBody = replyObj.toString().toRequestBody(JSON_MEDIA_TYPE)
+                        val replyReq = Request.Builder().url(replyUrl).post(replyBody).build()
+                        pollingClient.newCall(replyReq).execute()
+                    } catch (e: Exception) {
+                        Log.e("CommandReceiver", "Failed to process command", e)
                     }
-                }
+                }.start()
             }
         }
     }
