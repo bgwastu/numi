@@ -1,13 +1,17 @@
 package com.bgwastu.numi.device
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.BatteryManager
+import android.os.Build
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
+import androidx.core.content.ContextCompat
 
 object DeviceStatusProvider {
     fun summary(context: Context): String = buildString {
@@ -18,17 +22,39 @@ object DeviceStatusProvider {
     }.trimEnd()
 
     fun activeSims(context: Context): List<SimInfo> {
-        val manager = context.getSystemService(SubscriptionManager::class.java)
+        val subManager = context.getSystemService(SubscriptionManager::class.java)
+        val telephony = context.getSystemService(TelephonyManager::class.java)
+        val hasPhone = ContextCompat.checkSelfPermission(
+            context, Manifest.permission.READ_PHONE_STATE
+        ) == PackageManager.PERMISSION_GRANTED
+
         return try {
-            manager.activeSubscriptionInfoList.orEmpty().map { subscription ->
+            subManager.activeSubscriptionInfoList.orEmpty().map { subscription ->
+                val number: String? = if (hasPhone && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    try {
+                        telephony.createForSubscriptionId(subscription.subscriptionId).line1Number
+                            ?.takeIf { it.isNotBlank() }
+                    } catch (_: Exception) { null }
+                } else if (hasPhone) {
+                    @Suppress("DEPRECATION")
+                    try {
+                        // On older Android, line1Number is per-device, not per-subscription
+                        if (subscription.simSlotIndex == 0) telephony.line1Number?.takeIf { it.isNotBlank() }
+                        else null
+                    } catch (_: Exception) { null }
+                } else null
+
                 val label = listOfNotNull(
+                    number?.let { "+$it" },
                     subscription.displayName?.toString()?.takeIf { it.isNotBlank() },
                     subscription.carrierName?.toString()?.takeIf { it.isNotBlank() }
                 ).distinct().joinToString(" · ").ifBlank { "SIM ${subscription.simSlotIndex + 1}" }
+
                 SimInfo(
                     subscriptionId = subscription.subscriptionId,
                     slotIndex = subscription.simSlotIndex,
-                    label = label
+                    label = label,
+                    number = number
                 )
             }
         } catch (_: SecurityException) {
@@ -82,5 +108,6 @@ object DeviceStatusProvider {
 data class SimInfo(
     val subscriptionId: Int,
     val slotIndex: Int,
-    val label: String
+    val label: String,
+    val number: String? = null
 )
