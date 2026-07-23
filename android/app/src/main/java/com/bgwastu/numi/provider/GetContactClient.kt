@@ -21,6 +21,10 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.io.File
 
 class GetContactClient(private val context: Context) {
+    companion object {
+        private const val GC_PKG = "app.source.getcontact"
+        private const val GC_DATA = "/data/data/$GC_PKG"
+    }
 
     private val client = HttpClient(OkHttp) {
         install(HttpTimeout) {
@@ -49,12 +53,46 @@ class GetContactClient(private val context: Context) {
     fun isAvailable(): Boolean = getCredentials() != null
 
     /**
+     * Force-resets the GetContact app to get a fresh token, then re-extracts.
+     * Requires root (su). Non-blocking — runs in a background thread.
+     */
+    private fun refreshCredentials() {
+        Thread {
+            try {
+                Log.i("GetContactClient", "Running credential auto-refresh...")
+                val cmds = listOf(
+                    "am force-stop $GC_PKG",
+                    "rm -f $GC_DATA/files/datastore/tokens.preferences_pb",
+                    "monkey -p $GC_PKG -c android.intent.category.LAUNCHER 1"
+                )
+                for (cmd in cmds) {
+                    Runtime.getRuntime().exec(arrayOf("su", "-c", cmd)).waitFor()
+                    Thread.sleep(1500)
+                }
+                Thread.sleep(4000) // Wait for app to generate new token
+                GetContactCredentialExtractor.extractAndSave(context)
+                Log.i("GetContactClient", "Credential auto-refresh complete")
+            } catch (e: Exception) {
+                Log.e("GetContactClient", "Auto-refresh failed", e)
+            }
+        }.start()
+    }
+
+    /**
      * Searches profile metadata, then calls number-detail for the actual tag list.
      * The service authenticates the pre-encryption JSON with HMAC, while the HTTP
      * body is {"data": AES(pre-encryption JSON)}. Do not sign the outer envelope.
      */
     suspend fun performLookup(phoneNumber: String): GetContactResult {
         val credentials = getCredentials() ?: return GetContactResult.Error("No GetContact credentials installed")
+        return performLookupWithRetry(phoneNumber, credentials, retried = false)
+    }
+
+    private suspend fun performLookupWithRetry(
+        phoneNumber: String,
+        credentials: GetContactCredentials,
+        retried: Boolean
+    ): GetContactResult {
         if (credentials.aes_key.isBlank() || credentials.hmac_key.isBlank()) {
             return GetContactResult.Error("Invalid GetContact crypto keys")
         }
@@ -71,7 +109,18 @@ class GetContactClient(private val context: Context) {
         val search = callApi("search", searchPayload, credentials)
         val searchBody = when (search) {
             is ApiCallResult.Success -> search.body
-            is ApiCallResult.Failure -> return GetContactResult.Error(search.message)
+            is ApiCallResult.Failure -> {
+                // If token was expired and auto-refresh triggered, retry once
+                if (!retried && search.message.contains("validation", ignoreCase = true)) {
+                    Log.i("GetContactClient", "Retrying after auto-refresh...")
+                    kotlinx.coroutines.delay(8_000) // wait for refresh to complete
+                    val freshCreds = getCredentials()
+                    if (freshCreds != null) {
+                        return performLookupWithRetry(phoneNumber, freshCreds, retried = true)
+                    }
+                }
+                return GetContactResult.Error(search.message)
+            }
         }
 
         val searchResult = searchBody["result"]?.jsonObject
@@ -169,6 +218,11 @@ class GetContactClient(private val context: Context) {
             if (response.status.value != 200) {
                 val reason = readApiError(responseText) ?: "HTTP ${response.status.value}"
                 Log.w("GetContactClient", "GetContact $path rejected: HTTP ${response.status.value}, $reason")
+                // Auto-refresh credentials on validation errors
+                if (response.status.value == 403 && reason.contains("validation", ignoreCase = true)) {
+                    Log.i("GetContactClient", "Token expired — triggering auto-refresh")
+                    refreshCredentials()
+                }
                 return ApiCallResult.Failure(reason)
             }
 
