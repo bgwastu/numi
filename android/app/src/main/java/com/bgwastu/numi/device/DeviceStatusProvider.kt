@@ -52,16 +52,16 @@ object DeviceStatusProvider {
     private fun networkSummary(context: Context): String {
         return try {
             val connectivity = context.getSystemService(ConnectivityManager::class.java)
-            val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork)
-                ?: return@try "offline"
+            val caps = connectivity.getNetworkCapabilities(connectivity.activeNetwork)
+            if (caps == null) return "offline"
             val transport = when {
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "Wi‑Fi"
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "mobile data"
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "Ethernet"
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> "VPN"
+                caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "Wi‑Fi"
+                caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "mobile data"
+                caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "Ethernet"
+                caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> "VPN"
                 else -> "connected"
             }
-            val validated = capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            val validated = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
             if (validated) "$transport · internet reachable" else "$transport · no validated internet"
         } catch (_: SecurityException) {
             "unavailable (grant Network permission)"
