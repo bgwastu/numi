@@ -30,8 +30,9 @@ class OutboxService : Service() {
     companion object {
         private const val CHANNEL_ID = "NumiOutboxChannel"
         private const val NOTIFICATION_ID = 2002
-        private var BOT_TOKEN = "" // Stored or set via settings
-        private var TARGET_CHAT_ID = "" // Stored or set via settings
+        private var BOT_TOKEN = ""
+        private var TARGET_CHAT_ID = ""
+        @Volatile private var instanceCreated = false
 
         fun updateConfig(token: String, chat: String) {
             BOT_TOKEN = token
@@ -41,6 +42,10 @@ class OutboxService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        // Prevent duplicate initialization on sticky restarts
+        if (instanceCreated) return
+        instanceCreated = true
+
         dbHelper = DbHelper(this)
 
         // Read persistent config FIRST, then create the sender

