@@ -50,18 +50,22 @@ object DeviceStatusProvider {
     }
 
     private fun networkSummary(context: Context): String {
-        val connectivity = context.getSystemService(ConnectivityManager::class.java)
-        val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork)
-            ?: return "offline"
-        val transport = when {
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "Wi‑Fi"
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "mobile data"
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "Ethernet"
-            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> "VPN"
-            else -> "connected"
+        return try {
+            val connectivity = context.getSystemService(ConnectivityManager::class.java)
+            val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork)
+                ?: return@try "offline"
+            val transport = when {
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "Wi‑Fi"
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "mobile data"
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "Ethernet"
+                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> "VPN"
+                else -> "connected"
+            }
+            val validated = capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            if (validated) "$transport · internet reachable" else "$transport · no validated internet"
+        } catch (_: SecurityException) {
+            "unavailable (grant Network permission)"
         }
-        val validated = capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-        return if (validated) "$transport · internet reachable" else "$transport · no validated internet"
     }
 
     private fun simSummary(context: Context): String {
