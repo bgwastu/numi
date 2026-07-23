@@ -50,6 +50,38 @@ class CommandReceiver(
         if (!isRunning.compareAndSet(false, true)) return
         pollingThread = Thread(PollRunnable())
         pollingThread?.start()
+        registerCommands()
+    }
+
+    private fun registerCommands() {
+        Thread {
+            try {
+                val commands = JSONArray().apply {
+                    put(JSONObject().apply { put("command", "status"); put("description", "Device status — battery, network, SIMs") })
+                    put(JSONObject().apply { put("command", "gc"); put("description", "GetContact lookup for a phone number") })
+                    put(JSONObject().apply { put("command", "send"); put("description", "Send SMS via device") })
+                    put(JSONObject().apply { put("command", "refresh"); put("description", "Refresh GetContact credentials") })
+                }
+                val body = JSONObject().apply { put("commands", commands) }
+                val request = Request.Builder()
+                    .url("https://api.telegram.org/bot$botToken/setMyCommands")
+                    .post(body.toString().toRequestBody("application/json".toMediaType()))
+                    .build()
+                val client = OkHttpClient.Builder()
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .build()
+                client.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        Log.d("CommandReceiver", "Bot commands registered")
+                    } else {
+                        Log.w("CommandReceiver", "Command registration failed: HTTP ${response.code}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w("CommandReceiver", "Command registration error: ${e.message}")
+            }
+        }.start()
     }
 
     fun stop() {
@@ -142,7 +174,15 @@ class CommandReceiver(
             }
         }
 
-        private fun handleUpdate(update: JSONObject) {
+            private fun handleUpdate(update: JSONObject) {
+            try {
+                handleUpdateSafe(update)
+            } catch (e: Exception) {
+                Log.e("CommandReceiver", "Handler crash (offset will advance)", e)
+            }
+        }
+
+        private fun handleUpdateSafe(update: JSONObject) {
             // -- CALLBACK QUERY (inline button taps) --
             val callback = update.optJSONObject("callback_query")
             if (callback != null) {

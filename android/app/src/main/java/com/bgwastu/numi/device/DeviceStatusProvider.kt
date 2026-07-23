@@ -45,7 +45,7 @@ object DeviceStatusProvider {
                 } else null
 
                 val label = listOfNotNull(
-                    number?.let { "+$it" },
+                    number?.let { if (it.startsWith("+")) it else "+$it" },
                     subscription.displayName?.toString()?.takeIf { it.isNotBlank() },
                     subscription.carrierName?.toString()?.takeIf { it.isNotBlank() }
                 ).distinct().joinToString(" · ").ifBlank { "SIM ${subscription.simSlotIndex + 1}" }
@@ -98,8 +98,8 @@ object DeviceStatusProvider {
         val sims = activeSims(context)
         if (sims.isEmpty()) return "unavailable (grant Phone permission)"
         val defaultSmsSubId = SubscriptionManager.getDefaultSmsSubscriptionId()
-        return sims.joinToString("; ") { sim ->
-            "SIM ${sim.slotIndex + 1}: ${sim.label}" +
+        return sims.joinToString("\n") { sim ->
+            "- SIM ${sim.slotIndex + 1}: ${sim.label}" +
                 if (sim.subscriptionId == defaultSmsSubId) " (default SMS)" else ""
         }
     }

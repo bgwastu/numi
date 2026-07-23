@@ -4,7 +4,25 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- Background circle -->
     <path
-        android:fillColor="#3DDC84"
+        android:fillColor="#1B5E20"
         android:pathData="M54,54m-50,0a50,50 0,1 1,100 0a50,50 0,1 1,-100 0" />
+    <!-- Phone handset -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M38,42 C38,40 40,36 44,36 L46,36 C47,36 48,37 48,38 L48,42 C48,43 47,44 46,44 L44,44 C42,44 40,46 40,48 L40,58 C40,60 42,62 44,62 L46,62 C47,62 48,63 48,64 L48,68 C48,69 47,70 46,70 L44,70 C40,70 38,66 38,64 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M62,42 C62,40 64,36 68,36 L70,36 C71,36 72,37 72,38 L72,42 C72,43 71,44 70,44 L68,44 C66,44 64,46 64,48 L64,58 C64,60 66,62 68,62 L70,62 C71,62 72,63 72,64 L72,68 C72,69 71,70 70,70 L68,70 C64,70 62,66 62,64 Z" />
+    <!-- Signal bars -->
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M50,30 L54,30 L54,36 L50,36 Z" />
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M55,27 L59,27 L59,36 L55,36 Z" />
+    <path
+        android:fillColor="#4CAF50"
+        android:pathData="M60,24 L64,24 L64,36 L60,36 Z" />
 </vector>

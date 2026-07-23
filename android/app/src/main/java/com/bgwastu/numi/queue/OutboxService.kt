@@ -51,7 +51,17 @@ class OutboxService : Service() {
         telegramSender = TelegramSender(BOT_TOKEN)
 
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, createNotification())
+        try {
+            startForeground(NOTIFICATION_ID, createNotification())
+        } catch (e: Exception) {
+            Log.e("OutboxService", "startForeground failed, retrying with specialUse", e)
+            try {
+                startForeground(NOTIFICATION_ID, createNotification(), 
+                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            } catch (e2: Exception) {
+                Log.e("OutboxService", "Foreground start failed completely", e2)
+            }
+        }
         startPolling()
 
         // Create CommandReceiver if we have a token

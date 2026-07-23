@@ -1,5 +1,6 @@
 package com.bgwastu.numi
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,206 +13,179 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.bgwastu.numi.queue.OutboxService
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme(
-                colorScheme = darkColorScheme(
-                    primary = Color(0xFF90CAF9),
-                    secondary = Color(0xFF80CBC4),
-                    background = Color(0xFF121212),
-                    surface = Color(0xFF1E1E1E),
-                )
-            ) {
-                NumiApp()
+            MaterialTheme(colorScheme = darkColorScheme()) {
+                NumiScreen()
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NumiApp() {
+fun NumiScreen() {
     val context = androidx.compose.ui.platform.LocalContext.current
-    val prefs = context.getSharedPreferences("numi_settings", 0)
+    val prefs = context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
 
     var botToken by remember { mutableStateOf(prefs.getString("BOT_TOKEN", "") ?: "") }
-    var chatId by remember { mutableStateOf(prefs.getString("TARGET_CHAT_ID", "") ?: "") }
-    var showToken by remember { mutableStateOf(false) }
-    var serviceStatus by remember { mutableStateOf("Checking...") }
+    var targetChatId by remember { mutableStateOf(prefs.getString("TARGET_CHAT_ID", "") ?: "") }
 
-    // Check service status
-    LaunchedEffect(Unit) {
-        serviceStatus = "Running ✓"
-    }
+    val savedToken = prefs.getString("BOT_TOKEN", "") ?: ""
+    val savedChatId = prefs.getString("TARGET_CHAT_ID", "") ?: ""
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Numi Gateway", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-        }
-    ) { padding ->
+    val isDirty = botToken != savedToken || targetChatId != savedChatId
+    val isFormValid = botToken.isNotBlank() && targetChatId.isNotBlank()
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Status card
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Status", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Spacer(Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            shape = MaterialTheme.shapes.small,
-                            color = Color(0xFF4CAF50),
-                            modifier = Modifier.size(8.dp)
-                        ) {}
-                        Spacer(Modifier.width(8.dp))
-                        Text(serviceStatus, fontSize = 14.sp)
-                    }
-                }
-            }
-
-            // Bot Configuration
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Telegram Bot", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Spacer(Modifier.height(12.dp))
-
-                    OutlinedTextField(
-                        value = botToken,
-                        onValueChange = { botToken = it },
-                        label = { Text("Bot Token") },
-                        placeholder = { Text("123456:ABC-def...") },
-                        modifier = Modifier.fillMaxWidth(),
-                        visualTransformation = if (showToken) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        trailingIcon = {
-                            TextButton(onClick = { showToken = !showToken }) {
-                                Text(if (showToken) "Hide" else "Show")
-                            }
-                        }
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = chatId,
-                        onValueChange = { chatId = it },
-                        label = { Text("Target Chat ID") },
-                        placeholder = { Text("123456789") },
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
-
-                    Spacer(Modifier.height(16.dp))
-
-                    Button(
-                        onClick = {
-                            context.getSharedPreferences("numi_settings", 0)
-                                .edit()
-                                .putString("BOT_TOKEN", botToken)
-                                .putString("TARGET_CHAT_ID", chatId)
-                                .apply()
-                            // Restart service with new config
-                            val intent = Intent(context, OutboxService::class.java).apply {
-                                putExtra("BOT_TOKEN", botToken)
-                                putExtra("TARGET_CHAT_ID", chatId)
-                            }
-                            context.startService(intent)
-                            serviceStatus = "Running ✓"
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        Text("Save & Restart")
-                    }
-                }
-            }
-
-            // GetContact Status
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("GetContact API", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Spacer(Modifier.height(8.dp))
-                    val credsFile = java.io.File(
-                        context.filesDir,
-                        "providers/getcontact.json"
-                    )
-                    val hasCreds = credsFile.exists()
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            shape = MaterialTheme.shapes.small,
-                            color = if (hasCreds) Color(0xFF4CAF50) else Color(0xFFFF9800),
-                            modifier = Modifier.size(8.dp)
-                        ) {}
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            if (hasCreds) "Credentials installed ✓"
-                            else "No credentials — run harvester",
-                            fontSize = 14.sp
-                        )
-                    }
-                }
-            }
-
-            // Quick commands help
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Commands", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                    Spacer(Modifier.height(8.dp))
-                    Text("• /gc <number> — Look up phone number", fontSize = 13.sp)
-                    Text("• /analyze <number> — Same as /gc", fontSize = 13.sp)
-                    Text("• Send any phone number — Auto-detect", fontSize = 13.sp)
-                    Text("• NUMI_CMD — Signed commands", fontSize = 13.sp)
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            // Footer
+            // ── Header ──
             Text(
-                "Numi v1.0 — SMS Gateway & Number Analysis",
-                fontSize = 11.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                text = "Numi",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.primary
             )
+            Text(
+                text = "SMS gateway · GetContact · Telegram bot",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            // ── Status Card ──
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Status", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
+                    StatusRow("Service", if (savedToken.isNotBlank()) "Configured" else "Not configured")
+                    StatusRow("Bot token", if (savedToken.isNotBlank()) "✓ Set" else "✗ Missing")
+                    StatusRow("Target chat", if (savedChatId.isNotBlank()) "✓ $savedChatId" else "✗ Missing")
+                }
+            }
+
+            // ── Configuration ──
+            Text("Configuration", style = MaterialTheme.typography.titleMedium)
+
+            OutlinedTextField(
+                value = botToken,
+                onValueChange = { botToken = it },
+                label = { Text("Bot Token") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                supportingText = { Text("From @BotFather") }
+            )
+
+            OutlinedTextField(
+                value = targetChatId,
+                onValueChange = { targetChatId = it },
+                label = { Text("Target Chat ID") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                supportingText = { Text("Your Telegram user ID") }
+            )
+
+            // ── Save button (only when dirty) ──
+            AnimatedVisibility(visible = isDirty && isFormValid) {
+                Button(
+                    onClick = {
+                        prefs.edit()
+                            .putString("BOT_TOKEN", botToken)
+                            .putString("TARGET_CHAT_ID", targetChatId)
+                            .apply()
+                        val intent = Intent(context, OutboxService::class.java).apply {
+                            putExtra("BOT_TOKEN", botToken)
+                            putExtra("TARGET_CHAT_ID", targetChatId)
+                        }
+                        context.startForegroundService(intent)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = isFormValid
+                ) {
+                    Text("Save & Restart Service")
+                }
+            }
+
+            // ── Commands ──
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Commands", style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(8.dp))
+                    CommandRow("/status", "Device battery, network, SIM status")
+                    CommandRow("/gc <number>", "GetContact phone number lookup")
+                    CommandRow("/send <number> <msg>", "Send SMS via device SIM")
+                    CommandRow("/refresh", "Refresh GetContact credentials")
+                }
+            }
         }
+    }
+}
+
+@Composable
+private fun StatusRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, style = MaterialTheme.typography.bodyMedium)
+        Text(
+            value,
+            style = MaterialTheme.typography.bodyMedium,
+            fontFamily = FontFamily.Monospace,
+            color = if (value.startsWith("✗")) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun CommandRow(command: String, description: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 3.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            command,
+            style = MaterialTheme.typography.bodyMedium,
+            fontFamily = FontFamily.Monospace,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.widthIn(min = 130.dp)
+        )
+        Text(
+            description,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
