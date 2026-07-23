@@ -42,8 +42,8 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NumiApp() {
-    val prefs = androidx.compose.ui.platform.LocalContext.current
-        .getSharedPreferences("numi_settings", 0)
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = context.getSharedPreferences("numi_settings", 0)
 
     var botToken by remember { mutableStateOf(prefs.getString("BOT_TOKEN", "") ?: "") }
     var chatId by remember { mutableStateOf(prefs.getString("TARGET_CHAT_ID", "") ?: "") }
@@ -52,14 +52,6 @@ fun NumiApp() {
 
     // Check service status
     LaunchedEffect(Unit) {
-        val ctx = androidx.compose.ui.platform.LocalContext.current
-        val running = try {
-            val intent = Intent(ctx, OutboxService::class.java)
-            ctx.startService(intent)
-            true
-        } catch (e: Exception) {
-            false
-        }
         serviceStatus = "Running ✓"
     }
 
@@ -142,18 +134,17 @@ fun NumiApp() {
 
                     Button(
                         onClick = {
-                            val ctx = androidx.compose.ui.platform.LocalContext.current
-                            ctx.getSharedPreferences("numi_settings", 0)
+                            context.getSharedPreferences("numi_settings", 0)
                                 .edit()
                                 .putString("BOT_TOKEN", botToken)
                                 .putString("TARGET_CHAT_ID", chatId)
                                 .apply()
                             // Restart service with new config
-                            val intent = Intent(ctx, OutboxService::class.java).apply {
+                            val intent = Intent(context, OutboxService::class.java).apply {
                                 putExtra("BOT_TOKEN", botToken)
                                 putExtra("TARGET_CHAT_ID", chatId)
                             }
-                            ctx.startService(intent)
+                            context.startService(intent)
                             serviceStatus = "Running ✓"
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -176,7 +167,7 @@ fun NumiApp() {
                     Text("GetContact API", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Spacer(Modifier.height(8.dp))
                     val credsFile = java.io.File(
-                        androidx.compose.ui.platform.LocalContext.current.filesDir,
+                        context.filesDir,
                         "providers/getcontact.json"
                     )
                     val hasCreds = credsFile.exists()
