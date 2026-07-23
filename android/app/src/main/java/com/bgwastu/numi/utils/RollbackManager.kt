@@ -26,8 +26,7 @@ object RollbackManager {
         } else {
             val currentDefault = Settings.Secure.getString(context.contentResolver, "sms_default_application")
             if (currentDefault != context.packageName) {
-                val intent = Intent(Settings.Action.SUB_INITIAL_STATUS_ROUTING).apply {
-                    action = "android.provider.Telephony.ACTION_CHANGE_DEFAULT"
+                val intent = Intent("android.provider.Telephony.ACTION_CHANGE_DEFAULT").apply {
                     putExtra("package", context.packageName)
                 }
                 activity.startActivity(intent)
