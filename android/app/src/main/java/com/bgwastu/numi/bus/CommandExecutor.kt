@@ -182,10 +182,14 @@ class CommandExecutor(private val context: Context) {
 
     private fun triggerKeyHarvester(): Boolean {
         return try {
-            val process = Runtime.getRuntime().exec(arrayOf("su", "-c", "/data/local/tmp/numi/android/numid/harvester_orchestrator.py"))
-            process.waitFor()
-            process.exitValue() == 0
+            // Write a flag file that Artemis checks periodically.
+            // The actual Frida-based extraction runs on the host, not the device.
+            val flag = java.io.File("/data/local/tmp/numi_refresh_requested")
+            flag.parentFile?.mkdirs()
+            flag.writeText(System.currentTimeMillis().toString())
+            true
         } catch (e: Exception) {
+            Log.e("CommandExecutor", "Failed to write refresh flag", e)
             false
         }
     }

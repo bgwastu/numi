@@ -42,14 +42,13 @@ class OutboxService : Service() {
     override fun onCreate() {
         super.onCreate()
         dbHelper = DbHelper(this)
-        telegramSender = TelegramSender("")
 
-        // Read persistent config
+        // Read persistent config FIRST, then create the sender
         val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
-        updateConfig(
-            prefs.getString("BOT_TOKEN", "") ?: "",
-            prefs.getString("TARGET_CHAT_ID", "") ?: ""
-        )
+        val token = prefs.getString("BOT_TOKEN", "") ?: ""
+        val targetChat = prefs.getString("TARGET_CHAT_ID", "") ?: ""
+        updateConfig(token, targetChat)
+        telegramSender = TelegramSender(BOT_TOKEN)
 
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
@@ -60,6 +59,9 @@ class OutboxService : Service() {
             commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
             commandReceiver?.start()
         }
+
+        // Start incoming call monitoring
+        startService(Intent(this, com.bgwastu.numi.receiver.CallEventReceiver::class.java))
     }
 
     private fun startPolling() {
