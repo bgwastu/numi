@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.bgwastu.numi.database.DbHelper
 import com.bgwastu.numi.network.TelegramSender
+import com.bgwastu.numi.provider.GetContactResult
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -64,7 +65,6 @@ class CommandReceiver(
         override fun run() {
             Log.d("CommandReceiver", "Polling thread started")
             var retryMs = MIN_RETRY_MS
-            var firstRequest = true
 
             while (isRunning.get()) {
                 if (botToken.isBlank()) {
@@ -77,7 +77,7 @@ class CommandReceiver(
                     val url = "https://api.telegram.org/bot$botToken/getUpdates"
                     val bodyObj = JSONObject().apply {
                         put("offset", offset)
-                        put("timeout", if (firstRequest) 0 else 60)
+                        put("timeout", 60)
                     }
                     val body = bodyObj.toString().toRequestBody(JSON_MEDIA_TYPE)
                     val request = Request.Builder().url(url).post(body).build()
@@ -107,13 +107,8 @@ class CommandReceiver(
                                 offset = updateId + 1
                                 saveOffset()
                             }
-                            if (firstRequest) {
-                                Log.d("CommandReceiver", "Drain: update_id=$updateId")
-                                continue
-                            }
                             handleUpdate(update)
                         }
-                        firstRequest = false
                         retryMs = MIN_RETRY_MS
                     }
                 } catch (e: IOException) {
@@ -156,32 +151,139 @@ class CommandReceiver(
             val gcMatch = Regex("^/(?:gc|lookup|analyze)\\s+(.+)$", RegexOption.IGNORE_CASE).find(text)
             if (gcMatch != null) {
                 val number = gcMatch.groupValues[1].trim()
-                Log.d("CommandReceiver", "GC lookup for $number from chat $chatId")
-                dispatchReply(chatId) { executor.gcLookup(number) }
+                Log.d("CommandReceiver", "GC lookup requested from chat $chatId")
+                dispatchGetContactReply(chatId, number)
                 return
             }
 
             // Plain phone number — auto-detect and lookup
             val phoneClean = text.trim().replace(Regex("[^0-9+]"), "")
             if (phoneClean.length in 8..15 && phoneClean.all { it.isDigit() || it == '+' }) {
-                Log.d("CommandReceiver", "Auto GC lookup for $phoneClean from chat $chatId")
-                dispatchReply(chatId) { executor.gcLookup(phoneClean) }
+                Log.d("CommandReceiver", "Auto GC lookup requested from chat $chatId")
+                dispatchGetContactReply(chatId, phoneClean)
+            }
+        }
+
+        private fun dispatchGetContactReply(chatId: String, phoneNumber: String) {
+            Thread {
+                try {
+                    when (val result = executor.gcLookup(phoneNumber)) {
+                        is GetContactResult.Error -> {
+                            sendText(chatId, "❌ Lookup failed: ${result.message}")
+                        }
+                        is GetContactResult.Success -> {
+                            val profileSummary = buildProfileSummary(result)
+                            val imageSent = result.profileImageUrl?.let { imageUrl ->
+                                sendPhoto(chatId, imageUrl, profileSummary)
+                            } ?: false
+                            if (!imageSent) {
+                                // A missing or expired image must not suppress the lookup results.
+                                sendText(chatId, profileSummary)
+                            }
+
+                            if (result.tags.isEmpty()) {
+                                sendText(chatId, "📭 No tags found for this number.")
+                            } else {
+                                val chunks = buildTagChunks(result)
+                                for (chunk in chunks) {
+                                    if (!sendText(chatId, chunk)) {
+                                        Log.e("CommandReceiver", "Stopped tag delivery after a Telegram send failure")
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("CommandReceiver", "Failed to process GetContact lookup", e)
+                    sendText(chatId, "❌ Lookup failed due to an internal error")
+                }
+            }.start()
+        }
+
+        private fun buildProfileSummary(result: GetContactResult.Success): String = buildString {
+            appendLine("📞 Number analysis")
+            appendLine("Number: ${result.displayNumber}")
+            result.displayName?.takeIf { it.isNotBlank() }?.let { appendLine("Name: $it") }
+            append("Tags: ${result.tags.size} (full list follows)")
+        }
+
+        /** Telegram allows 4096 chars for text. Leave margin for headers and API changes. */
+        private fun buildTagChunks(result: GetContactResult.Success): List<String> {
+            val maxChars = 3_800
+            val headerAllowance = 80
+            val maxLinePartChars = maxChars - headerAllowance
+            // Keep the originating tag number with each segment. A huge tag is continued,
+            // never truncated, so every returned tag remains visible in Telegram.
+            val tagLines: List<Pair<Int, String>> = result.tags.flatMapIndexed { index, tag ->
+                val name = tag.name.ifBlank { tag.tag }
+                    .replace(Regex("[\r\n]+"), " ")
+                    .trim()
+                val count = if (tag.count > 0) " (${tag.count}x)" else ""
+                val line = "${index + 1}. $name$count"
+                line.chunked(maxLinePartChars).mapIndexed { partIndex, part ->
+                    (index + 1) to if (partIndex == 0) part else "   ↳ $part"
+                }
+            }
+
+            val chunks = mutableListOf<String>()
+            var lineIndex = 0
+            while (lineIndex < tagLines.size) {
+                val start = tagLines[lineIndex].first
+                val body = StringBuilder()
+                while (lineIndex < tagLines.size) {
+                    val line = tagLines[lineIndex].second
+                    val separatorLength = if (body.isEmpty()) 0 else 1
+                    if (body.isNotEmpty() && body.length + separatorLength + line.length + headerAllowance > maxChars) {
+                        break
+                    }
+                    if (body.isNotEmpty()) body.append('\n')
+                    body.append(line)
+                    lineIndex++
+                }
+                val end = tagLines[lineIndex - 1].first
+                chunks += "🏷️ Tags ($start–$end of ${result.tags.size})\n\n$body"
+            }
+            return chunks
+        }
+
+        private fun sendPhoto(chatId: String, photoUrl: String, caption: String): Boolean =
+            sendTelegram("sendPhoto", JSONObject().apply {
+                put("chat_id", chatId)
+                put("photo", photoUrl)
+                put("caption", caption.take(1_000))
+            })
+
+        private fun sendText(chatId: String, text: String): Boolean =
+            sendTelegram("sendMessage", JSONObject().apply {
+                put("chat_id", chatId)
+                put("text", text.take(4_000))
+            })
+
+        private fun sendTelegram(method: String, body: JSONObject): Boolean {
+            val request = Request.Builder()
+                .url("https://api.telegram.org/bot$botToken/$method")
+                .post(body.toString().toRequestBody(JSON_MEDIA_TYPE))
+                .build()
+            return try {
+                pollingClient.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        true
+                    } else {
+                        Log.e("CommandReceiver", "Telegram $method failed: HTTP ${response.code}")
+                        false
+                    }
+                }
+            } catch (e: IOException) {
+                Log.e("CommandReceiver", "Telegram $method I/O failure", e)
+                false
             }
         }
 
         private fun dispatchReply(chatId: String, block: () -> String) {
             Thread {
                 try {
-                    val result = block()
-                    val replyUrl = "https://api.telegram.org/bot$botToken/sendMessage"
-                    val replyObj = JSONObject().apply {
-                        put("chat_id", chatId)
-                        put("text", result)
-                        put("parse_mode", "Markdown")
-                    }
-                    val replyBody = replyObj.toString().toRequestBody(JSON_MEDIA_TYPE)
-                    val replyReq = Request.Builder().url(replyUrl).post(replyBody).build()
-                    pollingClient.newCall(replyReq).execute()
+                    sendText(chatId, block())
                 } catch (e: Exception) {
                     Log.e("CommandReceiver", "Failed to process command", e)
                 }

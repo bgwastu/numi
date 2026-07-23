@@ -167,44 +167,11 @@ class CommandExecutor(private val context: Context) {
         return "OUTCOME: $outcome | DETAILS: $details"
     }
 
-    fun gcLookup(phoneNumber: String): String {
+    /** Runs a GetContact lookup; Telegram presentation belongs in CommandReceiver. */
+    fun gcLookup(phoneNumber: String): GetContactResult {
         val cleaned = phoneNumber.trim().replace(Regex("[^0-9+]"), "")
-        if (cleaned.length < 8) return "❌ Invalid phone number: too short"
-
-        val result = runBlocking {
-            getContactClient.performLookup(cleaned)
-        }
-
-        return when (result) {
-            is GetContactResult.Success -> {
-                val sb = StringBuilder()
-                sb.appendLine("📞 *Number Analysis*")
-                sb.appendLine("`${result.displayNumber}`")
-                if (!result.displayName.isNullOrBlank()) {
-                    sb.appendLine("👤 *Name:* ${result.displayName}")
-                }
-                sb.appendLine()
-
-                if (result.tags.isEmpty()) {
-                    sb.appendLine("📭 No tags found for this number.")
-                } else {
-                    sb.appendLine("🏷️ *Tags (${result.tags.size}):*")
-                    val limited = result.tags.take(20)
-                    for ((i, tag) in limited.withIndex()) {
-                        val tagName = tag.name.ifBlank { tag.tag }
-                        val count = if (tag.count > 0) " (${tag.count}x)" else ""
-                        sb.appendLine("${i + 1}. `$tagName`$count")
-                    }
-                    if (result.tags.size > 20) {
-                        sb.appendLine("*...and ${result.tags.size - 20} more*")
-                    }
-                }
-                sb.toString()
-            }
-            is GetContactResult.Error -> {
-                "❌ Lookup failed: ${result.message}"
-            }
-        }
+        if (cleaned.length < 8) return GetContactResult.Error("Invalid phone number: too short")
+        return runBlocking { getContactClient.performLookup(cleaned) }
     }
 
     private fun parseJsonField(json: String, field: String): String {
