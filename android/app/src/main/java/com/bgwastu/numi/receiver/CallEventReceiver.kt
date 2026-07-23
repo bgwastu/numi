@@ -97,17 +97,12 @@ class CallEventReceiver : Service() {
                     val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
                     val chatId = prefs.getString("TARGET_CHAT_ID", null)
                     if (chatId != null) {
-                        val msgId = sender.sendTelegram(
-                            "sendMessage",
-                            org.json.JSONObject().apply {
-                                put("chat_id", chatId)
-                                put("text", "📞 Call ended — ring followed by idle")
-                            }
-                        )
-                        // Store a reply target so the owner can reply with SMS text
-                        if (msgId > 0) {
+                        val sent = sender.sendMessage(chatId, "📞 Call ended — ring followed by idle")
+                        if (sent) {
+                            // Store a reply target so the owner can reply with SMS text
+                            // (caller number unknown — reply target created for manual SMS)
                             actionStore.saveReplyTarget(
-                                msgId,
+                                System.currentTimeMillis().toInt(),
                                 ReplyTarget(
                                     phoneNumber = "", // unknown caller — reply manual
                                     subscriptionId = null,

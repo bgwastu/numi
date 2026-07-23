@@ -31,6 +31,7 @@ class CommandReceiver(
     private var pollingThread: Thread? = null
     private var offset = 0L
     private val actionStore = TelegramActionStore(context)
+    private val prefs = context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
 
     // Separate client for long-polling with a high read timeout (> 60s poll timeout)
     private val pollingClient = OkHttpClient.Builder()
