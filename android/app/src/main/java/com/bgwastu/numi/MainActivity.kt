@@ -53,6 +53,8 @@ fun NumiScreen() {
     var botToken by remember { mutableStateOf(prefs.getString("BOT_TOKEN", "") ?: "") }
     var targetChatId by remember { mutableStateOf(prefs.getString("TARGET_CHAT_ID", "") ?: "") }
     var hasCredentials by remember { mutableStateOf(GetContactCredentialExtractor.isGetContactInstalled(context)) }
+    val credsFile = java.io.File(context.filesDir, "providers/getcontact.json")
+    var credsExtracted by remember { mutableStateOf(credsFile.exists()) }
 
     val savedToken = prefs.getString("BOT_TOKEN", "") ?: ""
     val savedChatId = prefs.getString("TARGET_CHAT_ID", "") ?: ""
@@ -87,7 +89,7 @@ fun NumiScreen() {
                     Spacer(Modifier.height(8.dp))
                     StatusRow("Service", "Running ✓")
                     StatusRow("Bot", if (savedToken.isNotBlank()) "Configured ✓" else "Not configured ✗")
-                    StatusRow("GetContact", if (hasCredentials) "Installed ✓" else "Not installed ✗")
+                    StatusRow("GetContact", if (credsExtracted) "Extracted ✓" else if (hasCredentials) "App installed — refresh below" else "Not installed ✗")
                     StatusRow("Root", if (RootChecker.isRootAvailable()) "Available ✓" else "Denied ✗ — check KernelSU")
                     StatusRow("Battery", if (isBatteryExempt) "Unrestricted ✓" else "Optimized — tap to fix") {
                         if (!isBatteryExempt) {
@@ -143,7 +145,10 @@ fun NumiScreen() {
             if (hasCredentials) {
                 OutlinedButton(
                     onClick = {
-                        Thread { GetContactCredentialExtractor.extractAndSave(context) }.start()
+                        Thread {
+                            GetContactCredentialExtractor.extractAndSave(context)
+                            credsExtracted = credsFile.exists()
+                        }.start()
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) { Text("Refresh GetContact Credentials") }
