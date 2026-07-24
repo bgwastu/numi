@@ -99,12 +99,15 @@ object GetContactCredentialExtractor {
                 val process = Runtime.getRuntime().exec(arrayOf(suPath, "-c", cmd))
                 process.outputStream.close()
                 val out = process.inputStream.bufferedReader().readText()
+                val err = process.errorStream.bufferedReader().readText()
                 val exitCode = process.waitFor()
-                if (exitCode == 0 || out.isNotBlank()) {
+                if (exitCode == 0) {
                     return out
+                } else {
+                    Log.w("GCExtractor", "Command ($suPath) returned exit $exitCode. Stderr: $err. Stdout: $out")
                 }
             } catch (e: Exception) {
-                // Try next path
+                Log.w("GCExtractor", "Failed to exec $suPath -c '$cmd'", e)
             }
         }
         Log.e("GCExtractor", "Root command failed for all SU paths: $cmd")

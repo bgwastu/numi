@@ -13,12 +13,15 @@ object RootChecker {
             try {
                 val process = Runtime.getRuntime().exec(arrayOf(suPath, "-c", "id"))
                 val out = process.inputStream.bufferedReader().readText()
+                val err = process.errorStream.bufferedReader().readText()
                 val exitCode = process.waitFor()
-                if ((exitCode == 0 || out.isNotBlank()) && out.contains("uid=0")) {
+                if (exitCode == 0 && out.contains("uid=0")) {
                     return true
+                } else {
+                    Log.w("RootChecker", "suPath ($suPath) failed: exit=$exitCode, out=$out, err=$err")
                 }
             } catch (e: Exception) {
-                // Try next path
+                Log.w("RootChecker", "Failed to exec suPath ($suPath)", e)
             }
         }
         return false
