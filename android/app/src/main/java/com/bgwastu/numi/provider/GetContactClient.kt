@@ -53,6 +53,22 @@ class GetContactClient(private val context: Context) {
 
     fun isAvailable(): Boolean = getCredentials() != null
 
+    private val SU_PATHS = arrayOf("/system/bin/su", "/system/xbin/su", "su")
+
+    private fun runRoot(cmd: String): Boolean {
+        for (suPath in SU_PATHS) {
+            try {
+                val p = Runtime.getRuntime().exec(arrayOf(suPath, "-c", cmd))
+                p.outputStream.close()
+                p.waitFor()
+                if (p.exitValue() == 0) return true
+            } catch (e: Exception) {
+                // Try next
+            }
+        }
+        return false
+    }
+
     /**
      * Force-resets the GetContact app to get a fresh token, then re-extracts.
      * Requires root (su). Non-blocking — runs in a background thread.
@@ -61,22 +77,18 @@ class GetContactClient(private val context: Context) {
         Thread {
             try {
                 Log.i("GetContactClient", "Auto-refresh: force-stopping GetContact...")
-                val p1 = Runtime.getRuntime().exec(arrayOf("su", "-c", "am force-stop $GC_PKG"))
-                val out1 = p1.inputStream.bufferedReader().readText()
-                p1.waitFor()
-                Log.i("GetContactClient", "Force-stop result: exit=${p1.exitValue()}, out=$out1")
+                val ok1 = runRoot("am force-stop $GC_PKG")
+                Log.i("GetContactClient", "Force-stop status: $ok1")
 
                 Thread.sleep(1000)
                 Log.i("GetContactClient", "Auto-refresh: deleting stale token...")
-                val p2 = Runtime.getRuntime().exec(arrayOf("su", "-c", "rm -f $GC_DATA/files/datastore/tokens.preferences_pb"))
-                p2.waitFor()
-                Log.i("GetContactClient", "Token delete: exit=${p2.exitValue()}")
+                val ok2 = runRoot("rm -f $GC_DATA/files/datastore/tokens.preferences_pb")
+                Log.i("GetContactClient", "Token delete status: $ok2")
 
                 Thread.sleep(500)
                 Log.i("GetContactClient", "Auto-refresh: launching GetContact...")
-                val p3 = Runtime.getRuntime().exec(arrayOf("su", "-c", "monkey -p $GC_PKG -c android.intent.category.LAUNCHER 1"))
-                p3.waitFor()
-                Log.i("GetContactClient", "Launch: exit=${p3.exitValue()}")
+                val ok3 = runRoot("monkey -p $GC_PKG -c android.intent.category.LAUNCHER 1")
+                Log.i("GetContactClient", "Launch status: $ok3")
 
                 Thread.sleep(5000) // Wait for app to fully init and generate new token
                 val ok = GetContactCredentialExtractor.extractAndSave(context)

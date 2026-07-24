@@ -90,17 +90,24 @@ object GetContactCredentialExtractor {
             ?.takeIf { it.isNotBlank() }
     }
 
+    private val SU_PATHS = arrayOf("/system/bin/su", "/system/xbin/su", "su")
+
     /** Executes a root shell command and returns stdout. */
     private fun runRoot(cmd: String): String {
-        return try {
-            val process = Runtime.getRuntime().exec(arrayOf("su", "-c", cmd))
-            process.outputStream.close()
-            val out = process.inputStream.bufferedReader().readText()
-            process.waitFor()
-            out
-        } catch (e: Exception) {
-            Log.e("GCExtractor", "Root command failed: $cmd", e)
-            ""
+        for (suPath in SU_PATHS) {
+            try {
+                val process = Runtime.getRuntime().exec(arrayOf(suPath, "-c", cmd))
+                process.outputStream.close()
+                val out = process.inputStream.bufferedReader().readText()
+                val exitCode = process.waitFor()
+                if (exitCode == 0 || out.isNotBlank()) {
+                    return out
+                }
+            } catch (e: Exception) {
+                // Try next path
+            }
         }
+        Log.e("GCExtractor", "Root command failed for all SU paths: $cmd")
+        return ""
     }
 }
