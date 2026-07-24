@@ -56,9 +56,10 @@ class GetContactClient(private val context: Context) {
     private val SU_PATHS = arrayOf("/system/bin/su", "/system/xbin/su", "su")
 
     private fun runRoot(cmd: String): Boolean {
+        val nsenterCmd = "nsenter -t 1 -m $cmd"
         for (suPath in SU_PATHS) {
             try {
-                val p = Runtime.getRuntime().exec(arrayOf(suPath, "-c", cmd))
+                val p = Runtime.getRuntime().exec(arrayOf(suPath, "-c", nsenterCmd))
                 p.outputStream.close()
                 p.waitFor()
                 if (p.exitValue() == 0) return true

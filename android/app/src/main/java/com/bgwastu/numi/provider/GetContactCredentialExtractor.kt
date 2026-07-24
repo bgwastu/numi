@@ -92,11 +92,12 @@ object GetContactCredentialExtractor {
 
     private val SU_PATHS = arrayOf("/system/bin/su", "/system/xbin/su", "su")
 
-    /** Executes a root shell command and returns stdout. */
+    /** Executes a root shell command in the global mount namespace (init's namespace) and returns stdout. */
     private fun runRoot(cmd: String): String {
+        val nsenterCmd = "nsenter -t 1 -m $cmd"
         for (suPath in SU_PATHS) {
             try {
-                val process = Runtime.getRuntime().exec(arrayOf(suPath, "-c", cmd))
+                val process = Runtime.getRuntime().exec(arrayOf(suPath, "-c", nsenterCmd))
                 process.outputStream.close()
                 val out = process.inputStream.bufferedReader().readText()
                 val err = process.errorStream.bufferedReader().readText()
@@ -104,13 +105,13 @@ object GetContactCredentialExtractor {
                 if (exitCode == 0) {
                     return out
                 } else {
-                    Log.w("GCExtractor", "Command ($suPath) returned exit $exitCode. Stderr: $err. Stdout: $out")
+                    Log.w("GCExtractor", "Command ($suPath -c '$nsenterCmd') returned exit $exitCode. Stderr: $err. Stdout: $out")
                 }
             } catch (e: Exception) {
-                Log.w("GCExtractor", "Failed to exec $suPath -c '$cmd'", e)
+                Log.w("GCExtractor", "Failed to exec $suPath -c '$nsenterCmd'", e)
             }
         }
-        Log.e("GCExtractor", "Root command failed for all SU paths: $cmd")
+        Log.e("GCExtractor", "Root command failed for all SU paths: $nsenterCmd")
         return ""
     }
 }
