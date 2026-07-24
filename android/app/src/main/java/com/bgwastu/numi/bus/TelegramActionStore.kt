@@ -106,6 +106,19 @@ class TelegramActionStore(context: Context) {
         prefs.edit().remove(replyKey(messageId)).apply()
     }
 
+    /** Last Telegram message in the conversation thread for this SMS address. */
+    fun saveThreadTip(address: String, messageId: Int) {
+        val key = normalizeAddress(address) ?: return
+        if (messageId <= 0) return
+        prefs.edit().putInt(threadTipKey(key), messageId).apply()
+    }
+
+    fun getThreadTip(address: String): Int? {
+        val key = normalizeAddress(address) ?: return null
+        val id = prefs.getInt(threadTipKey(key), 0)
+        return id.takeIf { it > 0 }
+    }
+
     fun savePendingCaptcha(captcha: PendingCaptcha) {
         prefs.edit().putString(CAPTCHA_KEY, JSONObject().apply {
             put("chatId", captcha.chatId)
@@ -141,9 +154,21 @@ class TelegramActionStore(context: Context) {
 
     private fun pendingKey(id: String) = "pending_sms_$id"
     private fun replyKey(messageId: Int) = "telegram_reply_target_$messageId"
+    private fun threadTipKey(normalizedAddress: String) = "telegram_thread_tip_$normalizedAddress"
 
     private companion object {
         const val PREFS_NAME = "numi_telegram_actions"
         const val CAPTCHA_KEY = "pending_gc_captcha"
+
+        /** Digits for numbers/short codes; uppercase alpha for named senders (TELKOMSEL). */
+        fun normalizeAddress(raw: String): String? {
+            val trimmed = raw.trim()
+            if (trimmed.isEmpty() || trimmed.equals("Unknown", ignoreCase = true)) return null
+            val digits = trimmed.filter { it.isDigit() }
+            return when {
+                digits.length >= 3 -> digits
+                else -> trimmed.uppercase(java.util.Locale.US)
+            }
+        }
     }
 }

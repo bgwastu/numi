@@ -8,7 +8,9 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,6 +53,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.bgwastu.numi.provider.GetContactCredentialExtractor
 import com.bgwastu.numi.queue.OutboxService
 import com.bgwastu.numi.util.RootChecker
+import com.bgwastu.numi.utils.RollbackManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,6 +93,7 @@ fun NumiScreen() {
     var botConfigured by remember { mutableStateOf(false) }
     var rootAvailable by remember { mutableStateOf(false) }
     var batteryExempt by remember { mutableStateOf(false) }
+    var isDefaultSms by remember { mutableStateOf(false) }
 
     fun refreshStatus() {
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -101,6 +105,13 @@ fun NumiScreen() {
         rootAvailable = RootChecker.isRootAvailable()
         val pm = context.getSystemService(PowerManager::class.java)
         batteryExempt = pm.isIgnoringBatteryOptimizations(context.packageName)
+        isDefaultSms = RollbackManager.isDefaultSmsApp(context)
+    }
+
+    val smsRoleLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        refreshStatus()
     }
 
     DisposableEffect(lifecycleOwner) {
@@ -145,6 +156,16 @@ fun NumiScreen() {
                     Spacer(Modifier.height(8.dp))
                     StatusRow("Service", if (serviceRunning) "Running ✓" else "Stopped ✗")
                     StatusRow("Bot", if (botConfigured) "Configured ✓" else "Not configured ✗")
+                    StatusRow(
+                        "SMS role",
+                        if (isDefaultSms) "Default ✓" else "Not default ✗ — tap to set"
+                    ) {
+                        if (!isDefaultSms) {
+                            RollbackManager.createRequestDefaultSmsIntent(context)?.let {
+                                smsRoleLauncher.launch(it)
+                            }
+                        }
+                    }
                     StatusRow(
                         "GetContact",
                         if (credsExtracted) "Extracted ✓"
@@ -224,9 +245,10 @@ fun NumiScreen() {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Commands", style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(8.dp))
-                    CommandRow("/status", "Device battery, network, SIM status")
+                    CommandRow("/status", "Device status, SIMs, signal & permissions")
                     CommandRow("/check <number>", "Phone number lookup (GetContact + more)")
                     CommandRow("/send <number> <msg>", "Send SMS via device SIM")
+                    CommandRow("/ussd <code>", "Dial USSD (e.g. /ussd *888#)")
                     CommandRow("/refresh", "Refresh GetContact credentials")
                     CommandRow("/help", "List available commands")
                 }

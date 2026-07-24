@@ -11,27 +11,41 @@ object RollbackManager {
 
     private const val TELEGRAM_SMS_PKG = "com.qwe7002.telegram_sms"
 
-    // Request the user (or automation) to make this app default SMS
-    fun requestDefaultSmsRole(context: Context, activity: android.app.Activity, requestCode: Int) {
+    fun isDefaultSmsApp(context: Context): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val roleManager = context.getSystemService(RoleManager::class.java)
             if (roleManager.isRoleAvailable(RoleManager.ROLE_SMS)) {
-                if (!roleManager.isRoleHeld(RoleManager.ROLE_SMS)) {
-                    val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
-                    activity.startActivityForResult(intent, requestCode)
-                } else {
-                    Log.d("RollbackManager", "Numi already holds the default SMS role")
-                }
-            }
-        } else {
-            val currentDefault = Settings.Secure.getString(context.contentResolver, "sms_default_application")
-            if (currentDefault != context.packageName) {
-                val intent = Intent("android.provider.Telephony.ACTION_CHANGE_DEFAULT").apply {
-                    putExtra("package", context.packageName)
-                }
-                activity.startActivity(intent)
+                return roleManager.isRoleHeld(RoleManager.ROLE_SMS)
             }
         }
+        val currentDefault = Settings.Secure.getString(context.contentResolver, "sms_default_application")
+        return currentDefault == context.packageName
+    }
+
+    /** Intent to request the default SMS role, or null if already held / unavailable. */
+    fun createRequestDefaultSmsIntent(context: Context): Intent? {
+        if (isDefaultSmsApp(context)) {
+            Log.d("RollbackManager", "Numi already holds the default SMS role")
+            return null
+        }
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roleManager = context.getSystemService(RoleManager::class.java)
+            if (roleManager.isRoleAvailable(RoleManager.ROLE_SMS)) {
+                roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+            } else {
+                null
+            }
+        } else {
+            Intent("android.provider.Telephony.ACTION_CHANGE_DEFAULT").apply {
+                putExtra("package", context.packageName)
+            }
+        }
+    }
+
+    // Request the user (or automation) to make this app default SMS
+    fun requestDefaultSmsRole(context: Context, activity: android.app.Activity, requestCode: Int) {
+        val intent = createRequestDefaultSmsIntent(context) ?: return
+        activity.startActivityForResult(intent, requestCode)
     }
 
     // Helper script command templates for ADB rollback

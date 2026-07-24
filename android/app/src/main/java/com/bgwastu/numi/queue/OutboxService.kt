@@ -11,6 +11,9 @@ import android.os.Build
 import android.os.IBinder
 import android.telephony.SmsManager
 import android.util.Log
+import com.bgwastu.numi.R
+import com.bgwastu.numi.bus.ReplyTarget
+import com.bgwastu.numi.bus.TelegramActionStore
 import com.bgwastu.numi.database.DbHelper
 import com.bgwastu.numi.network.TelegramSender
 import kotlinx.coroutines.*
@@ -23,9 +26,11 @@ class OutboxService : Service() {
     
     private lateinit var dbHelper: DbHelper
     private lateinit var telegramSender: TelegramSender
+    private lateinit var actionStore: TelegramActionStore
     private var commandReceiver: com.bgwastu.numi.bus.CommandReceiver? = null
     private val isRunning = AtomicBoolean(false)
     private var pollJob: Job? = null
+    private var signalWatchdog: com.bgwastu.numi.device.SignalWatchdog? = null
 
     companion object {
         private const val CHANNEL_ID = "NumiOutboxChannel"
@@ -47,6 +52,7 @@ class OutboxService : Service() {
         instanceCreated = true
 
         dbHelper = DbHelper(this)
+        actionStore = TelegramActionStore(this)
 
         // Read persistent config FIRST, then create the sender
         val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
@@ -54,6 +60,9 @@ class OutboxService : Service() {
         val targetChat = prefs.getString("TARGET_CHAT_ID", "") ?: ""
         updateConfig(token, targetChat)
         telegramSender = TelegramSender(BOT_TOKEN)
+
+        // Avoid blocking short-code SMS behind the premium/cost confirmation dialog.
+        Thread { com.bgwastu.numi.util.PremiumSmsAutoAllow.ensureAllowed() }.start()
 
         createNotificationChannel()
         try {
@@ -77,6 +86,9 @@ class OutboxService : Service() {
 
         // Start incoming call monitoring
         startService(Intent(this, com.bgwastu.numi.receiver.CallEventReceiver::class.java))
+
+        signalWatchdog = com.bgwastu.numi.device.SignalWatchdog(this) { TARGET_CHAT_ID }
+        signalWatchdog?.start()
     }
 
     private fun startPolling() {
@@ -142,14 +154,42 @@ class OutboxService : Service() {
         cursor.close()
     }
 
-    private suspend fun sendTelegram(chatId: String, text: String): Boolean {
-        // If config changed during runtime, re-init
-        val activeChat = if (chatId.isBlank()) TARGET_CHAT_ID else chatId
-        return telegramSender.sendMessage(activeChat, text)
+    private suspend fun sendTelegram(recipientOrChat: String, text: String): Boolean {
+        val activeChat = TARGET_CHAT_ID.ifBlank { return false }
+        val replyTo = actionStore.getThreadTip(recipientOrChat)
+        val messageId = telegramSender.sendMessageForId(activeChat, text, replyTo)
+            ?: if (replyTo != null) {
+                // Parent may have been deleted; fall back to a top-level message.
+                telegramSender.sendMessageForId(activeChat, text, null)
+            } else {
+                null
+            }
+            ?: return false
+        // Keep the thread tip on the newest message so the next inbound replies here.
+        actionStore.saveThreadTip(recipientOrChat, messageId)
+        // Inbound SMS / short codes store origin in recipient; attach reply target for user replies.
+        if (looksLikeSmsAddress(recipientOrChat)) {
+            actionStore.saveReplyTarget(
+                messageId,
+                ReplyTarget(phoneNumber = recipientOrChat, source = "inbound_sms")
+            )
+        }
+        return true
+    }
+
+    private fun looksLikeSmsAddress(value: String): Boolean {
+        val cleaned = value.trim()
+        if (cleaned.isEmpty() || cleaned.equals("Unknown", ignoreCase = true)) return false
+        val digits = cleaned.filter { it.isDigit() }
+        // Include short codes (e.g. 3636) as well as E.164 numbers.
+        if (digits.length in 3..15) return true
+        // Named senders like TELKOMSEL
+        return cleaned.any { it.isLetter() }
     }
 
     private fun sendSmsDirect(recipient: String, body: String): Boolean {
         return try {
+            com.bgwastu.numi.util.PremiumSmsAutoAllow.ensureAllowed()
             val smsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 this.getSystemService(SmsManager::class.java)
             } else {
@@ -157,6 +197,7 @@ class OutboxService : Service() {
                 SmsManager.getDefault()
             }
             smsManager.sendTextMessage(recipient, null, body, null, null)
+            com.bgwastu.numi.util.PremiumSmsAutoAllow.dismissConfirmDialogAsync()
             Log.d("OutboxService", "SMS sent successfully to $recipient")
             true
         } catch (e: Exception) {
@@ -199,6 +240,8 @@ class OutboxService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         isRunning.set(false)
+        signalWatchdog?.stop()
+        signalWatchdog = null
         commandReceiver?.stop()
         pollJob?.cancel()
         serviceJob.cancel()
@@ -225,7 +268,7 @@ class OutboxService : Service() {
             Notification.Builder(this)
         }
         return builder
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setSmallIcon(R.drawable.ic_stat_numi)
             .setContentTitle("Numi Outbox Daemon")
             .setContentText("Gateway is running...")
             .setOngoing(true)

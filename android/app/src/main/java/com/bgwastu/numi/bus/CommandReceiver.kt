@@ -6,9 +6,16 @@ import com.bgwastu.numi.database.DbHelper
 import com.bgwastu.numi.bus.CommandError
 import com.bgwastu.numi.bus.PendingSmsAction
 import com.bgwastu.numi.bus.TelegramActionStore
+import com.bgwastu.numi.device.DevicePermissionFixer
 import com.bgwastu.numi.device.DeviceStatusProvider
 import com.bgwastu.numi.device.SimInfo
+import com.bgwastu.numi.device.TelkomselCheck
+import com.bgwastu.numi.device.UssdRunner
+import com.bgwastu.numi.network.TelegramHtml
 import com.bgwastu.numi.network.TelegramSender
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import com.bgwastu.numi.provider.PhoneLookupResult
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -59,7 +66,7 @@ class CommandReceiver(
                 val commands = JSONArray().apply {
                     put(JSONObject().apply {
                         put("command", "status")
-                        put("description", "Device status: battery, network, SIMs")
+                        put("description", "Device status, SIMs, signal & permissions")
                     })
                     put(JSONObject().apply {
                         put("command", "check")
@@ -68,6 +75,10 @@ class CommandReceiver(
                     put(JSONObject().apply {
                         put("command", "send")
                         put("description", "Send SMS via device")
+                    })
+                    put(JSONObject().apply {
+                        put("command", "ussd")
+                        put("description", "Dial USSD code, e.g. /ussd *888#")
                     })
                     put(JSONObject().apply {
                         put("command", "refresh")
@@ -288,9 +299,10 @@ class CommandReceiver(
                     chatId,
                     """
                     |Numi commands:
-                    |/status - device battery, network, SIMs
+                    |/status - device status, SIMs, signal & permissions
                     |/check <number> - phone lookup
                     |/send <number> <message> - send SMS
+                    |/ussd <code> - dial USSD (e.g. /ussd *888#)
                     |/refresh - refresh GetContact credentials
                     |/help - this list
                     |
@@ -302,12 +314,20 @@ class CommandReceiver(
 
             // -- /status command --
             if (command.equals("/status", ignoreCase = true)) {
-                dispatchTextReply(chatId, DeviceStatusProvider.summary(context))
+                sendStatus(chatId)
+                return
+            }
+
+            // -- /ussd <code> --
+            val ussdMatch = Regex("""^/ussd(?:@\S+)?\s+(\S+)$""", RegexOption.IGNORE_CASE).find(text.trim())
+            if (ussdMatch != null) {
+                handleUssdCommand(chatId, ussdMatch.groupValues[1].trim())
                 return
             }
 
             // -- /send [number] [message] command --
-            val sendMatch = Regex("""^/send(?:@\S+)?\s+(\+?\d{7,15})\s+([\s\S]+)$""", RegexOption.IGNORE_CASE).find(text)
+            // Allow short codes (e.g. 3636) as well as E.164 numbers.
+            val sendMatch = Regex("""^/send(?:@\S+)?\s+(\+?\d{3,15})\s+([\s\S]+)$""", RegexOption.IGNORE_CASE).find(text)
             if (sendMatch != null) {
                 handleSendCommand(chatId, sendMatch.groupValues[1].trim(), sendMatch.groupValues[2].trim())
                 return
@@ -353,52 +373,226 @@ args: e30=
         }
 
         private fun handleCallback(callback: JSONObject) {
-            val chat = callback.optJSONObject("message")?.optJSONObject("chat") ?: return
+            val message = callback.optJSONObject("message") ?: return
+            val chat = message.optJSONObject("chat") ?: return
             val chatId = chat.optLong("id", 0).toString()
             val targetChatId = prefs.getString("TARGET_CHAT_ID", null) ?: return
             if (chatId != targetChatId) return
 
             val data = callback.optString("data", "")
             val callbackId = callback.optString("id", "")
+            val confirmMessageId = message.optInt("message_id", 0).takeIf { it > 0 }
 
             // Answer callback query to stop the spinner
             answerCallback(callbackId)
 
             when {
                 data.startsWith("confirm_sms:") -> {
-                    val actionId = data.removePrefix("confirm_sms:")
+                    val payload = data.removePrefix("confirm_sms:")
+                    val parts = payload.split(":", limit = 2)
+                    val actionId = parts[0]
+                    val chosenSubId = parts.getOrNull(1)?.toIntOrNull()
                     val pending = actionStore.getPending(actionId)
                     if (pending == null) {
-                        sendText(chatId, "❌ This confirmation has expired. Please re-issue the command.")
+                        editOrSend(
+                            chatId,
+                            confirmMessageId,
+                            "❌ This confirmation has expired. Please re-issue the command."
+                        )
                         return
                     }
-                    // Execute the SMS send
+                    val subscriptionId = chosenSubId ?: pending.subscriptionId
+                    val sims = DeviceStatusProvider.activeSims(context)
+                    val simLabel = sims.firstOrNull { it.subscriptionId == subscriptionId }?.label
+                        ?: pending.simLabel
                     val smsSender = com.bgwastu.numi.device.SmsSender(context)
                     val result = smsSender.sendSms(
                         recipient = pending.recipient,
                         body = pending.body,
-                        subscriptionId = pending.subscriptionId
+                        subscriptionId = subscriptionId
                     )
                     actionStore.removePending(actionId)
-                    when (result) {
+                    val statusText = when (result) {
                         is com.bgwastu.numi.device.SmsSendResult.Sent -> {
-                            val label = pending.simLabel?.let { "via $it" } ?: ""
-                            sendText(chatId, "✅ SMS queued to ${pending.recipient} $label".trim())
+                            val label = simLabel?.let { " via $it" } ?: ""
+                            "✅ SMS queued to ${pending.recipient}$label"
                         }
                         is com.bgwastu.numi.device.SmsSendResult.PermissionDenied ->
-                            sendText(chatId, "❌ SMS permission not granted. Grant SEND_SMS to Numi and try again.")
+                            "❌ SMS permission not granted. Grant SEND_SMS to Numi and try again."
                         is com.bgwastu.numi.device.SmsSendResult.NoSim ->
-                            sendText(chatId, "❌ No active SIM available.")
+                            "❌ No active SIM available."
                         is com.bgwastu.numi.device.SmsSendResult.Error ->
-                            sendText(chatId, "❌ Failed to send: ${result.reason}")
+                            "❌ Failed to send: ${result.reason}"
+                    }
+                    editOrSend(chatId, confirmMessageId, statusText)
+                    // Anchor the outbound tip so the carrier's inbound reply threads under this.
+                    if (result is com.bgwastu.numi.device.SmsSendResult.Sent && confirmMessageId != null) {
+                        actionStore.saveThreadTip(pending.recipient, confirmMessageId)
                     }
                 }
                 data.startsWith("cancel_sms:") -> {
                     val actionId = data.removePrefix("cancel_sms:")
                     actionStore.removePending(actionId)
-                    sendText(chatId, "❌ SMS cancelled.")
+                    editOrSend(chatId, confirmMessageId, "❌ SMS cancelled.")
+                }
+                data == "fix_perms" -> {
+                    Thread {
+                        try {
+                            val result = DevicePermissionFixer.fix(context)
+                            val text = buildString {
+                                appendLine(DeviceStatusProvider.summary(context))
+                                appendLine()
+                                append("🛠 $result")
+                            }
+                            editStatus(chatId, confirmMessageId, text)
+                        } catch (e: Exception) {
+                            Log.e("CommandReceiver", "fix_perms failed", e)
+                            editOrSend(
+                                chatId,
+                                confirmMessageId,
+                                "❌ Fix failed: ${e.message ?: "unknown error"}"
+                            )
+                        }
+                    }.start()
+                }
+                data == "tsel_kuota" -> {
+                    Thread {
+                        try {
+                            val result = TelkomselCheck.requestKuota(context)
+                            when (result) {
+                                is com.bgwastu.numi.device.SmsSendResult.Sent -> {
+                                    val ackId = sendTextForId(
+                                        chatId,
+                                        "📶 Cek kuota sent (CEK → 3636). Reply will arrive as inbound SMS."
+                                    )
+                                    if (ackId != null) {
+                                        actionStore.saveThreadTip(TelkomselCheck.KUOTA_DEST, ackId)
+                                    }
+                                }
+                                is com.bgwastu.numi.device.SmsSendResult.PermissionDenied ->
+                                    sendText(chatId, "❌ SMS permission denied. Use Fix on /status first.")
+                                is com.bgwastu.numi.device.SmsSendResult.NoSim ->
+                                    sendText(chatId, "❌ No active SIM.")
+                                is com.bgwastu.numi.device.SmsSendResult.Error ->
+                                    sendText(chatId, "❌ Failed to send: ${result.reason}")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("CommandReceiver", "tsel_kuota failed", e)
+                            sendText(chatId, "❌ Cek kuota failed: ${e.message ?: "unknown"}")
+                        }
+                    }.start()
+                }
+                data == "tsel_aktif" -> {
+                    Thread {
+                        try {
+                            val pendingId = sendTextForId(chatId, "📅 Dialing *888# for masa aktif…")
+                            if (pendingId != null) {
+                                actionStore.saveThreadTip("TELKOMSEL", pendingId)
+                            }
+                            val ussd = TelkomselCheck.requestMasaAktifUssd(context)
+                            if (ussd.isSuccess) {
+                                val raw = ussd.getOrThrow()
+                                val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                                    .format(Date())
+                                val msg = buildString {
+                                    appendLine("📬 ${TelegramHtml.bold("USSD (*888#)")}")
+                                    appendLine("${TelegramHtml.bold("From:")} ${TelegramHtml.code("TELKOMSEL")}")
+                                    appendLine("${TelegramHtml.bold("Time:")} ${TelegramHtml.code(time)}")
+                                    appendLine()
+                                    append(TelegramHtml.pre(raw))
+                                }
+                                // Replace the dialing placeholder so it doesn't look stuck.
+                                if (pendingId != null) {
+                                    val edited = sendTelegram("editMessageText", JSONObject().apply {
+                                        put("chat_id", chatId)
+                                        put("message_id", pendingId)
+                                        put("text", msg.take(4_000))
+                                        put("parse_mode", "HTML")
+                                    })
+                                    if (edited != null) {
+                                        actionStore.saveThreadTip("TELKOMSEL", pendingId)
+                                        return@Thread
+                                    }
+                                }
+                                val replyTo = actionStore.getThreadTip("TELKOMSEL")
+                                val body = JSONObject().apply {
+                                    put("chat_id", chatId)
+                                    put("text", msg.take(4_000))
+                                    put("parse_mode", "HTML")
+                                    if (replyTo != null) put("reply_to_message_id", replyTo)
+                                }
+                                val sent = sendTelegram("sendMessage", body)
+                                val mid = sent?.optJSONObject("result")?.optInt("message_id")
+                                    ?.takeIf { it > 0 }
+                                if (mid != null) actionStore.saveThreadTip("TELKOMSEL", mid)
+                            } else {
+                                val err =
+                                    "❌ Masa aktif USSD failed: ${ussd.exceptionOrNull()?.message ?: "unknown"}"
+                                if (pendingId != null) {
+                                    editOrSend(chatId, pendingId, err)
+                                } else {
+                                    sendText(chatId, err)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Log.e("CommandReceiver", "tsel_aktif failed", e)
+                            sendText(chatId, "❌ Cek masa aktif failed: ${e.message ?: "unknown"}")
+                        }
+                    }.start()
                 }
             }
+        }
+
+        private fun sendStatus(chatId: String) {
+            val text = DeviceStatusProvider.summary(context)
+            val body = JSONObject().apply {
+                put("chat_id", chatId)
+                put("text", text.take(4_000))
+                put("parse_mode", "HTML")
+                put("reply_markup", statusKeyboard())
+            }
+            sendTelegram("sendMessage", body)
+        }
+
+        private fun editStatus(chatId: String, messageId: Int?, text: String) {
+            if (messageId != null) {
+                val body = JSONObject().apply {
+                    put("chat_id", chatId)
+                    put("message_id", messageId)
+                    put("text", text.take(4_000))
+                    put("parse_mode", "HTML")
+                    put("reply_markup", statusKeyboard())
+                }
+                if (sendTelegram("editMessageText", body) != null) return
+            }
+            sendTelegram("sendMessage", JSONObject().apply {
+                put("chat_id", chatId)
+                put("text", text.take(4_000))
+                put("parse_mode", "HTML")
+                put("reply_markup", statusKeyboard())
+            })
+        }
+
+        private fun statusKeyboard(): JSONObject {
+            val rows = JSONArray().apply {
+                put(JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("text", "📶 Cek kuota")
+                        put("callback_data", "tsel_kuota")
+                    })
+                    put(JSONObject().apply {
+                        put("text", "📅 Cek masa aktif")
+                        put("callback_data", "tsel_aktif")
+                    })
+                })
+                put(JSONArray().apply {
+                    put(JSONObject().apply {
+                        put("text", "🔧 Auto-fix all permissions")
+                        put("callback_data", "fix_perms")
+                    })
+                })
+            }
+            return JSONObject().put("inline_keyboard", rows)
         }
 
         private fun handleCaptchaCode(
@@ -474,48 +668,140 @@ args: e30=
             sendConfirmation(chatId, pending)
         }
 
+        private fun handleUssdCommand(chatId: String, code: String) {
+            Thread {
+                val normalized = UssdRunner.normalizeUssd(code)
+                if (normalized == null) {
+                    sendText(chatId, "❌ Invalid USSD. Example: /ussd *888#")
+                    return@Thread
+                }
+                val pendingId = sendTextForId(chatId, "📞 Dialing ${TelegramHtml.code(normalized)}…".let {
+                    // sendTextForId doesn't set parse_mode — keep plain
+                    "📞 Dialing $normalized…"
+                })
+                try {
+                    val result = UssdRunner.run(context, normalized)
+                    if (result.isSuccess) {
+                        val raw = result.getOrThrow()
+                        val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                            .format(Date())
+                        val msg = buildString {
+                            appendLine("📬 ${TelegramHtml.bold("USSD")}")
+                            appendLine("${TelegramHtml.bold("Code:")} ${TelegramHtml.code(normalized)}")
+                            appendLine("${TelegramHtml.bold("Time:")} ${TelegramHtml.code(time)}")
+                            appendLine()
+                            append(TelegramHtml.pre(raw))
+                        }
+                        if (pendingId != null) {
+                            val edited = sendTelegram("editMessageText", JSONObject().apply {
+                                put("chat_id", chatId)
+                                put("message_id", pendingId)
+                                put("text", msg.take(4_000))
+                                put("parse_mode", "HTML")
+                            })
+                            if (edited != null) return@Thread
+                        }
+                        sendTelegram("sendMessage", JSONObject().apply {
+                            put("chat_id", chatId)
+                            put("text", msg.take(4_000))
+                            put("parse_mode", "HTML")
+                        })
+                    } else {
+                        val err = "❌ USSD failed: ${result.exceptionOrNull()?.message ?: "unknown"}"
+                        if (pendingId != null) editOrSend(chatId, pendingId, err) else sendText(chatId, err)
+                    }
+                } catch (e: Exception) {
+                    Log.e("CommandReceiver", "ussd failed", e)
+                    val err = "❌ USSD failed: ${e.message ?: "unknown"}"
+                    if (pendingId != null) editOrSend(chatId, pendingId, err) else sendText(chatId, err)
+                }
+            }.start()
+        }
+
         private fun handleSendCommand(chatId: String, number: String, body: String) {
             if (body.isBlank()) {
                 sendText(chatId, "❌ Message body cannot be empty.")
                 return
             }
-            val activeSims = com.bgwastu.numi.device.DeviceStatusProvider.activeSims(context)
-            val subId = if (activeSims.size == 1) activeSims[0].subscriptionId else null
-            val simLabel = if (activeSims.size == 1) activeSims[0].label else null
-
+            val activeSims = DeviceStatusProvider.activeSims(context)
+            if (activeSims.isEmpty()) {
+                sendText(chatId, "❌ No active SIM available.")
+                return
+            }
+            // Never auto-pick "default SMS" when multiple SIMs — ask in confirmation.
+            val single = activeSims.singleOrNull()
             val pending = PendingSmsAction(
                 chatId = chatId,
                 recipient = number,
                 body = body.take(1_000),
-                subscriptionId = subId,
-                simLabel = simLabel
+                subscriptionId = single?.subscriptionId,
+                simLabel = single?.label
             )
             actionStore.savePending(pending)
-            sendConfirmation(chatId, pending)
+            sendConfirmation(chatId, pending, activeSims)
         }
 
-        private fun sendConfirmation(chatId: String, action: PendingSmsAction) {
+        private fun sendConfirmation(
+            chatId: String,
+            action: PendingSmsAction,
+            sims: List<com.bgwastu.numi.device.SimInfo> = DeviceStatusProvider.activeSims(context)
+        ) {
             val keyboard = JSONObject().apply {
                 put("inline_keyboard", JSONArray().apply {
-                    put(JSONArray().apply {
-                        put(JSONObject().apply {
-                            put("text", "✅ Send")
-                            put("callback_data", "confirm_sms:${action.id}")
+                    if (sims.size > 1) {
+                        // One SIM button per row so choices stay clear ("1 by 1").
+                        for (sim in sims) {
+                            put(JSONArray().apply {
+                                put(JSONObject().apply {
+                                    put("text", "📤 SIM ${sim.slotIndex + 1}: ${sim.carrier ?: sim.label}")
+                                    put("callback_data", "confirm_sms:${action.id}:${sim.subscriptionId}")
+                                })
+                            })
+                        }
+                        put(JSONArray().apply {
+                            put(JSONObject().apply {
+                                put("text", "❌ Cancel")
+                                put("callback_data", "cancel_sms:${action.id}")
+                            })
                         })
-                        put(JSONObject().apply {
-                            put("text", "❌ Cancel")
-                            put("callback_data", "cancel_sms:${action.id}")
+                    } else {
+                        put(JSONArray().apply {
+                            put(JSONObject().apply {
+                                put("text", "✅ Send")
+                                put("callback_data", "confirm_sms:${action.id}")
+                            })
+                            put(JSONObject().apply {
+                                put("text", "❌ Cancel")
+                                put("callback_data", "cancel_sms:${action.id}")
+                            })
                         })
-                    })
+                    }
                 })
             }
-            val simInfo = action.simLabel?.let { " via $it" } ?: ""
-            val body = JSONObject().apply {
-                put("chat_id", chatId)
-                put("text", "📤 Send SMS to ${action.recipient}$simInfo?\n\n${action.body}")
-                put("reply_markup", keyboard)
+            val prompt = if (sims.size > 1) {
+                "📤 Send SMS to ${action.recipient}?\nChoose SIM:\n\n${action.body}"
+            } else {
+                val simInfo = action.simLabel?.let { " via $it" } ?: ""
+                "📤 Send SMS to ${action.recipient}$simInfo?\n\n${action.body}"
             }
-            sendTelegram("sendMessage", body)
+            sendTelegram("sendMessage", JSONObject().apply {
+                put("chat_id", chatId)
+                put("text", prompt)
+                put("reply_markup", keyboard)
+            })
+        }
+
+        private fun editOrSend(chatId: String, messageId: Int?, text: String) {
+            if (messageId != null) {
+                val edited = sendTelegram("editMessageText", JSONObject().apply {
+                    put("chat_id", chatId)
+                    put("message_id", messageId)
+                    put("text", text)
+                    put("reply_markup", JSONObject().put("inline_keyboard", JSONArray()))
+                })
+                if (edited != null) return
+            }
+            sendText(chatId, text)
         }
 
         private fun answerCallback(callbackId: String) {
@@ -704,10 +990,19 @@ args: e30=
         }
 
         private fun sendText(chatId: String, text: String): Boolean =
-            sendTelegram("sendMessage", JSONObject().apply {
+            sendTextForId(chatId, text) != null
+
+        private fun sendTextForId(chatId: String, text: String, replyToMessageId: Int? = null): Int? {
+            val body = JSONObject().apply {
                 put("chat_id", chatId)
                 put("text", text.take(4_000))
-            }) != null
+                if (replyToMessageId != null && replyToMessageId > 0) {
+                    put("reply_to_message_id", replyToMessageId)
+                }
+            }
+            val resp = sendTelegram("sendMessage", body) ?: return null
+            return resp.optJSONObject("result")?.optInt("message_id")?.takeIf { it > 0 }
+        }
 
         private fun sendTelegram(method: String, body: JSONObject): JSONObject? {
             val request = Request.Builder()

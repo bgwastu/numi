@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- White-on-transparent silhouette for status-bar / foreground notifications. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M8,3h2.2l0.5,4h4.6L14.8,3H17l0.5,4H21v2h-3.2l0.5,4H21v2h-2.5l0.5,6h-2.2l-0.5,-6H9.7L9.2,21H7l0.5,-6H4v-2h3.2L6.7,9H4V7h3.2L8,3zM9.7,9l0.5,4h4.6l-0.5,-4H9.7z" />
+</vector>
