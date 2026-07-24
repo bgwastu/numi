@@ -14,15 +14,38 @@ class PhoneLookupService(private val providers: List<PhoneLookupProvider>) {
         }
     }
 
-    /** Run all available providers. Returns results sorted by provider name. */
-    suspend fun lookup(phoneNumber: String): List<PhoneLookupResult> = coroutineScope {
-        providers
-            .filter { it.isAvailable() }
-            .map { provider ->
-                async { provider.lookup(phoneNumber) }
+    /** Run all available providers. Returns successes and provider errors separately. */
+    suspend fun lookup(phoneNumber: String): PhoneLookupBatch = coroutineScope {
+        val available = providers.filter { it.isAvailable() }
+        if (available.isEmpty()) {
+            return@coroutineScope PhoneLookupBatch(emptyList(), emptyList())
+        }
+
+        val outcomes = available.map { provider ->
+            async {
+                provider.name to provider.lookup(phoneNumber)
             }
-            .awaitAll()
-            .mapNotNull { it.getOrNull() }
-            .sortedBy { it.provider }
+        }.awaitAll()
+
+        val results = mutableListOf<PhoneLookupResult>()
+        val errors = mutableListOf<PhoneLookupError>()
+        for ((name, outcome) in outcomes) {
+            outcome.fold(
+                onSuccess = { results += it },
+                onFailure = { err ->
+                    val pe = err as? PhoneLookupException
+                    errors += PhoneLookupError(
+                        provider = name,
+                        message = err.message ?: "Lookup failed",
+                        errorCode = pe?.errorCode,
+                        captchaImageBase64 = pe?.captchaImageBase64
+                    )
+                }
+            )
+        }
+        PhoneLookupBatch(
+            results = results.sortedBy { it.provider },
+            errors = errors.sortedBy { it.provider }
+        )
     }
 }

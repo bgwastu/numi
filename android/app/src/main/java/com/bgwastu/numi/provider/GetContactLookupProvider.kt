@@ -35,7 +35,11 @@ class GetContactLookupProvider(private val context: Context) : PhoneLookupProvid
                     )
                 )
                 is GetContactResult.Error -> Result.failure(
-                    RuntimeException("GetContact: ${result.message}")
+                    PhoneLookupException(
+                        message = result.message,
+                        errorCode = result.errorCode,
+                        captchaImageBase64 = result.captchaImageBase64
+                    )
                 )
             }
         } catch (e: Exception) {

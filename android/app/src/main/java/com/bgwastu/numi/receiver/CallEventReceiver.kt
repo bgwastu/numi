@@ -44,23 +44,35 @@ class CallEventReceiver : Service() {
         val telephony = getSystemService(TelephonyManager::class.java)
         val handler = CallHandler(this, sender, actionStore)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val callback = object : TelephonyCallback(), TelephonyCallback.CallStateListener {
-                override fun onCallStateChanged(state: Int) {
-                    handler.onCallStateChanged(state)
+        val hasPhoneState = ContextCompat.checkSelfPermission(
+            this, Manifest.permission.READ_PHONE_STATE
+        ) == PackageManager.PERMISSION_GRANTED
+        if (!hasPhoneState) {
+            Log.w("CallEventReceiver", "READ_PHONE_STATE missing; skipping call-state listener")
+            return START_STICKY
+        }
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val callback = object : TelephonyCallback(), TelephonyCallback.CallStateListener {
+                    override fun onCallStateChanged(state: Int) {
+                        handler.onCallStateChanged(state)
+                    }
                 }
-            }
-            telephony.registerTelephonyCallback(mainExecutor, callback)
-            telephonyListener = callback
-        } else {
-            @Suppress("DEPRECATION")
-            val listener = object : PhoneStateListener() {
-                override fun onCallStateChanged(state: Int, phoneNumber: String?) {
-                    handler.onCallStateChanged(state)
+                telephony.registerTelephonyCallback(mainExecutor, callback)
+                telephonyListener = callback
+            } else {
+                @Suppress("DEPRECATION")
+                val listener = object : PhoneStateListener() {
+                    override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                        handler.onCallStateChanged(state)
+                    }
                 }
+                telephony.listen(listener, PhoneStateListener.LISTEN_CALL_STATE)
+                telephonyListener = listener
             }
-            telephony.listen(listener, PhoneStateListener.LISTEN_CALL_STATE)
-            telephonyListener = listener
+        } catch (e: SecurityException) {
+            Log.e("CallEventReceiver", "Failed to register call-state listener", e)
         }
 
         return START_STICKY

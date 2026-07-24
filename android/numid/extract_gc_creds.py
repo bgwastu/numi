@@ -26,14 +26,28 @@ from pathlib import Path
 # ── Configuration ────────────────────────────────────────────────────
 GC_PACKAGE = "app.source.getcontact"
 NUMI_PACKAGE = "com.bgwastu.numi"
-DEVICE_SERIAL = "100.96.0.44:5555"
+# Override with ADB_SERIAL env, else first `adb devices` entry.
+DEVICE_SERIAL = os.environ.get("ADB_SERIAL") or ""
 HARVESTER_JS = os.path.join(os.path.dirname(__file__), "gc_harvester.js")
 CREDS_OUTPUT = "/tmp/getcontact_creds.json"
 
 # Frida connects via ADB forwarded port, not USB
 FRIDA_TARGET = "localhost:27042"
 
-ADB = ["adb", "-s", DEVICE_SERIAL]
+def _resolve_serial():
+    serial = DEVICE_SERIAL.strip()
+    if serial:
+        return serial
+    r = subprocess.run(["adb", "devices"], capture_output=True, text=True, timeout=10)
+    for line in r.stdout.splitlines()[1:]:
+        parts = line.split()
+        if len(parts) >= 2 and parts[1] == "device":
+            return parts[0]
+    return ""
+
+
+_SERIAL = _resolve_serial()
+ADB = ["adb", "-s", _SERIAL] if _SERIAL else ["adb"]
 
 # ── ADB Helpers ──────────────────────────────────────────────────────
 
@@ -93,28 +107,57 @@ def extract_device_id():
 
 
 def extract_token():
-    """Extract API token from GetContact's DataStore."""
+    """Extract API token from GetContact's DataStore (plaintext or encrypted)."""
     print("[*] Extracting Token from DataStore...")
     out, rc = adb_shell(
         f"strings /data/data/{GC_PACKAGE}/files/datastore/tokens.preferences_pb 2>/dev/null",
         su=True
     )
-    if rc != 0 or not out:
-        print("  [!] Could not read tokens.preferences_pb")
+    if rc == 0 and out:
+        for line in out.strip().split('\n'):
+            line = line.strip()
+            # Legacy plaintext token (40-60 chars). Encrypted blobs are much longer.
+            if 40 <= len(line) <= 60 and not re.search(r'[^a-zA-Z0-9+/=]', line):
+                print(f"  [+] Token found (plaintext): {line[:16]}...{line[-8:]}")
+                return line
+
+    # Newer builds: CryptoSerializer AES-CBC under Keystore alias crypto_client
+    print("  [*] Plaintext token missing; trying frida-inject decrypt...")
+    token = extract_token_encrypted()
+    if token:
+        return token
+
+    print("  [!] Token not found in DataStore")
+    return None
+
+
+def extract_token_encrypted():
+    """Decrypt tokens.preferences_pb inside GetContact via on-device frida-inject."""
+    script = os.path.join(os.path.dirname(__file__), "gc_dump_token.bundle.js")
+    sh = os.path.join(os.path.dirname(__file__), "gc_extract_token.sh")
+    inject = "/tmp/frida-inject-android-arm64"
+    if not os.path.exists(script):
+        print("  [!] gc_dump_token.bundle.js missing")
+        return None
+    if not os.path.exists(sh):
+        print("  [!] gc_extract_token.sh missing")
         return None
 
-    # Look for the token pattern — a long base64-ish string
-    # Tokens in DataStore appear as plain strings between protobuf markers
-    lines = out.strip().split('\n')
-    for line in lines:
-        line = line.strip()
-        # Filter for plausible token strings: 30-80 chars, mostly alphanumeric
-        if 30 <= len(line) <= 80 and not re.search(r'[^a-zA-Z0-9+/=]', line):
-            # Likely a token
-            print(f"  [+] Token found: {line[:16]}...{line[-8:]}")
-            return line
+    # Prefer a local frida-inject binary if present; otherwise assume already on device
+    if os.path.exists(inject):
+        adb_push(inject, "/data/local/tmp/frida-inject")
+        adb_shell("chmod 755 /data/local/tmp/frida-inject", su=True)
+    adb_push(script, "/data/local/tmp/gc_dump_token.bundle.js")
+    adb_push(sh, "/data/local/tmp/gc_extract_token.sh")
+    adb_shell("chmod 755 /data/local/tmp/gc_extract_token.sh", su=True)
 
-    print("  [!] Token not found in DataStore strings")
+    out, rc = adb_shell("sh /data/local/tmp/gc_extract_token.sh", su=True)
+    for line in (out or "").splitlines():
+        line = line.strip()
+        if 40 <= len(line) <= 60 and not re.search(r'[^a-zA-Z0-9+/=]', line):
+            print(f"  [+] Token found (encrypted): {line[:16]}...{line[-8:]}")
+            return line
+    print(f"  [!] Encrypted extract failed (rc={rc}): {out}")
     return None
 
 

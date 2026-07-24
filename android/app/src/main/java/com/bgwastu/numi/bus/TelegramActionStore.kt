@@ -24,6 +24,16 @@ data class ReplyTarget(
     val source: String
 )
 
+data class PendingCaptcha(
+    val chatId: String,
+    val phoneNumber: String,
+    val expiresAt: Long = System.currentTimeMillis() + PENDING_CAPTCHA_TTL_MS
+) {
+    companion object {
+        const val PENDING_CAPTCHA_TTL_MS = 10 * 60 * 1000L
+    }
+}
+
 /** Persists short-lived Telegram interaction state across foreground-service restarts. */
 class TelegramActionStore(context: Context) {
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -92,10 +102,48 @@ class TelegramActionStore(context: Context) {
         }
     }
 
+    fun removeReplyTarget(messageId: Int) {
+        prefs.edit().remove(replyKey(messageId)).apply()
+    }
+
+    fun savePendingCaptcha(captcha: PendingCaptcha) {
+        prefs.edit().putString(CAPTCHA_KEY, JSONObject().apply {
+            put("chatId", captcha.chatId)
+            put("phoneNumber", captcha.phoneNumber)
+            put("expiresAt", captcha.expiresAt)
+        }.toString()).apply()
+    }
+
+    fun getPendingCaptcha(chatId: String): PendingCaptcha? {
+        val raw = prefs.getString(CAPTCHA_KEY, null) ?: return null
+        return try {
+            val json = JSONObject(raw)
+            val captcha = PendingCaptcha(
+                chatId = json.getString("chatId"),
+                phoneNumber = json.getString("phoneNumber"),
+                expiresAt = json.getLong("expiresAt")
+            )
+            if (captcha.chatId != chatId || captcha.expiresAt <= System.currentTimeMillis()) {
+                clearPendingCaptcha()
+                null
+            } else {
+                captcha
+            }
+        } catch (_: Exception) {
+            clearPendingCaptcha()
+            null
+        }
+    }
+
+    fun clearPendingCaptcha() {
+        prefs.edit().remove(CAPTCHA_KEY).apply()
+    }
+
     private fun pendingKey(id: String) = "pending_sms_$id"
     private fun replyKey(messageId: Int) = "telegram_reply_target_$messageId"
 
     private companion object {
         const val PREFS_NAME = "numi_telegram_actions"
+        const val CAPTCHA_KEY = "pending_gc_captcha"
     }
 }

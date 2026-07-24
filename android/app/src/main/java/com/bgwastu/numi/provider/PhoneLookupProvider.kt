@@ -17,6 +17,26 @@ data class PhoneLookupResult(
     val profileImageUrl: String? = null
 )
 
+data class PhoneLookupError(
+    val provider: String,
+    val message: String,
+    val errorCode: String? = null,
+    val captchaImageBase64: String? = null
+)
+
+data class PhoneLookupBatch(
+    val results: List<PhoneLookupResult>,
+    val errors: List<PhoneLookupError>
+) {
+    val isEmpty: Boolean get() = results.isEmpty() && errors.isEmpty()
+}
+
+class PhoneLookupException(
+    message: String,
+    val errorCode: String? = null,
+    val captchaImageBase64: String? = null
+) : RuntimeException(message)
+
 /** Every lookup provider implements this. Drop in Truecaller next to GetContact. */
 interface PhoneLookupProvider {
     val name: String

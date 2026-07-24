@@ -4,7 +4,12 @@ import android.content.Context
 import android.util.Base64
 import android.util.Log
 import com.bgwastu.numi.database.DbHelper
+import com.bgwastu.numi.provider.GetContactClient
 import com.bgwastu.numi.provider.GetContactCredentialExtractor
+import com.bgwastu.numi.provider.GetContactResult
+import com.bgwastu.numi.provider.PhoneLookupBatch
+import com.bgwastu.numi.provider.PhoneLookupError
+import com.bgwastu.numi.provider.PhoneLookupException
 import com.bgwastu.numi.provider.PhoneLookupResult
 import com.bgwastu.numi.provider.PhoneLookupService
 import kotlinx.coroutines.runBlocking
@@ -109,10 +114,26 @@ class CommandExecutor(private val context: Context) {
     }
 
     /** Phone lookup across all available providers. TG presentation in CommandReceiver. */
-    fun checkNumber(phoneNumber: String): List<PhoneLookupResult> {
+    fun checkNumber(phoneNumber: String): PhoneLookupBatch {
         val cleaned = phoneNumber.trim().replace(Regex("[^0-9+]"), "")
-        if (cleaned.length < 8) return emptyList()
+        if (cleaned.length < 8) {
+            return PhoneLookupBatch(
+                results = emptyList(),
+                errors = listOf(PhoneLookupError("Numi", "Invalid phone number"))
+            )
+        }
         return runBlocking { lookupService.lookup(cleaned) }
+    }
+
+    fun verifyGetContactCaptcha(code: String): Result<Unit> {
+        return runBlocking {
+            when (val result = GetContactClient(context).verifyCaptcha(code)) {
+                is GetContactResult.Success -> Result.success(Unit)
+                is GetContactResult.Error -> Result.failure(
+                    PhoneLookupException(result.message, result.errorCode, result.captchaImageBase64)
+                )
+            }
+        }
     }
 
     private fun parseJsonField(json: String, field: String): String {

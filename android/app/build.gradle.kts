@@ -48,6 +48,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    androidResources {
+        // Keep ONNX weights uncompressed so OrtSession can mmap them from the APK.
+        noCompress += "onnx"
+    }
 }
 
 dependencies {
@@ -74,6 +78,10 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.okhttp)
+
+    // GetContact captcha: ddddocr ONNX + ML Kit fallback
+    implementation(libs.onnxruntime.android)
+    implementation(libs.mlkit.text.recognition)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

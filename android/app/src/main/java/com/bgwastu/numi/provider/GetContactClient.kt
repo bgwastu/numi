@@ -1,6 +1,7 @@
 package com.bgwastu.numi.provider
 
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import com.bgwastu.numi.crypto.GetContactCrypto
 import io.ktor.client.HttpClient
@@ -12,7 +13,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.intOrNull
@@ -25,6 +25,7 @@ class GetContactClient(private val context: Context) {
     companion object {
         private const val GC_PKG = "app.source.getcontact"
         private const val GC_DATA = "/data/data/$GC_PKG"
+        private const val MAX_AUTO_CAPTCHA_ROUNDS = 4
     }
 
     private val client = HttpClient(OkHttp) {
@@ -37,7 +38,11 @@ class GetContactClient(private val context: Context) {
 
     private sealed class ApiCallResult {
         data class Success(val body: kotlinx.serialization.json.JsonObject) : ApiCallResult()
-        data class Failure(val message: String) : ApiCallResult()
+        data class Failure(
+            val message: String,
+            val code: String? = null,
+            val captchaImageBase64: String? = null
+        ) : ApiCallResult()
     }
 
     private fun getCredentials(): GetContactCredentials? {
@@ -56,7 +61,8 @@ class GetContactClient(private val context: Context) {
     private val SU_PATHS = arrayOf("/system/bin/su", "/system/xbin/su", "su")
 
     private fun runRoot(cmd: String): Boolean {
-        val nsenterCmd = "nsenter -t 1 -m $cmd"
+        val quoted = "'" + cmd.replace("'", "'\\''") + "'"
+        val nsenterCmd = "nsenter -t 1 -m -- sh -c $quoted"
         for (suPath in SU_PATHS) {
             try {
                 val p = Runtime.getRuntime().exec(arrayOf(suPath, "-c", nsenterCmd))
@@ -70,50 +76,107 @@ class GetContactClient(private val context: Context) {
         return false
     }
 
-    /**
-     * Force-resets the GetContact app to get a fresh token, then re-extracts.
-     * Requires root (su). Non-blocking — runs in a background thread.
-     */
-    private fun refreshCredentials() {
-        Thread {
-            try {
-                Log.i("GetContactClient", "Auto-refresh: force-stopping GetContact...")
-                val ok1 = runRoot("am force-stop $GC_PKG")
-                Log.i("GetContactClient", "Force-stop status: $ok1")
+    private fun reqSigHeader(privateKey: String): String {
+        val key = privateKey.trim()
+        if (key.length < 4) return "--****--"
+        return key.take(2) + "****" + key.takeLast(2)
+    }
 
-                Thread.sleep(1000)
-                Log.i("GetContactClient", "Auto-refresh: deleting stale token...")
-                val ok2 = runRoot("rm -f $GC_DATA/files/datastore/tokens.preferences_pb")
-                Log.i("GetContactClient", "Token delete status: $ok2")
-
-                Thread.sleep(500)
-                Log.i("GetContactClient", "Auto-refresh: launching GetContact...")
-                val ok3 = runRoot("monkey -p $GC_PKG -c android.intent.category.LAUNCHER 1")
-                Log.i("GetContactClient", "Launch status: $ok3")
-
-                Thread.sleep(5000) // Wait for app to fully init and generate new token
-                val ok = GetContactCredentialExtractor.extractAndSave(context)
-                Log.i("GetContactClient", "Auto-refresh: extraction result = $ok")
-            } catch (e: Exception) {
-                Log.e("GetContactClient", "Auto-refresh failed: ${e.message}", e)
-            }
-        }.start()
+    /** Submits a GetContact text captcha code (POST /v2.8/verify-code). */
+    suspend fun verifyCaptcha(validationCode: String): GetContactResult {
+        val credentials = getCredentials()
+            ?: return GetContactResult.Error("No GetContact credentials installed")
+        val code = validationCode.trim()
+        if (code.length !in 4..12) {
+            return GetContactResult.Error("Captcha code looks invalid")
+        }
+        val payload =
+            """{"validationCode":"$code","token":"${credentials.device_token}"}"""
+        return when (val result = callApi("verify-code", payload, credentials)) {
+            is ApiCallResult.Success -> GetContactResult.Success(
+                tags = emptyList(),
+                displayNumber = "",
+                displayName = "captcha_ok"
+            )
+            is ApiCallResult.Failure -> GetContactResult.Error(
+                message = result.message,
+                captchaImageBase64 = result.captchaImageBase64,
+                errorCode = result.code
+            )
+        }
     }
 
     /**
      * Searches profile metadata, then calls number-detail for the actual tag list.
      * The service authenticates the pre-encryption JSON with HMAC, while the HTTP
      * body is {"data": AES(pre-encryption JSON)}. Do not sign the outer envelope.
+     *
+     * When GetContact returns a text captcha (403004), attempts on-device OCR + verify
+     * a few times before surfacing the latest captcha image to the caller.
      */
     suspend fun performLookup(phoneNumber: String): GetContactResult {
-        val credentials = getCredentials() ?: return GetContactResult.Error("No GetContact credentials installed")
-        return performLookupWithRetry(phoneNumber, credentials, retried = false)
+        val credentials = getCredentials()
+            ?: return GetContactResult.Error("No GetContact credentials installed")
+        return performLookupWithAutoCaptcha(phoneNumber, credentials)
     }
 
-    private suspend fun performLookupWithRetry(
+    private suspend fun performLookupWithAutoCaptcha(
         phoneNumber: String,
-        credentials: GetContactCredentials,
-        retried: Boolean
+        credentials: GetContactCredentials
+    ): GetContactResult {
+        var result = performLookupInternal(phoneNumber, credentials)
+        var rounds = 0
+        while (result is GetContactResult.Error && isCaptchaError(result) && rounds < MAX_AUTO_CAPTCHA_ROUNDS) {
+            val image = result.captchaImageBase64 ?: break
+            val guesses = GcCaptchaOcr.guessCodes(context, image)
+            if (guesses.isEmpty()) {
+                Log.i("GetContactClient", "Captcha OCR produced no guesses; handing off to user")
+                break
+            }
+
+            var verified = false
+            // One verify burns/rotates the captcha — only attempt the best guess per round.
+            val guess = guesses.firstOrNull() ?: break
+            Log.i(
+                "GetContactClient",
+                "Auto-solving captcha with ${guess.code} (${guess.source}, conf=${guess.confidence})"
+            )
+            when (val verifiedResult = verifyCaptcha(guess.code)) {
+                is GetContactResult.Success -> {
+                    verified = true
+                }
+                is GetContactResult.Error -> {
+                    if (verifiedResult.captchaImageBase64 != null) {
+                        result = verifiedResult
+                    } else if (isCaptchaError(verifiedResult)) {
+                        result = verifiedResult.copy(captchaImageBase64 = image)
+                    } else {
+                        return verifiedResult
+                    }
+                }
+            }
+
+            rounds++
+            if (!verified) {
+                val latest = (result as? GetContactResult.Error)?.captchaImageBase64
+                if (latest == null || latest == image) break
+                continue
+            }
+
+            result = performLookupInternal(phoneNumber, credentials)
+        }
+        return result
+    }
+
+    private fun isCaptchaError(error: GetContactResult.Error): Boolean {
+        if (error.errorCode == "403004") return true
+        if (error.captchaImageBase64 != null) return true
+        return error.message.contains("validation", ignoreCase = true)
+    }
+
+    private suspend fun performLookupInternal(
+        phoneNumber: String,
+        credentials: GetContactCredentials
     ): GetContactResult {
         if (credentials.aes_key.isBlank() || credentials.hmac_key.isBlank()) {
             return GetContactResult.Error("Invalid GetContact crypto keys")
@@ -131,18 +194,7 @@ class GetContactClient(private val context: Context) {
         val search = callApi("search", searchPayload, credentials)
         val searchBody = when (search) {
             is ApiCallResult.Success -> search.body
-            is ApiCallResult.Failure -> {
-                // If token was expired and auto-refresh triggered, retry once
-                if (!retried && search.message.contains("validation", ignoreCase = true)) {
-                    Log.i("GetContactClient", "Retrying after auto-refresh...")
-                    kotlinx.coroutines.delay(8_000) // wait for refresh to complete
-                    val freshCreds = getCredentials()
-                    if (freshCreds != null) {
-                        return performLookupWithRetry(phoneNumber, freshCreds, retried = true)
-                    }
-                }
-                return GetContactResult.Error(search.message)
-            }
+            is ApiCallResult.Failure -> return failureResult(search)
         }
 
         val searchResult = searchBody["result"]?.jsonObject
@@ -158,7 +210,7 @@ class GetContactClient(private val context: Context) {
         val detail = callApi("number-detail", detailPayload, credentials)
         val detailBody = when (detail) {
             is ApiCallResult.Success -> detail.body
-            is ApiCallResult.Failure -> return GetContactResult.Error(detail.message)
+            is ApiCallResult.Failure -> return failureResult(detail)
         }
 
         val detailResult = detailBody["result"]?.jsonObject
@@ -196,6 +248,15 @@ class GetContactClient(private val context: Context) {
         )
     }
 
+    private fun failureResult(failure: ApiCallResult.Failure): GetContactResult.Error {
+        // Captcha is handled in Telegram — do not force-open GetContact for that path.
+        return GetContactResult.Error(
+            message = failure.message,
+            captchaImageBase64 = failure.captchaImageBase64,
+            errorCode = failure.code
+        )
+    }
+
     private suspend fun callApi(
         path: String,
         plainPayload: String,
@@ -209,17 +270,20 @@ class GetContactClient(private val context: Context) {
         }
         val requestBody = """{"data":"$encryptedData"}"""
         val timestamp = System.currentTimeMillis().toString()
+        // Sign the pre-encryption JSON (matches GC interceptor order: sign then encrypt).
         val signature = GetContactCrypto.generateSignature(
             "$timestamp-$plainPayload",
             credentials.hmac_key
         )
+        val userAgent = System.getProperty("http.agent")
+            ?.takeIf { it.isNotBlank() }
+            ?: "Dalvik/2.1.0 (Linux; U; Android ${Build.VERSION.RELEASE})"
 
         return try {
             val response = client.post("https://pbssrv-centralevents.com/v2.8/$path") {
-                // The endpoint fingerprints this closely; this is deliberately the validated shape.
                 contentType(ContentType.parse("application/json; charset=utf-8"))
-                header("User-Agent", "Mozilla/5.0")
-                header("X-Os", "android 10")
+                header("User-Agent", userAgent)
+                header("X-Os", "android ${Build.VERSION.RELEASE}")
                 header("X-Mobile-Service", "GMS")
                 header("X-Store", "PLAYSTORE")
                 header("X-App-Version", "8.15.0")
@@ -232,28 +296,34 @@ class GetContactClient(private val context: Context) {
                 header("X-Country-Code", "id")
                 header("X-Req-Timestamp", timestamp)
                 header("X-Req-Signature", signature)
+                header("X-Req-Sig", reqSigHeader(credentials.private_key))
                 header("X-Path", "[v2.8, $path]")
                 setBody(requestBody)
             }
 
             val responseText = response.bodyAsText()
+            val responseBody = decodeResponse(responseText, credentials.aes_key)
             if (response.status.value != 200) {
-                val reason = readApiError(responseText) ?: "HTTP ${response.status.value}"
+                val reason = responseBody?.let { apiError(it) }
+                    ?: readApiError(responseText)
+                    ?: "HTTP ${response.status.value}"
+                val code = responseBody?.let { errorCode(it) } ?: readErrorCode(responseText)
+                val captcha = responseBody?.let { captchaImage(it) }
                 Log.w("GetContactClient", "GetContact $path rejected: HTTP ${response.status.value}, $reason")
-                // Auto-refresh credentials on validation errors
-                if (response.status.value == 403 && reason.contains("validation", ignoreCase = true)) {
-                    Log.i("GetContactClient", "Token expired — triggering auto-refresh")
-                    refreshCredentials()
-                }
-                return ApiCallResult.Failure(reason)
+                return ApiCallResult.Failure(reason, code, captcha)
             }
 
-            val responseBody = decodeResponse(responseText, credentials.aes_key)
-                ?: return ApiCallResult.Failure("GetContact returned an unreadable response")
+            if (responseBody == null) {
+                return ApiCallResult.Failure("GetContact returned an unreadable response")
+            }
             val apiError = apiError(responseBody)
             if (apiError != null) {
                 Log.w("GetContactClient", "GetContact $path returned an API error: $apiError")
-                return ApiCallResult.Failure(apiError)
+                return ApiCallResult.Failure(
+                    apiError,
+                    errorCode(responseBody),
+                    captchaImage(responseBody)
+                )
             }
             ApiCallResult.Success(responseBody)
         } catch (e: Exception) {
@@ -290,6 +360,21 @@ class GetContactClient(private val context: Context) {
         val message = meta.string("errorMessage") ?: "GetContact error"
         val code = meta.string("errorCode")
         return if (code.isNullOrBlank()) "$message (HTTP $status)" else "$message ($code)"
+    }
+
+    private fun errorCode(body: kotlinx.serialization.json.JsonObject): String? =
+        body["meta"]?.jsonObject?.string("errorCode")
+
+    private fun readErrorCode(responseText: String): String? = try {
+        jsonParser.parseToJsonElement(responseText).jsonObject
+            .let { errorCode(it) }
+    } catch (_: Exception) {
+        null
+    }
+
+    private fun captchaImage(body: kotlinx.serialization.json.JsonObject): String? {
+        val image = body["result"]?.jsonObject?.string("image") ?: return null
+        return image.takeIf { it.startsWith("/9j/") || it.startsWith("iVBOR") }
     }
 
     private fun normalizePhone(raw: String): String? {
@@ -331,13 +416,18 @@ sealed class GetContactResult {
         val tagCount: Int = tags.size
     ) : GetContactResult()
 
-    data class Error(val message: String) : GetContactResult()
+    data class Error(
+        val message: String,
+        val captchaImageBase64: String? = null,
+        val errorCode: String? = null
+    ) : GetContactResult()
 }
 
 @Serializable
 data class GetContactCredentials(
     val aes_key: String,
     val hmac_key: String,
+    val private_key: String = "",
     val device_token: String = "",
     val device_id: String = "",
     val updated_at: Long

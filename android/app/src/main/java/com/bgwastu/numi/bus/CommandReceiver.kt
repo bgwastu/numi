@@ -57,26 +57,76 @@ class CommandReceiver(
         Thread {
             try {
                 val commands = JSONArray().apply {
-                    put(JSONObject().apply { put("command", "status"); put("description", "Device status — battery, network, SIMs") })
-                    put(JSONObject().apply { put("command", "check"); put("description", "Phone number lookup (GetContact + more)") })
-                    put(JSONObject().apply { put("command", "send"); put("description", "Send SMS via device") })
-                    put(JSONObject().apply { put("command", "refresh"); put("description", "Refresh GetContact credentials") })
+                    put(JSONObject().apply {
+                        put("command", "status")
+                        put("description", "Device status: battery, network, SIMs")
+                    })
+                    put(JSONObject().apply {
+                        put("command", "check")
+                        put("description", "Phone number lookup")
+                    })
+                    put(JSONObject().apply {
+                        put("command", "send")
+                        put("description", "Send SMS via device")
+                    })
+                    put(JSONObject().apply {
+                        put("command", "refresh")
+                        put("description", "Refresh GetContact credentials")
+                    })
+                    put(JSONObject().apply {
+                        put("command", "help")
+                        put("description", "List available commands")
+                    })
                 }
-                val body = JSONObject().apply { put("commands", commands) }
-                val request = Request.Builder()
-                    .url("https://api.telegram.org/bot$botToken/setMyCommands")
-                    .post(body.toString().toRequestBody("application/json".toMediaType()))
-                    .build()
                 val client = OkHttpClient.Builder()
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(10, TimeUnit.SECONDS)
                     .build()
-                client.newCall(request).execute().use { response ->
-                    if (response.isSuccessful) {
-                        Log.d("CommandReceiver", "Bot commands registered")
-                    } else {
-                        Log.w("CommandReceiver", "Command registration failed: HTTP ${response.code}")
+
+                // Register for multiple scopes so the "/" menu appears in private chats.
+                val scopes = mutableListOf<JSONObject?>(
+                    null, // default
+                    JSONObject().put("type", "all_private_chats"),
+                    JSONObject().put("type", "all_group_chats")
+                )
+                prefs.getString("TARGET_CHAT_ID", null)?.toLongOrNull()?.let { chatId ->
+                    scopes += JSONObject().put("type", "chat").put("chat_id", chatId)
+                }
+
+                for (scope in scopes) {
+                    val body = JSONObject().apply {
+                        put("commands", commands)
+                        if (scope != null) put("scope", scope)
                     }
+                    val request = Request.Builder()
+                        .url("https://api.telegram.org/bot$botToken/setMyCommands")
+                        .post(body.toString().toRequestBody("application/json".toMediaType()))
+                        .build()
+                    client.newCall(request).execute().use { response ->
+                        val respBody = response.body?.string().orEmpty()
+                        val label = scope?.optString("type") ?: "default"
+                        if (response.isSuccessful) {
+                            Log.i("CommandReceiver", "Commands registered ($label): $respBody")
+                        } else {
+                            Log.w("CommandReceiver", "Command registration failed ($label): HTTP ${response.code} $respBody")
+                        }
+                    }
+                }
+
+                // Ensure the chat menu button opens the command list.
+                val menuBody = JSONObject().apply {
+                    put("menu_button", JSONObject().put("type", "commands"))
+                    prefs.getString("TARGET_CHAT_ID", null)?.toLongOrNull()?.let { put("chat_id", it) }
+                }
+                val menuReq = Request.Builder()
+                    .url("https://api.telegram.org/bot$botToken/setChatMenuButton")
+                    .post(menuBody.toString().toRequestBody("application/json".toMediaType()))
+                    .build()
+                client.newCall(menuReq).execute().use { response ->
+                    Log.i(
+                        "CommandReceiver",
+                        "Menu button: HTTP ${response.code} ${response.body?.string().orEmpty()}"
+                    )
                 }
             } catch (e: Exception) {
                 Log.w("CommandReceiver", "Command registration error: ${e.message}")
@@ -142,12 +192,13 @@ class CommandReceiver(
                         for (i in 0 until updates.length()) {
                             val update = updates.getJSONObject(i)
                             val updateId = update.optLong("update_id", 0)
+                            // Telegram returns updates with update_id >= offset. If offset was
+                            // incorrectly saved as the last update_id (not +1), the same update
+                            // would be handled forever because updateId > offset never becomes true.
+                            if (updateId < offset) continue
                             handleUpdate(update)
-                            // Save offset AFTER handling so a crash restarts cleanly
-                            if (updateId > offset) {
-                                offset = updateId + 1
-                                saveOffset()
-                            }
+                            offset = updateId + 1
+                            saveOffset()
                         }
                         retryMs = MIN_RETRY_MS
                     }
@@ -200,11 +251,25 @@ class CommandReceiver(
             if (chatId != targetChatId) return
 
             val text = message.optString("text", "")
+            if (text.isBlank()) return
 
-            // -- REPLY-TO-MESSAGE: forward the replied-to text back via SMS --
+            // -- REPLY-TO-MESSAGE --
             val replyTo = message.optJSONObject("reply_to_message")
             if (replyTo != null && text.isNotBlank()) {
+                val replyMsgId = replyTo.optInt("message_id", 0)
+                val replyTarget = if (replyMsgId > 0) actionStore.getReplyTarget(replyMsgId) else null
+                if (replyTarget?.source == "gc_captcha") {
+                    handleCaptchaCode(chatId, text.trim(), replyTarget.phoneNumber, replyMsgId)
+                    return
+                }
                 handleReplyForward(chatId, replyTo, text)
+                return
+            }
+
+            // Pending captcha: accept a bare code (4–12 alnum) without requiring reply.
+            val pendingCaptcha = actionStore.getPendingCaptcha(chatId)
+            if (pendingCaptcha != null && text.trim().matches(Regex("^[A-Za-z0-9]{4,12}$"))) {
+                handleCaptchaCode(chatId, text.trim(), pendingCaptcha.phoneNumber, null)
                 return
             }
 
@@ -215,21 +280,41 @@ class CommandReceiver(
                 return
             }
 
+            val command = text.trim().substringBefore('@').substringBefore(' ')
+
+            // -- /help command --
+            if (command.equals("/help", ignoreCase = true) || command.equals("/start", ignoreCase = true)) {
+                dispatchTextReply(
+                    chatId,
+                    """
+                    |Numi commands:
+                    |/status - device battery, network, SIMs
+                    |/check <number> - phone lookup
+                    |/send <number> <message> - send SMS
+                    |/refresh - refresh GetContact credentials
+                    |/help - this list
+                    |
+                    |Tip: tap / next to the message box to open the command menu.
+                    """.trimMargin()
+                )
+                return
+            }
+
             // -- /status command --
-            if (text.trim().equals("/status", ignoreCase = true)) {
+            if (command.equals("/status", ignoreCase = true)) {
                 dispatchTextReply(chatId, DeviceStatusProvider.summary(context))
                 return
             }
 
             // -- /send [number] [message] command --
-            val sendMatch = Regex("""^/send\s+(\+?\d{7,15})\s+([\s\S]+)$""", RegexOption.IGNORE_CASE).find(text)
+            val sendMatch = Regex("""^/send(?:@\S+)?\s+(\+?\d{7,15})\s+([\s\S]+)$""", RegexOption.IGNORE_CASE).find(text)
             if (sendMatch != null) {
                 handleSendCommand(chatId, sendMatch.groupValues[1].trim(), sendMatch.groupValues[2].trim())
                 return
             }
 
             // -- /refresh command --
-            if (text.trim().equals("/refresh", ignoreCase = true)) {
+            if (command.equals("/refresh", ignoreCase = true)) {
                 dispatchTextReply(chatId, executor.execute("""NUMI_CMD v1
 actor: owner
 action: provider.refresh
@@ -239,7 +324,7 @@ args: e30=
             }
 
             // -- /check <number> command — phone number lookup --
-            val checkMatch = Regex("""^/(?:check|gc|lookup|analyze)\s+(.+)$""", RegexOption.IGNORE_CASE).find(text)
+            val checkMatch = Regex("""^/(?:check|gc|lookup|analyze)(?:@\S+)?\s+(.+)$""", RegexOption.IGNORE_CASE).find(text)
             if (checkMatch != null) {
                 val number = checkMatch.groupValues[1].trim()
                 dispatchPhoneLookup(chatId, number)
@@ -250,6 +335,20 @@ args: e30=
             val phoneClean = text.trim().replace(Regex("[^0-9+]"), "")
             if (phoneClean.length in 8..15 && phoneClean.all { it.isDigit() || it == '+' }) {
                 dispatchPhoneLookup(chatId, phoneClean)
+                return
+            }
+
+            // Unrecognized text from the owner — reply so it doesn't feel dead.
+            if (text.startsWith("/")) {
+                sendText(
+                    chatId,
+                    "Unrecognized command. Try /help for the list."
+                )
+            } else {
+                sendText(
+                    chatId,
+                    "Unrecognized message. Send a phone number, or use /help."
+                )
             }
         }
 
@@ -302,12 +401,66 @@ args: e30=
             }
         }
 
+        private fun handleCaptchaCode(
+            chatId: String,
+            code: String,
+            phoneNumber: String,
+            replyMessageId: Int?
+        ) {
+            Thread {
+                try {
+                    sendText(chatId, "Verifying captcha…")
+                    val verified = executor.verifyGetContactCaptcha(code)
+                    if (verified.isFailure) {
+                        val err = verified.exceptionOrNull()
+                        val pe = err as? com.bgwastu.numi.provider.PhoneLookupException
+                        // Stale reply target must not accept codes for a previous captcha image.
+                        replyMessageId?.let { actionStore.removeReplyTarget(it) }
+                        val msg = "Captcha failed: ${err?.message ?: "unknown error"}"
+                        val imageSent = pe?.captchaImageBase64?.let { b64 ->
+                            // Always send the rotated captcha image so the user never solves a stale one.
+                            actionStore.savePendingCaptcha(
+                                PendingCaptcha(chatId = chatId, phoneNumber = phoneNumber)
+                            )
+                            sendCaptchaPhoto(
+                                chatId,
+                                phoneNumber,
+                                b64,
+                                "$msg\nNew captcha — reply to this photo with the code."
+                            )
+                        } ?: false
+                        if (!imageSent) {
+                            actionStore.savePendingCaptcha(
+                                PendingCaptcha(chatId = chatId, phoneNumber = phoneNumber)
+                            )
+                            sendText(
+                                chatId,
+                                "$msg\nNo new captcha image returned. Retry /check to get a fresh one."
+                            )
+                        }
+                        return@Thread
+                    }
+                    actionStore.clearPendingCaptcha()
+                    replyMessageId?.let { actionStore.removeReplyTarget(it) }
+                    sendText(chatId, "Captcha accepted. Looking up $phoneNumber…")
+                    dispatchPhoneLookup(chatId, phoneNumber)
+                } catch (e: Exception) {
+                    Log.e("CommandReceiver", "Captcha verify failed", e)
+                    sendText(chatId, "Captcha verify failed due to an internal error")
+                }
+            }.start()
+        }
+
         private fun handleReplyForward(chatId: String, replyTo: JSONObject, text: String) {
             val messageId = replyTo.optInt("message_id", 0)
             if (messageId <= 0) return
             val target = actionStore.getReplyTarget(messageId)
             if (target == null) {
-                sendText(chatId, "❌ No SMS reply target found for this message.")
+                sendText(chatId, "No SMS reply target found for this message.")
+                return
+            }
+            if (target.source == "gc_captcha") {
+                handleCaptchaCode(chatId, text.trim(), target.phoneNumber, messageId)
                 return
             }
             val pending = PendingSmsAction(
@@ -375,12 +528,33 @@ args: e30=
         private fun dispatchPhoneLookup(chatId: String, phoneNumber: String) {
             Thread {
                 try {
-                    val results = executor.checkNumber(phoneNumber)
-                    if (results.isEmpty()) {
-                        sendText(chatId, "❌ No results found for this number (or no providers available).")
+                    sendText(chatId, "Looking up $phoneNumber…")
+                    val batch = executor.checkNumber(phoneNumber)
+                    if (batch.results.isEmpty() && batch.errors.isEmpty()) {
+                        sendText(chatId, "No providers available. Extract GetContact credentials first (/refresh).")
                         return@Thread
                     }
-                    for (result in results) {
+
+                    for (error in batch.errors) {
+                        val isCaptcha = error.errorCode == "403004" ||
+                            error.message.contains("validation", ignoreCase = true) ||
+                            error.captchaImageBase64 != null
+                        if (isCaptcha && error.captchaImageBase64 != null) {
+                            actionStore.savePendingCaptcha(
+                                PendingCaptcha(chatId = chatId, phoneNumber = phoneNumber)
+                            )
+                            val caption =
+                                "Auto-solve failed. GetContact captcha for $phoneNumber\n" +
+                                    "Reply to this photo with the code (or just send the code)."
+                            sendCaptchaPhoto(chatId, phoneNumber, error.captchaImageBase64, caption)
+                            continue
+                        }
+                        sendText(chatId, "${error.provider}: ${error.message}")
+                    }
+
+                    if (batch.results.isEmpty()) return@Thread
+
+                    for (result in batch.results) {
                         val header = buildLookupHeader(result)
                         val imageSent = result.profileImageUrl?.let { url ->
                             sendPhoto(chatId, url, header)
@@ -388,7 +562,7 @@ args: e30=
                         if (!imageSent) sendText(chatId, header)
 
                         if (result.tags.isEmpty()) {
-                            sendText(chatId, "📭 No tags from ${result.provider}.")
+                            sendText(chatId, "No tags from ${result.provider}.")
                         } else {
                             val chunks = buildTagChunks(result)
                             for (chunk in chunks) {
@@ -398,9 +572,31 @@ args: e30=
                     }
                 } catch (e: Exception) {
                     Log.e("CommandReceiver", "Lookup failed", e)
-                    sendText(chatId, "❌ Lookup failed due to an internal error")
+                    sendText(chatId, "Lookup failed due to an internal error")
                 }
             }.start()
+        }
+
+        private fun sendCaptchaPhoto(
+            chatId: String,
+            phoneNumber: String,
+            jpegBase64: String,
+            caption: String
+        ): Boolean {
+            val messageId = sendPhotoBase64(
+                chatId = chatId,
+                jpegBase64 = jpegBase64,
+                caption = caption,
+                forceReply = true
+            )
+            if (messageId != null) {
+                actionStore.saveReplyTarget(
+                    messageId,
+                    ReplyTarget(phoneNumber = phoneNumber, source = "gc_captcha")
+                )
+                return true
+            }
+            return false
         }
 
         private fun buildLookupHeader(result: PhoneLookupResult): String = buildString {
@@ -453,31 +649,88 @@ args: e30=
                 put("chat_id", chatId)
                 put("photo", photoUrl)
                 put("caption", caption.take(1_000))
-            })
+            }) != null
+
+        /** Returns Telegram message_id on success. */
+        private fun sendPhotoBase64(
+            chatId: String,
+            jpegBase64: String,
+            caption: String,
+            forceReply: Boolean = false
+        ): Int? {
+            return try {
+                val bytes = android.util.Base64.decode(jpegBase64, android.util.Base64.DEFAULT)
+                val boundary = "----NumiBoundary${System.currentTimeMillis()}"
+                val crlf = "\r\n"
+                val forceReplyJson = if (forceReply) {
+                    """{"force_reply":true,"selective":true}"""
+                } else null
+                val preamble = buildString {
+                    append("--$boundary$crlf")
+                    append("Content-Disposition: form-data; name=\"chat_id\"$crlf$crlf")
+                    append(chatId).append(crlf)
+                    append("--$boundary$crlf")
+                    append("Content-Disposition: form-data; name=\"caption\"$crlf$crlf")
+                    append(caption.take(1_000)).append(crlf)
+                    if (forceReplyJson != null) {
+                        append("--$boundary$crlf")
+                        append("Content-Disposition: form-data; name=\"reply_markup\"$crlf$crlf")
+                        append(forceReplyJson).append(crlf)
+                    }
+                    append("--$boundary$crlf")
+                    append("Content-Disposition: form-data; name=\"photo\"; filename=\"captcha.jpg\"$crlf")
+                    append("Content-Type: image/jpeg$crlf$crlf")
+                }.toByteArray(Charsets.UTF_8)
+                val epilogue = "\r\n--$boundary--\r\n".toByteArray(Charsets.UTF_8)
+                val bodyBytes = preamble + bytes + epilogue
+                val body = bodyBytes.toRequestBody("multipart/form-data; boundary=$boundary".toMediaType())
+                val request = Request.Builder()
+                    .url("https://api.telegram.org/bot$botToken/sendPhoto")
+                    .post(body)
+                    .build()
+                pollingClient.newCall(request).execute().use { response ->
+                    val raw = response.body?.string().orEmpty()
+                    if (!response.isSuccessful) {
+                        Log.e("CommandReceiver", "sendPhotoBase64 failed: HTTP ${response.code} $raw")
+                        return null
+                    }
+                    JSONObject(raw).optJSONObject("result")?.optInt("message_id")
+                        ?.takeIf { it > 0 }
+                }
+            } catch (e: Exception) {
+                Log.e("CommandReceiver", "sendPhotoBase64 failed", e)
+                null
+            }
+        }
 
         private fun sendText(chatId: String, text: String): Boolean =
             sendTelegram("sendMessage", JSONObject().apply {
                 put("chat_id", chatId)
                 put("text", text.take(4_000))
-            })
+            }) != null
 
-        private fun sendTelegram(method: String, body: JSONObject): Boolean {
+        private fun sendTelegram(method: String, body: JSONObject): JSONObject? {
             val request = Request.Builder()
                 .url("https://api.telegram.org/bot$botToken/$method")
                 .post(body.toString().toRequestBody(JSON_MEDIA_TYPE))
                 .build()
             return try {
                 pollingClient.newCall(request).execute().use { response ->
+                    val raw = response.body?.string().orEmpty()
                     if (response.isSuccessful) {
-                        true
+                        try {
+                            JSONObject(raw)
+                        } catch (_: Exception) {
+                            JSONObject()
+                        }
                     } else {
-                        Log.e("CommandReceiver", "Telegram $method failed: HTTP ${response.code}")
-                        false
+                        Log.e("CommandReceiver", "Telegram $method failed: HTTP ${response.code} $raw")
+                        null
                     }
                 }
             } catch (e: IOException) {
                 Log.e("CommandReceiver", "Telegram $method I/O failure", e)
-                false
+                null
             }
         }
 

@@ -184,10 +184,12 @@ class OutboxService : Service() {
                 .putString("TARGET_CHAT_ID", chat)
                 .apply()
 
-            // Create/recreate CommandReceiver with new token
-            commandReceiver?.stop()
-            commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
-            commandReceiver?.start()
+            // Avoid starting a second getUpdates poller on every onStartCommand —
+            // duplicate pollers race on telegram_offset and re-handle the same update.
+            if (commandReceiver == null) {
+                commandReceiver = com.bgwastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
+                commandReceiver?.start()
+            }
         }
         return START_STICKY
     }
