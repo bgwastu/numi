@@ -1,23 +1,47 @@
+import java.io.RandomAccessFile
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 }
 
+val releaseVersionCode = providers.environmentVariable("GITHUB_RUN_NUMBER")
+    .orNull?.toIntOrNull()?.coerceAtLeast(1) ?: 1
+val releaseStoreFile = providers.environmentVariable("ANDROID_KEYSTORE_FILE").orNull
+val releaseStorePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").orNull
+val releaseKeyAlias = providers.environmentVariable("ANDROID_KEYSTORE_ALIAS").orNull
+val releaseKeyPassword = providers.environmentVariable("ANDROID_KEYSTORE_KEY_PASSWORD").orNull
+    ?: releaseStorePassword
+
 android {
-    namespace = "com.bgwastu.numi"
-    compileSdk = 34
+    namespace = "net.wastu.numi"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.bgwastu.numi"
+        applicationId = "net.wastu.numi"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = releaseVersionCode
+        versionName = "2.0.$releaseVersionCode"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            if (releaseStoreFile != null && releaseStorePassword != null && releaseKeyAlias != null) {
+                storeFile = file(releaseStoreFile)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword ?: releaseStorePassword
+            }
         }
     }
 
@@ -28,29 +52,86 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     buildFeatures {
         compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
-    androidResources {
-        // Keep ONNX weights uncompressed so OrtSession can mmap them from the APK.
-        noCompress += "onnx"
+}
+
+// Fix 16 KB ELF LOAD segment alignment on arm64 native libs
+// Rewrites p_align of PT_LOAD segments to 16384 (16 KB) in each .so
+tasks.matching { name.startsWith("merge") && name.endsWith("NativeLibs") }.configureEach {
+    val variant = name.removePrefix("merge").removeSuffix("NativeLibs").lowercase()
+    doLast {
+        val nativeDir = project.layout.buildDirectory
+            .dir("intermediates/merged_native_libs/$variant/out/lib/arm64-v8a")
+            .get().asFile
+        if (!nativeDir.exists()) return@doLast
+        nativeDir.listFiles { file -> file.name.endsWith(".so") }?.forEach { so ->
+            try {
+                RandomAccessFile(so, "rw").use { raf ->
+                    val bytes = ByteArray(raf.length().toInt())
+                    raf.readFully(bytes)
+                    val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+                    if (buffer.getInt(0) != 0x464c457f) return@forEach
+                    val programHeaderOffset = buffer.getLong(32).toInt()
+                    val entrySize = buffer.getShort(54).toInt() and 0xFFFF
+                    val entryCount = buffer.getShort(56).toInt() and 0xFFFF
+                    var modified = false
+                    for (index in 0 until entryCount) {
+                        val headerOffset = programHeaderOffset + index * entrySize
+                        if (buffer.getInt(headerOffset) != 1) continue
+                        val alignmentOffset = headerOffset + 48
+                        if (buffer.getLong(alignmentOffset) < 16384) {
+                            buffer.putLong(alignmentOffset, 16384)
+                            modified = true
+                        }
+                    }
+                    if (modified) {
+                        raf.seek(0)
+                        raf.write(buffer.array())
+                    }
+                }
+            } catch (exception: Exception) {
+                throw GradleException("Could not align native library ${so.name} to 16 KB pages", exception)
+            }
+        }
+    }
+}
+
+tasks.register("validateReleaseSigning") {
+    doLast {
+        val missing = buildList {
+            if (releaseStoreFile.isNullOrBlank()) add("ANDROID_KEYSTORE_FILE")
+            if (releaseStorePassword.isNullOrBlank()) add("ANDROID_KEYSTORE_PASSWORD")
+            if (releaseKeyAlias.isNullOrBlank()) add("ANDROID_KEYSTORE_ALIAS")
+        }
+        require(missing.isEmpty()) { "Release signing is missing: ${missing.joinToString()}" }
+        require(file(releaseStoreFile!!).isFile) { "ANDROID_KEYSTORE_FILE does not exist" }
+    }
+}
+tasks.matching { name == "validateSigningRelease" }.configureEach {
+    dependsOn("validateReleaseSigning")
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        allWarningsAsErrors.set(true)
     }
 }
 
@@ -64,13 +145,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Room SQLite
-    implementation(libs.room.runtime)
-
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation(libs.room.ktx)
-    annotationProcessor(libs.room.compiler) // KSP can be configured later
 
     // Ktor Client
     implementation(libs.ktor.client.core)
@@ -78,10 +154,6 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.okhttp)
-
-    // GetContact captcha: ddddocr ONNX + ML Kit fallback
-    implementation(libs.onnxruntime.android)
-    implementation(libs.mlkit.text.recognition)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
