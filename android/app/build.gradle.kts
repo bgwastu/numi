@@ -67,6 +67,7 @@ android {
         }
         jniLibs {
             useLegacyPackaging = true
+            keepDebugSymbols += "**/liblitertlm_jni.so"
         }
     }
 }

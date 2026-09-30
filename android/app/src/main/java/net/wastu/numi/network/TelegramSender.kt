@@ -81,7 +81,7 @@ class TelegramSender(private val botToken: String) {
                 Log.e("TelegramSender", "sendMessage succeeded without a message_id")
                 return null
             }
-            Log.d("TelegramSender", "Message sent successfully to $chatId id=$messageId")
+            Log.d("TelegramSender", "Telegram message sent successfully")
             messageId
         } catch (e: Exception) {
             Log.e("TelegramSender", "Telegram sendMessage failed: ${e.javaClass.simpleName}")

@@ -39,6 +39,7 @@ class TelegramActionStore(context: Context) {
         }.toString()).apply()
     }
 
+    @Synchronized
     fun getPending(id: String): PendingSmsAction? {
         val raw = prefs.getString(pendingKey(id), null) ?: return null
         return try {
@@ -65,6 +66,14 @@ class TelegramActionStore(context: Context) {
         }
     }
 
+    @Synchronized
+    fun consumePending(id: String): PendingSmsAction? {
+        val action = getPending(id) ?: return null
+        val removed = prefs.edit().remove(pendingKey(id)).commit()
+        return action.takeIf { removed }
+    }
+
+    @Synchronized
     fun removePending(id: String) {
         prefs.edit().remove(pendingKey(id)).apply()
     }

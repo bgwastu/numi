@@ -37,7 +37,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -74,6 +73,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.wastu.numi.device.DeviceStatusProvider
+import net.wastu.numi.device.DevicePermissionFixer
+import net.wastu.numi.bus.TelegramOwnerConfig
 import net.wastu.numi.queue.OutboxService
 import net.wastu.numi.spam.GemmaDownloadStatus
 import net.wastu.numi.spam.GemmaSpamModel
@@ -97,7 +98,10 @@ private data class PhoneAccess(
     val simCount: Int = 0,
     val defaultSms: Boolean = false,
     val readPhoneState: Boolean = false,
-    val sendSms: Boolean = false
+    val sendSms: Boolean = false,
+    val batteryUnrestricted: Boolean = false,
+    val startupEnabled: Boolean = false,
+    val notificationsVisible: Boolean = false
 )
 
 class MainActivity : ComponentActivity() {
@@ -126,6 +130,7 @@ private fun NumiTheme(content: @Composable () -> Unit) {
 }
 
 private fun ensureGatewayService(context: Context) {
+    DevicePermissionFixer.ensureStartupReceiverEnabled(context)
     ContextCompat.startForegroundService(context, Intent(context, OutboxService::class.java))
 }
 
@@ -143,8 +148,8 @@ private fun NumiGatewayScreen() {
     var showGemmaDownloadConfirmation by remember { mutableStateOf(false) }
     var isSavingSettings by remember { mutableStateOf(false) }
     var botToken by remember { mutableStateOf(prefs.getString("BOT_TOKEN", "") ?: "") }
-    var allowedUserIds by remember {
-        mutableStateOf(parseAllowedUserIds(prefs.getString("ALLOWED_USER_IDS", "") ?: ""))
+    var ownerId by remember {
+        mutableStateOf(TelegramOwnerConfig.normalize(prefs.getString("TELEGRAM_OWNER_ID", null)))
     }
 
     fun refreshPhoneAccess() {
@@ -160,7 +165,12 @@ private fun NumiGatewayScreen() {
                     sendSms = ContextCompat.checkSelfPermission(
                         context,
                         Manifest.permission.SEND_SMS
-                    ) == PackageManager.PERMISSION_GRANTED
+                    ) == PackageManager.PERMISSION_GRANTED,
+                    batteryUnrestricted = android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M ||
+                        context.getSystemService(android.os.PowerManager::class.java)
+                            .isIgnoringBatteryOptimizations(context.packageName),
+                    startupEnabled = DevicePermissionFixer.startupEnabled(context),
+                    notificationsVisible = DevicePermissionFixer.notificationsVisibleInDrawer(context)
                 )
             }
         }
@@ -202,7 +212,7 @@ private fun NumiGatewayScreen() {
         gemmaStatus = gemmaStatus.copy(filterEnabled = enabled)
     }
 
-    val telegramConfigured = botToken.isNotBlank() && allowedUserIds.isNotEmpty()
+    val telegramConfigured = botToken.isNotBlank() && ownerId.isNotBlank()
 
     Scaffold(
         topBar = {
@@ -235,7 +245,7 @@ private fun NumiGatewayScreen() {
                     Text("Telegram", style = MaterialTheme.typography.titleLarge)
                     Text(
                         if (telegramConfigured) {
-                            "Bot configured · ${allowedUserIds.size} approved ${if (allowedUserIds.size == 1) "user" else "users"}"
+                            "Bot configured · one approved owner"
                         } else {
                             "Connect a bot to manage SMS and SIM routing in Telegram."
                         },
@@ -338,6 +348,39 @@ private fun NumiGatewayScreen() {
                         action = if (phoneAccess.readPhoneState) null else "Allow",
                         onAction = { phonePermissionLauncher.launch(Manifest.permission.READ_PHONE_STATE) }
                     )
+                    PhoneAccessRow(
+                        title = "Startup after reboot",
+                        detail = if (phoneAccess.startupEnabled) "Enabled" else "Could not enable startup receiver",
+                        action = if (phoneAccess.startupEnabled) null else "Enable",
+                        onAction = {
+                            DevicePermissionFixer.ensureStartupReceiverEnabled(context)
+                            refreshPhoneAccess()
+                        }
+                    )
+                    PhoneAccessRow(
+                        title = "Background battery use",
+                        detail = if (phoneAccess.batteryUnrestricted) "Unrestricted" else "Optimized · may pause background polling",
+                        action = if (phoneAccess.batteryUnrestricted) null else "Allow",
+                        onAction = {
+                            if (!DevicePermissionFixer.openBatteryOptimizationRequest(context)) {
+                                Toast.makeText(context, "Open Android battery settings for Numi", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    )
+                    PhoneAccessRow(
+                        title = "Service notification",
+                        detail = if (phoneAccess.notificationsVisible) {
+                            "Visible in drawer · manage to hide"
+                        } else {
+                            "Hidden from drawer · still shown in Android Task Manager"
+                        },
+                        action = "Manage",
+                        onAction = {
+                            if (!DevicePermissionFixer.openNotificationSettings(context)) {
+                                Toast.makeText(context, "Could not open notification settings", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    )
                 }
             }
         }
@@ -375,21 +418,23 @@ private fun NumiGatewayScreen() {
         TelegramSetupDialog(
             botToken = botToken,
             onBotTokenChange = { botToken = it },
-            allowedUserIds = allowedUserIds,
-            onAllowedUserIdsChange = { allowedUserIds = it },
+            ownerId = ownerId,
+            onOwnerIdChange = { ownerId = it },
             isSaving = isSavingSettings,
             onDismiss = { showTelegramSetup = false },
             onSave = {
                 isSavingSettings = true
                 val savedToken = botToken.trim()
-                val savedIds = allowedUserIds.joinToString(",")
+                val savedOwnerId = ownerId.trim()
                 prefs.edit()
                     .putString("BOT_TOKEN", savedToken)
-                    .putString("ALLOWED_USER_IDS", savedIds)
+                    .putString("TELEGRAM_OWNER_ID", savedOwnerId)
+                    .remove("ALLOWED_USER_IDS")
+                    .remove("TARGET_CHAT_ID")
                     .apply()
                 val intent = Intent(context, OutboxService::class.java).apply {
                     putExtra("BOT_TOKEN", savedToken)
-                    putExtra("ALLOWED_USER_IDS", savedIds)
+                    putExtra("TELEGRAM_OWNER_ID", savedOwnerId)
                 }
                 ContextCompat.startForegroundService(context, intent)
                 scope.launch {
@@ -435,29 +480,20 @@ private fun PhoneAccessRow(
     )
 }
 
-private fun parseAllowedUserIds(value: String): List<String> = value
-    .split(',')
-    .map(String::trim)
-    .filter(String::isNotEmpty)
-    .distinct()
-
 @Composable
 private fun TelegramSetupDialog(
     botToken: String,
     onBotTokenChange: (String) -> Unit,
-    allowedUserIds: List<String>,
-    onAllowedUserIdsChange: (List<String>) -> Unit,
+    ownerId: String,
+    onOwnerIdChange: (String) -> Unit,
     isSaving: Boolean,
     onDismiss: () -> Unit,
     onSave: () -> Unit
 ) {
-    var userIdInput by remember { mutableStateOf("") }
-    val hasExistingConfig = remember { botToken.isNotBlank() && allowedUserIds.isNotEmpty() }
-    val bothBlank = botToken.isBlank() && allowedUserIds.isEmpty()
-    val userIdsValid = allowedUserIds.isNotEmpty() && allowedUserIds.all { it.matches(Regex("[0-9]+")) }
-    val valuesValid = bothBlank || (botToken.isNotBlank() && userIdsValid)
-    val canSave = valuesValid && (!bothBlank || hasExistingConfig) && !isSaving
-    val inputIsValid = userIdInput.isNotBlank() && userIdInput.matches(Regex("[0-9]+"))
+    val bothBlank = botToken.isBlank() && ownerId.isBlank()
+    val ownerIdValid = ownerId.matches(Regex("[0-9]+"))
+    val valuesValid = bothBlank || (botToken.isNotBlank() && ownerIdValid)
+    val canSave = valuesValid && !isSaving
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -468,7 +504,7 @@ private fun TelegramSetupDialog(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Text(
-                    "Add a bot token and approve users who can control Numi. The first user also receives SMS alerts.",
+                    "Connect a Telegram bot and set the one user ID allowed to manage Numi and receive SMS alerts.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -481,69 +517,18 @@ private fun TelegramSetupDialog(
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
                 )
-                Text("Allowed users", style = MaterialTheme.typography.titleSmall)
-                if (allowedUserIds.isEmpty()) {
-                    Text(
-                        "No users added",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                } else {
-                    allowedUserIds.forEachIndexed { index, userId ->
-                        Surface(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = MaterialTheme.shapes.small,
-                            color = MaterialTheme.colorScheme.secondaryContainer
-                        ) {
-                            Row(
-                                Modifier.padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(Modifier.weight(1f)) {
-                                    Text(userId, style = MaterialTheme.typography.bodyMedium)
-                                    if (index == 0) {
-                                        Text(
-                                            "Receives SMS alerts",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                                        )
-                                    }
-                                }
-                                TextButton(
-                                    onClick = {
-                                        onAllowedUserIdsChange(allowedUserIds.filterIndexed { itemIndex, _ -> itemIndex != index })
-                                    }
-                                ) {
-                                    Text("Remove")
-                                }
-                            }
-                        }
-                    }
-                }
                 OutlinedTextField(
-                    value = userIdInput,
-                    onValueChange = { userIdInput = it.filter { character -> character in '0'..'9' } },
-                    label = { Text("Telegram user ID") },
-                    supportingText = { Text("Find the numeric ID in your Telegram profile or bot tools.") },
+                    value = ownerId,
+                    onValueChange = { onOwnerIdChange(it.filter { character -> character in '0'..'9' }) },
+                    label = { Text("Owner Telegram user ID") },
+                    supportingText = { Text("This user can control Numi and receives SMS alerts.") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
-                Button(
-                    onClick = {
-                        if (inputIsValid && userIdInput !in allowedUserIds) {
-                            onAllowedUserIdsChange(allowedUserIds + userIdInput)
-                        }
-                        userIdInput = ""
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = inputIsValid && userIdInput !in allowedUserIds
-                ) {
-                    Text("Add user")
-                }
                 if (!valuesValid) {
                     Text(
-                        "Enter a bot token and at least one numeric user ID, or clear both to disconnect.",
+                        "Enter a bot token and one numeric Telegram user ID, or clear both to disconnect.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -552,7 +537,7 @@ private fun TelegramSetupDialog(
         },
         confirmButton = {
             Button(onClick = onSave, enabled = canSave) {
-                Text(if (isSaving) "Saving…" else if (bothBlank && hasExistingConfig) "Disconnect" else "Save")
+                Text(if (isSaving) "Saving…" else if (bothBlank) "Disconnect" else "Save")
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }

@@ -6,11 +6,13 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import android.content.pm.ServiceInfo
+import androidx.core.app.ServiceCompat
 import net.wastu.numi.R
+import net.wastu.numi.bus.TelegramOwnerConfig
 import net.wastu.numi.bus.ReplyTarget
 import net.wastu.numi.bus.TelegramActionStore
 import net.wastu.numi.database.DbHelper
@@ -52,12 +54,12 @@ class OutboxService : Service() {
         private const val NOTIFICATION_ID = 2002
         @Volatile private var serviceActive = false
         private var BOT_TOKEN = ""
-        private var ALLOWED_USER_IDS = ""
-        private val primaryChatId: String get() = ALLOWED_USER_IDS.split(",").firstOrNull { it.isNotBlank() }?.trim() ?: ""
+        private var OWNER_ID = ""
+        private val primaryChatId: String get() = OWNER_ID
 
-        fun updateConfig(token: String, allowedIds: String) {
+        fun updateConfig(token: String, ownerId: String) {
             BOT_TOKEN = token
-            ALLOWED_USER_IDS = allowedIds
+            OWNER_ID = TelegramOwnerConfig.normalize(ownerId)
         }
 
         fun isServiceRunning(): Boolean = serviceActive
@@ -65,6 +67,7 @@ class OutboxService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        net.wastu.numi.device.DevicePermissionFixer.ensureStartupReceiverEnabled(this)
         serviceActive = true
         dbHelper = DbHelper(this)
         actionStore = TelegramActionStore(this)
@@ -73,27 +76,29 @@ class OutboxService : Service() {
         // Read persistent config FIRST, then create the sender
         val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
         val token = prefs.getString("BOT_TOKEN", "") ?: ""
-        val allowedIds = prefs.getString("ALLOWED_USER_IDS", "") ?: prefs.getString("TARGET_CHAT_ID", "") ?: ""
-        updateConfig(token, allowedIds)
+        val ownerId = prefs.getString("TELEGRAM_OWNER_ID", "") ?: ""
+        updateConfig(token, ownerId)
         telegramSender = TelegramSender(BOT_TOKEN)
 
         createNotificationChannel()
         try {
-            startForeground(NOTIFICATION_ID, createNotification())
-        } catch (e: Exception) {
-            Log.e("OutboxService", "startForeground failed, retrying with specialUse", e)
-            try {
-                startForeground(NOTIFICATION_ID, createNotification(), 
-                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
-            } catch (e2: Exception) {
-                Log.e("OutboxService", "Foreground start failed completely", e2)
+            val serviceType = when {
+                Build.VERSION.SDK_INT >= 35 -> ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE ->
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                else -> 0
             }
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, createNotification(), serviceType)
+        } catch (e: Exception) {
+            Log.e("OutboxService", "Could not promote SMS gateway to foreground service", e)
+            stopSelf()
+            return
         }
         startPolling()
 
         // Create CommandReceiver if we have a token
-        if (BOT_TOKEN.isNotBlank() && ALLOWED_USER_IDS.isNotBlank()) {
-            commandReceiver = net.wastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
+        if (BOT_TOKEN.isNotBlank() && OWNER_ID.isNotBlank()) {
+            commandReceiver = net.wastu.numi.bus.CommandReceiver(this, BOT_TOKEN)
             commandReceiver?.start()
         }
 
@@ -210,7 +215,7 @@ class OutboxService : Service() {
                         Log.e("OutboxService", "Message $id failed. Retrying in ${delayMs / 1000}s")
                     }
                 } catch (exception: Exception) {
-                    Log.e("OutboxService", "Message $id processing failed", exception)
+                    Log.e("OutboxService", "Message $id processing failed: ${exception.javaClass.simpleName}")
                     val nextAttempts = attempts + 1
                     val delayMs = (5000 * Math.pow(2.0, attempts.toDouble())).toLong().coerceAtMost(300000)
                     db.execSQL(
@@ -290,7 +295,7 @@ class OutboxService : Service() {
     ): net.wastu.numi.device.SmsSendResult {
         val result = net.wastu.numi.device.SmsSender(this).sendSms(recipient, body, subscriptionId)
         if (result !is net.wastu.numi.device.SmsSendResult.Sent) {
-            Log.e("OutboxService", "Failed to send SMS to $recipient via subscription $subscriptionId: $result")
+            Log.e("OutboxService", "Failed to send SMS via subscription $subscriptionId: $result")
         }
         return result
     }
@@ -302,23 +307,23 @@ class OutboxService : Service() {
             return START_NOT_STICKY
         }
         val token = intent?.getStringExtra("BOT_TOKEN")
-        val allowedIds = intent?.getStringExtra("ALLOWED_USER_IDS")
-        if (token != null && allowedIds != null) {
+        val ownerId = intent?.getStringExtra("TELEGRAM_OWNER_ID")
+        if (token != null && ownerId != null) {
             commandReceiver?.stop()
             commandReceiver = null
             telegramSender.close()
-            updateConfig(token, allowedIds)
+            updateConfig(token, ownerId)
             telegramSender = TelegramSender(BOT_TOKEN)
 
             // Persist config
             getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
                 .edit()
                 .putString("BOT_TOKEN", token)
-                .putString("ALLOWED_USER_IDS", allowedIds)
+                .putString("TELEGRAM_OWNER_ID", OWNER_ID)
                 .apply()
 
-            if (BOT_TOKEN.isNotBlank() && ALLOWED_USER_IDS.isNotBlank()) {
-                commandReceiver = net.wastu.numi.bus.CommandReceiver(this, BOT_TOKEN, telegramSender)
+            if (BOT_TOKEN.isNotBlank() && OWNER_ID.isNotBlank()) {
+                commandReceiver = net.wastu.numi.bus.CommandReceiver(this, BOT_TOKEN)
                 commandReceiver?.start()
             }
         }

@@ -6,13 +6,10 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import net.wastu.numi.database.DbHelper
-import net.wastu.numi.bus.CommandError
 import net.wastu.numi.bus.PendingSmsAction
 import net.wastu.numi.bus.TelegramActionStore
 import net.wastu.numi.device.DevicePermissionFixer
 import net.wastu.numi.device.DeviceStatusProvider
-import net.wastu.numi.device.SimInfo
-import net.wastu.numi.database.IncomingSms
 import net.wastu.numi.network.TelegramSender
 import net.wastu.numi.network.TelegramHtml
 import net.wastu.numi.queue.OutboxService
@@ -27,16 +24,19 @@ import org.json.JSONObject
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.locks.ReentrantLock
 
 private const val SMS_LIST_PAGE_SIZE = 6
 
 class CommandReceiver(
     private val context: Context,
-    private val botToken: String,
-    private val replySender: TelegramSender
+    private val botToken: String
 ) {
+    companion object {
+        private val pollerLock = ReentrantLock(true)
+    }
+
     private val dbHelper = DbHelper(context)
-    private val executor = CommandExecutor(context)
     private val isRunning = AtomicBoolean(false)
     private var pollingThread: Thread? = null
     @Volatile private var activePoll: Call? = null
@@ -49,6 +49,13 @@ class CommandReceiver(
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(65, TimeUnit.SECONDS)
         .writeTimeout(15, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
+        .build()
+
+    private val apiClient = OkHttpClient.Builder()
+        .connectTimeout(5, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
         .retryOnConnectionFailure(true)
         .build()
 
@@ -72,15 +79,17 @@ class CommandReceiver(
                     .connectTimeout(10, TimeUnit.SECONDS)
                     .readTimeout(10, TimeUnit.SECONDS)
                     .build()
+                val ownerId = allowedIds().singleOrNull()?.toLongOrNull()
                 val scopes = listOf(
-                    JSONObject().put("type", "default"),
-                    JSONObject().put("type", "all_private_chats")
-                ) + allowedIds().mapNotNull { it.toLongOrNull() }
-                    .map { JSONObject().put("type", "chat").put("chat_id", it) }
+                    JSONObject().put("type", "default") to JSONArray(),
+                    JSONObject().put("type", "all_private_chats") to JSONArray()
+                ) + listOfNotNull(ownerId?.let {
+                    JSONObject().put("type", "chat").put("chat_id", it) to commands
+                })
 
-                for (scope in scopes.distinctBy { it.toString() }) {
+                for ((scope, scopedCommands) in scopes) {
                     val body = JSONObject().apply {
-                        put("commands", commands)
+                        put("commands", scopedCommands)
                         put("scope", scope)
                     }
                     val request = Request.Builder()
@@ -120,33 +129,36 @@ class CommandReceiver(
         isRunning.set(false)
         activePoll?.cancel()
         pollingThread?.interrupt()
+        pollingClient.dispatcher.cancelAll()
+        apiClient.dispatcher.cancelAll()
+        pollingClient.connectionPool.evictAll()
+        apiClient.connectionPool.evictAll()
     }
 
     private fun commandList() = JSONArray().apply {
         put(JSONObject().put("command", "start").put("description", "Open SMS gateway controls"))
-        put(JSONObject().put("command", "status").put("description", "Gateway, SIMs and queue status"))
+        put(JSONObject().put("command", "status").put("description", "Gateway and device health"))
         put(JSONObject().put("command", "send").put("description", "Compose an SMS"))
-        put(JSONObject().put("command", "sims").put("description", "Manage SIM routing"))
+        put(JSONObject().put("command", "sims").put("description", "View active SIM cards"))
         put(JSONObject().put("command", "inbox").put("description", "Recent incoming SMS"))
         put(JSONObject().put("command", "outbox").put("description", "Review and manage sent SMS"))
         put(JSONObject().put("command", "help").put("description", "Show gateway help"))
     }
 
-    private fun allowedIds(): Set<String> = (prefs.getString("ALLOWED_USER_IDS", null)
-        ?: prefs.getString("TARGET_CHAT_ID", "").orEmpty())
-        .split(',').map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+        private fun allowedIds(): Set<String> = setOf(
+        TelegramOwnerConfig.normalize(prefs.getString("TELEGRAM_OWNER_ID", null))
+    ).filter(String::isNotEmpty).toSet()
 
     private fun isAllowedPrivateChat(chat: JSONObject, actorId: String): Boolean {
         val chatId = chat.optLong("id", 0L).toString()
         return chat.optString("type") == "private" && actorId == chatId && actorId in allowedIds()
     }
 
-    private fun saveOffset() {
+    private fun saveOffset(nextOffset: Long): Boolean =
         context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
             .edit()
-            .putLong("telegram_offset", offset)
-            .apply()
-    }
+            .putLong("telegram_offset", nextOffset)
+            .commit()
 
     private inner class PollRunnable : Runnable {
         private val MIN_RETRY_MS = 1000L
@@ -154,6 +166,20 @@ class CommandReceiver(
         private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
 
         override fun run() {
+            try {
+                pollerLock.lockInterruptibly()
+            } catch (_: InterruptedException) {
+                Thread.currentThread().interrupt()
+                return
+            }
+            try {
+                runPollingLoop()
+            } finally {
+                pollerLock.unlock()
+            }
+        }
+
+        private fun runPollingLoop() {
             Log.d("CommandReceiver", "Polling thread started")
             var retryMs = MIN_RETRY_MS
 
@@ -177,46 +203,68 @@ class CommandReceiver(
                     activePoll = pollCall
                     try {
                     pollCall.execute().use { response ->
+                        val resultStr = response.body?.string().orEmpty()
+                        val resultObj = runCatching { JSONObject(resultStr) }.getOrNull()
                         if (!response.isSuccessful) {
-                            Log.e("CommandReceiver", "Poll error HTTP ${response.code}")
+                            val error = pollError(response.code, resultObj)
+                            TelegramPollHealth.recordError(context, error)
+                            Log.e("CommandReceiver", error)
                             sleepWithCheck(retryMs)
                             retryMs = (retryMs * 2).coerceAtMost(MAX_RETRY_MS)
                             return@use
                         }
 
-                        val resultStr = response.body?.string() ?: return@use
-                        val resultObj = JSONObject(resultStr)
-                        if (!resultObj.optBoolean("ok", false)) {
-                            Log.e("CommandReceiver", "Poll API rejected the request")
+                        if (resultObj?.optBoolean("ok", false) != true) {
+                            val error = pollError(
+                                resultObj?.optInt("error_code", response.code) ?: response.code,
+                                resultObj
+                            )
+                            TelegramPollHealth.recordError(context, error)
+                            Log.e("CommandReceiver", error)
                             sleepWithCheck(retryMs)
                             retryMs = (retryMs * 2).coerceAtMost(MAX_RETRY_MS)
                             return@use
                         }
 
+                        TelegramPollHealth.recordSuccess(context)
                         val updates = resultObj.optJSONArray("result") ?: JSONArray()
+                        var handlerFailed = false
                         for (i in 0 until updates.length()) {
                             val update = updates.getJSONObject(i)
                             val updateId = update.optLong("update_id", 0)
-                            // Telegram returns updates with update_id >= offset. If offset was
-                            // incorrectly saved as the last update_id (not +1), the same update
-                            // would be handled forever because updateId > offset never becomes true.
                             if (updateId < offset) continue
-                            handleUpdate(update)
-                            offset = updateId + 1
-                            saveOffset()
+                            if (!handleUpdate(update)) {
+                                handlerFailed = true
+                                TelegramPollHealth.recordError(context, "Update handler failed")
+                                break
+                            }
+                            val nextOffset = updateId + 1
+                            if (!saveOffset(nextOffset)) {
+                                handlerFailed = true
+                                TelegramPollHealth.recordError(context, "Could not save Telegram update")
+                                break
+                            }
+                            offset = nextOffset
                         }
-                        retryMs = MIN_RETRY_MS
+                        if (handlerFailed) {
+                            sleepWithCheck(retryMs)
+                            retryMs = (retryMs * 2).coerceAtMost(MAX_RETRY_MS)
+                        } else {
+                            retryMs = MIN_RETRY_MS
+                        }
                     }
                     } finally {
                         if (activePoll === pollCall) activePoll = null
                     }
                 } catch (e: IOException) {
                     if (!isRunning.get()) break
+                    TelegramPollHealth.recordError(context, "Network unavailable · ${e.javaClass.simpleName}")
                     Log.e("CommandReceiver", "Poll IO error: ${e.javaClass.simpleName}")
                     sleepWithCheck(retryMs)
                     retryMs = (retryMs * 2).coerceAtMost(MAX_RETRY_MS)
                 } catch (e: Exception) {
                     if (!isRunning.get()) break
+                    TelegramPollHealth.recordError(context, "Polling failed · ${e.javaClass.simpleName}")
                     Log.e("CommandReceiver", "Poll unexpected error: ${e.javaClass.simpleName}")
                     sleepWithCheck(retryMs)
                     retryMs = (retryMs * 2).coerceAtMost(MAX_RETRY_MS)
@@ -233,11 +281,25 @@ class CommandReceiver(
             }
         }
 
-            private fun handleUpdate(update: JSONObject) {
+        private fun pollError(httpCode: Int, result: JSONObject?): String {
+            val errorCode = result?.optInt("error_code", httpCode) ?: httpCode
+            val description = result?.optString("description").orEmpty()
+            return if (errorCode == 409) {
+                "HTTP 409 · polling conflicts with another poller or webhook"
+            } else if (errorCode == 401) {
+                "HTTP 401 · bot token rejected"
+            } else {
+                "HTTP $errorCode · ${description.ifBlank { "Telegram API unavailable" }.take(60)}"
+            }
+        }
+
+        private fun handleUpdate(update: JSONObject): Boolean {
             try {
                 handleUpdateSafe(update)
+                return true
             } catch (e: Exception) {
-                Log.e("CommandReceiver", "Handler crash (offset will advance)", e)
+                Log.e("CommandReceiver", "Update handler failed; update will be retried", e)
+                return false
             }
         }
 
@@ -256,11 +318,13 @@ class CommandReceiver(
             if (!isAllowedPrivateChat(chat, actorId)) return
 
             val text = message.optString("text", "")
-            if (text.isBlank()) return
+            if (text.isBlank()) {
+                sendText(chatId, "Use the buttons for SMS controls, or send text to compose an SMS.")
+                return
+            }
 
             val command = text.trim().substringBefore('@').substringBefore(' ')
             when {
-                text.startsWith("NUMI_CMD v1") -> RecentActivity.record(context, "Telegram control command")
                 command.equals("/status", ignoreCase = true) -> Unit
                 text.startsWith("/") -> RecentActivity.record(context, command.take(40))
                 else -> RecentActivity.record(context, "Telegram reply")
@@ -275,13 +339,6 @@ class CommandReceiver(
                 } else {
                     handleReplyForward(chatId, replyTo, text)
                 }
-                return
-            }
-
-            // -- Numi signed commands --
-            if (text.startsWith("NUMI_CMD v1")) {
-                Log.d("CommandReceiver", "Received Numi cmd from chat $chatId")
-                dispatchReply(chatId) { executor.execute(text) }
                 return
             }
 
@@ -343,23 +400,27 @@ class CommandReceiver(
         }
 
         private fun handleCallback(callback: JSONObject) {
-            val message = callback.optJSONObject("message") ?: return
-            val chat = message.optJSONObject("chat") ?: return
-            val chatId = chat.optLong("id", 0).toString()
-            val actorId = callback.optJSONObject("from")?.optLong("id", 0L)?.toString().orEmpty()
             val callbackId = callback.optString("id", "")
+            val message = callback.optJSONObject("message")
+            val chat = message?.optJSONObject("chat")
+            val chatId = chat?.optLong("id", 0L)?.toString().orEmpty()
+            val actorId = callback.optJSONObject("from")?.optLong("id", 0L)?.toString().orEmpty()
+            if (message == null || chat == null) {
+                answerCallback(callbackId)
+                return
+            }
             if (!isAllowedPrivateChat(chat, actorId)) {
                 answerCallback(callbackId, "This Numi control is limited to approved private chats.")
                 return
             }
 
+            // Always stop Telegram's button spinner before doing any work.
+            answerCallback(callbackId)
+
             val data = callback.optString("data", "")
             val confirmMessageId = message.optInt("message_id", 0).takeIf { it > 0 }
 
             callbackActivity(data)?.let { RecentActivity.record(context, it) }
-
-            // Answer callback query to stop the spinner
-            answerCallback(callbackId)
 
             when {
                 data == "menu:status" -> runBusy(chatId) { sendStatus(chatId, confirmMessageId) }
@@ -428,82 +489,9 @@ class CommandReceiver(
                         sendInbox(chatId, page, confirmMessageId)
                     }
                 }
-                data.startsWith("default_sim:") -> {
-                    val selectedRaw = data.removePrefix("default_sim:")
-                    if (selectedRaw == "system") {
-                        prefs.edit().remove("DEFAULT_SUBSCRIPTION_ID").apply()
-                        sendSims(chatId, confirmMessageId)
-                    } else {
-                        val selectedId = selectedRaw.toIntOrNull()
-                        val activeIds = DeviceStatusProvider.activeSims(context).map { it.subscriptionId }.toSet()
-                        if (selectedId == null || selectedId !in activeIds) {
-                            sendText(chatId, "That SIM is no longer active. Refresh /sims and choose again.")
-                        } else {
-                            prefs.edit().putInt("DEFAULT_SUBSCRIPTION_ID", selectedId).apply()
-                            sendSims(chatId, confirmMessageId)
-                        }
-                    }
-                }
+                data.startsWith("default_sim:") -> sendSims(chatId, confirmMessageId)
                 data.startsWith("confirm_sms:") -> {
-                    runBusy(chatId) {
-                        val payload = data.removePrefix("confirm_sms:")
-                        val parts = payload.split(":", limit = 2)
-                        val actionId = parts[0]
-                        val chosenSubId = parts.getOrNull(1)?.toIntOrNull()
-                        val pending = actionStore.getPending(actionId)
-                        if (pending == null) {
-                            editOrSend(
-                                chatId,
-                                confirmMessageId,
-                                "❌ This confirmation has expired. Please re-issue the command."
-                            )
-                            return@runBusy
-                        }
-                        if (pending.chatId != chatId) {
-                            editOrSend(chatId, confirmMessageId, "❌ This SMS confirmation belongs to another chat.")
-                            return@runBusy
-                        }
-                        val selectedRoute = parts.getOrNull(1)
-                        val subscriptionId = when {
-                            selectedRoute == "system" -> null
-                            chosenSubId != null -> chosenSubId
-                            else -> pending.subscriptionId
-                        }
-                        val sims = DeviceStatusProvider.activeSims(context)
-                        val simLabel = sims.firstOrNull { it.subscriptionId == subscriptionId }?.label
-                            ?: pending.simLabel
-                        val smsSender = net.wastu.numi.device.SmsSender(context)
-                        val result = smsSender.sendSms(
-                            recipient = pending.recipient,
-                            body = pending.body,
-                            subscriptionId = subscriptionId
-                        )
-                        if (result is net.wastu.numi.device.SmsSendResult.Sent) {
-                            DbHelper(context).recordAcceptedSms(
-                                recipient = pending.recipient,
-                                body = pending.body,
-                                subscriptionId = subscriptionId
-                            )
-                        }
-                        actionStore.removePending(actionId)
-                        val statusText = when (result) {
-                            is net.wastu.numi.device.SmsSendResult.Sent -> {
-                                val label = simLabel?.let { " via $it" } ?: ""
-                                "✅ SMS queued to ${pending.recipient}$label"
-                            }
-                            is net.wastu.numi.device.SmsSendResult.PermissionDenied ->
-                                "❌ SMS permission not granted. Grant SEND_SMS to Numi and try again."
-                            is net.wastu.numi.device.SmsSendResult.NoSim ->
-                                "❌ No active SIM available."
-                            is net.wastu.numi.device.SmsSendResult.Error ->
-                                "❌ Failed to send: ${result.reason}"
-                        }
-                        editOrSend(chatId, confirmMessageId, statusText)
-                        // Anchor the outbound tip so the carrier's inbound reply threads under this.
-                        if (result is net.wastu.numi.device.SmsSendResult.Sent && confirmMessageId != null) {
-                            actionStore.saveThreadTip(pending.recipient, confirmMessageId)
-                        }
-                    }
+                    handleSmsConfirmation(chatId, data, confirmMessageId)
                 }
                 data.startsWith("cancel_sms:") -> {
                     val actionId = data.removePrefix("cancel_sms:")
@@ -531,6 +519,63 @@ class CommandReceiver(
                         }
                     }
                 }
+                else -> editOrSend(chatId, confirmMessageId, "This control has expired. Use /start to open the current menu.")
+            }
+        }
+
+        private fun handleSmsConfirmation(chatId: String, data: String, messageId: Int?) {
+            val parts = data.removePrefix("confirm_sms:").split(":", limit = 2)
+            val actionId = parts.firstOrNull().orEmpty()
+            val chosenSubId = parts.getOrNull(1)?.toIntOrNull()
+            val pending = actionStore.getPending(actionId)
+            if (pending == null) {
+                editOrSend(chatId, messageId, "❌ This confirmation has expired. Please re-issue the command.")
+                return
+            }
+            if (pending.chatId != chatId) {
+                editOrSend(chatId, messageId, "❌ This SMS confirmation belongs to another chat.")
+                return
+            }
+            if (chosenSubId == null) {
+                editOrSend(chatId, messageId, "Choose an active SIM to send this SMS.")
+                return
+            }
+            val selectedSim = DeviceStatusProvider.activeSims(context)
+                .firstOrNull { it.subscriptionId == chosenSubId }
+            if (selectedSim == null) {
+                editOrSend(chatId, messageId, "That SIM is no longer active. Refresh /sims and retry.")
+                return
+            }
+            val confirmed = actionStore.consumePending(actionId)
+            if (confirmed == null) {
+                editOrSend(chatId, messageId, "❌ This confirmation has expired or was already used.")
+                return
+            }
+
+            val subscriptionId = selectedSim.subscriptionId
+            val result = net.wastu.numi.device.SmsSender(context).sendSms(
+                recipient = confirmed.recipient,
+                body = confirmed.body,
+                subscriptionId = subscriptionId
+            )
+            if (result is net.wastu.numi.device.SmsSendResult.Sent) {
+                dbHelper.recordAcceptedSms(
+                    recipient = confirmed.recipient,
+                    body = confirmed.body,
+                    subscriptionId = subscriptionId
+                )
+            }
+            val statusText = when (result) {
+                is net.wastu.numi.device.SmsSendResult.Sent ->
+                    "✅ SMS queued to ${confirmed.recipient} via SIM ${selectedSim.slotIndex + 1}"
+                is net.wastu.numi.device.SmsSendResult.PermissionDenied ->
+                    "❌ SMS permission not granted. Grant SEND_SMS to Numi and try again."
+                is net.wastu.numi.device.SmsSendResult.NoSim -> "❌ No active SIM available."
+                is net.wastu.numi.device.SmsSendResult.Error -> "❌ Failed to send: ${result.reason}"
+            }
+            editOrSend(chatId, messageId, statusText)
+            if (result is net.wastu.numi.device.SmsSendResult.Sent && messageId != null) {
+                actionStore.saveThreadTip(confirmed.recipient, messageId)
             }
         }
 
@@ -542,7 +587,7 @@ class CommandReceiver(
             data == "menu:outbox" || data.startsWith("outbox:page:") -> "Outbox viewed"
             data == "menu:help" -> "Help viewed"
             data == "menu:home" -> "Home opened"
-            data.startsWith("default_sim:") -> "Default SIM changed"
+            data.startsWith("default_sim:") -> "SIM list refreshed"
             data.startsWith("retry_outbox:") -> "SMS retry requested"
             data.startsWith("delete_outbox:") -> "Outbox message removed"
             data.startsWith("delete_inbox:") -> "Inbox message removed"
@@ -560,7 +605,6 @@ class CommandReceiver(
 
         private fun gatewayStatusText(): String = buildString {
             val sims = DeviceStatusProvider.activeSims(context)
-            val defaultSimId = prefs.getInt("DEFAULT_SUBSCRIPTION_ID", -1)
             val counts = dbHelper.outboxCounts()
             val queued = (counts["PENDING"] ?: 0) + (counts["SENDING"] ?: 0)
             val smsPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS) ==
@@ -569,8 +613,14 @@ class CommandReceiver(
 
             appendLine("📟 ${TelegramHtml.bold("Numi")}")
             appendLine("Service: ${if (OutboxService.isServiceRunning()) "✅ running" else "⚠️ stopped"}")
+            appendLine(TelegramHtml.escape(TelegramPollHealth.summary(context, botToken.isNotBlank())))
             appendLine("Default SMS app: ${if (defaultSms) "✅ enabled" else "⚠️ needed for incoming SMS"}")
             appendLine("Send permission: ${if (smsPermission) "✅ granted" else "⚠️ missing"}")
+            DevicePermissionFixer.health(context).checks
+                .filter { it.label in setOf("Startup", "Battery", "Service notification") }
+                .forEach { check ->
+                    appendLine("${check.label}: ${TelegramHtml.escape(check.detail)}")
+                }
             appendLine("Outbox: ${TelegramHtml.code("$queued queued · ${counts["SENT"] ?: 0} accepted · ${counts["FAILED"] ?: 0} failed")}")
             appendLine(recentActivityLine())
             appendLine()
@@ -579,10 +629,8 @@ class CommandReceiver(
                 append("No active SIMs found. Check SIM and phone permissions.")
             } else {
                 sims.forEach { sim ->
-                    val route = if (sim.subscriptionId == defaultSimId) " · default" else ""
-                    appendLine("• SIM ${sim.slotIndex + 1} · ${TelegramHtml.escape(sim.carrier ?: sim.label)}$route")
+                    appendLine("• SIM ${sim.slotIndex + 1} · ${TelegramHtml.escape(sim.carrier ?: sim.label)}")
                 }
-                if (defaultSimId < 0) append("• Android system default SIM is used when no SIM is chosen")
             }
         }.trimEnd()
 
@@ -597,7 +645,7 @@ class CommandReceiver(
         ) {
             fun requestBody(messageId: Int? = null) = JSONObject().apply {
                 put("chat_id", chatId)
-                put("text", text.take(3_900))
+                put("text", text)
                 put("parse_mode", "HTML")
                 if (messageId != null) put("message_id", messageId)
                 put("reply_markup", keyboard)
@@ -627,46 +675,37 @@ class CommandReceiver(
                 appendLine("Use the buttons to manage the gateway.")
                 appendLine()
                 appendLine("${TelegramHtml.code("/send <number> <message>")}  ·  compose SMS")
-                appendLine("/sims  ·  choose the default route")
+                appendLine("/sims  ·  view active SIMs")
                 appendLine("/inbox  ·  incoming SMS")
                 appendLine("/outbox  ·  sent and queued SMS")
                 appendLine("/status  ·  device and queue health")
-                append("Each outgoing SMS asks you to confirm. With multiple SIMs, choose one before sending.")
+                append("Every outgoing SMS asks for confirmation. Choose its SIM before sending; replies start with the SIM that received the message.")
             }
             sendScreen(chatId, text, helpKeyboard(), editMessageId)
         }
 
         private fun sendSims(chatId: String, editMessageId: Int? = null) {
             val sims = DeviceStatusProvider.activeSims(context)
-            val selected = prefs.getInt("DEFAULT_SUBSCRIPTION_ID", -1)
             val text = buildString {
                 appendLine("📶 ${TelegramHtml.bold("SIM routing")}")
-                appendLine("Choose the default SIM for messages without an explicit route.")
+                appendLine("Choose a SIM for each outgoing SMS.")
                 appendLine()
                 if (sims.isEmpty()) append("No active SIMs found.")
                 sims.forEach { sim ->
-                    val mark = if (sim.subscriptionId == selected) " ✓ default" else ""
-                    appendLine("SIM ${sim.slotIndex + 1} · ${TelegramHtml.escape(sim.carrier ?: sim.label)}$mark")
+                    appendLine("SIM ${sim.slotIndex + 1} · ${TelegramHtml.escape(sim.carrier ?: sim.label)}")
                 }
-                if (selected < 0) append("Android system default SIM is currently selected.")
             }.trimEnd()
             val keyboardRows = JSONArray().apply {
-                sims.forEach { sim ->
-                    put(JSONArray().put(JSONObject().apply {
-                        put("text", "Use SIM ${sim.slotIndex + 1} · ${sim.carrier ?: sim.label}".take(60))
-                        put("callback_data", "default_sim:${sim.subscriptionId}")
-                    }))
-                }
-                put(JSONArray().put(JSONObject().apply {
-                    put("text", "Use Android system default")
-                    put("callback_data", "default_sim:system")
-                }))
                 put(JSONArray().put(JSONObject().apply {
                     put("text", "📤 New SMS")
                     put("callback_data", "menu:compose")
                 }).put(JSONObject().apply {
                     put("text", "⌂ Home")
                     put("callback_data", "menu:home")
+                }))
+                put(JSONArray().put(JSONObject().apply {
+                    put("text", "🔄 Refresh SIMs")
+                    put("callback_data", "menu:sims")
                 }))
             }
             val markup = JSONObject().put("inline_keyboard", keyboardRows)
@@ -908,15 +947,12 @@ class CommandReceiver(
                 sendText(chatId, "❌ No active SIM available.")
                 return
             }
-            val preferredSimId = prefs.getInt("DEFAULT_SUBSCRIPTION_ID", -1)
-            val preferredSim = activeSims.firstOrNull { it.subscriptionId == preferredSimId }
-                ?: activeSims.singleOrNull()
             val pending = PendingSmsAction(
                 chatId = chatId,
                 recipient = number,
                 body = body.take(1_000),
-                subscriptionId = preferredSim?.subscriptionId,
-                simLabel = preferredSim?.label
+                subscriptionId = null,
+                simLabel = null
             )
             actionStore.savePending(pending)
             sendConfirmation(chatId, pending, activeSims)
@@ -934,64 +970,29 @@ class CommandReceiver(
             }
             val keyboard = JSONObject().apply {
                 put("inline_keyboard", JSONArray().apply {
-                    if (sims.size > 1) {
-                        // One SIM button per row so choices stay clear ("1 by 1").
-                        for (sim in sims) {
-                            val selected = sim.subscriptionId == action.subscriptionId
-                            val routeLabel = "📤 Send via SIM ${sim.slotIndex + 1}: ${sim.carrier ?: sim.label}"
-                            val buttonLabel = if (selected) "$routeLabel · selected" else routeLabel
-                            put(JSONArray().apply {
-                                put(JSONObject().apply {
-                                    put("text", buttonLabel.take(60))
-                                    put("callback_data", "confirm_sms:${action.id}:${sim.subscriptionId}")
-                                })
-                            })
-                        }
-                        put(JSONArray().apply {
-                            val systemLabel = if (action.subscriptionId == null) {
-                                "✅ Android system default · selected"
-                            } else {
-                                "Send via Android system default"
-                            }
-                            put(JSONObject().apply {
-                                put("text", systemLabel)
-                                put("callback_data", "confirm_sms:${action.id}:system")
-                            })
-                        })
+                    for (sim in sims) {
+                        val selected = sim.subscriptionId == action.subscriptionId
+                        val routeLabel = "Send via SIM ${sim.slotIndex + 1} · ${sim.carrier ?: sim.label}"
+                        val buttonLabel = if (selected) "✅ $routeLabel" else "📤 $routeLabel"
                         put(JSONArray().apply {
                             put(JSONObject().apply {
-                                put("text", "❌ Cancel")
-                                put("callback_data", "cancel_sms:${action.id}")
-                            })
-                        })
-                    } else {
-                        val sim = sims.single()
-                        put(JSONArray().apply {
-                            put(JSONObject().apply {
-                                put("text", "✅ Send via SIM ${sim.slotIndex + 1}")
+                                put("text", buttonLabel.take(60))
                                 put("callback_data", "confirm_sms:${action.id}:${sim.subscriptionId}")
                             })
-                            put(JSONObject().apply {
-                                put("text", "❌ Cancel")
-                                put("callback_data", "cancel_sms:${action.id}")
-                            })
                         })
                     }
+                    put(JSONArray().put(JSONObject().apply {
+                        put("text", "❌ Cancel")
+                        put("callback_data", "cancel_sms:${action.id}")
+                    }))
                 })
             }
-            val prompt = if (sims.size > 1) {
-                val selectedRoute = sims.firstOrNull { it.subscriptionId == action.subscriptionId }
-                    ?.let { "Selected route: SIM ${it.slotIndex + 1} · ${it.carrier ?: it.label}\n" }
-                    ?: if (action.subscriptionId == null) {
-                        "Selected route: Android system default.\n"
-                    } else {
-                        "The prior SIM is unavailable; choose a route.\n"
-                    }
-                "📤 Send SMS to ${action.recipient}?\n${selectedRoute}Choose a SIM to confirm:\n\n${action.body}"
-            } else {
-                val simInfo = action.simLabel?.let { " via $it" } ?: ""
-                "📤 Send SMS to ${action.recipient}$simInfo?\n\n${action.body}"
-            }
+            val selectedRoute = action.subscriptionId?.let { id ->
+                sims.firstOrNull { it.subscriptionId == id }?.let { sim ->
+                    "Reply SIM ${sim.slotIndex + 1} is selected. Choose a SIM to confirm:\n"
+                }
+            }.orEmpty()
+            val prompt = "📤 Send SMS to ${action.recipient}?\n${selectedRoute}Choose a SIM to confirm:\n\n${action.body}"
             sendTelegram("sendMessage", JSONObject().apply {
                 put("chat_id", chatId)
                 put("text", prompt)
@@ -1041,19 +1042,18 @@ class CommandReceiver(
                 .post(body.toString().toRequestBody(JSON_MEDIA_TYPE))
                 .build()
             return try {
-                pollingClient.newCall(request).execute().use { response ->
+                apiClient.newCall(request).execute().use { response ->
                     val raw = response.body?.string().orEmpty()
-                    if (!response.isSuccessful) {
-                        Log.e("CommandReceiver", "Telegram $method failed: HTTP ${response.code}")
-                        return@use null
-                    }
                     val result = runCatching { JSONObject(raw) }.getOrNull() ?: return@use null
                     if (result.optBoolean("ok")) result else {
                         val description = result.optString("description")
                         if (method == "editMessageText" && description.contains("message is not modified", ignoreCase = true)) {
                             JSONObject().put("ok", true)
                         } else {
-                            Log.e("CommandReceiver", "Telegram $method rejected the request (${result.optInt("error_code")})")
+                            Log.e(
+                                "CommandReceiver",
+                                "Telegram $method rejected the request: HTTP ${response.code}, ${description.take(100)}"
+                            )
                             null
                         }
                     }
@@ -1100,19 +1100,6 @@ class CommandReceiver(
             }.start()
         }
 
-        private fun dispatchReply(chatId: String, block: () -> String) {
-            runBusy(chatId) {
-                try {
-                    sendText(chatId, block())
-                } catch (e: Exception) {
-                    Log.e("CommandReceiver", "Failed to process command", e)
-                }
-            }
-        }
-
-        private fun dispatchTextReply(chatId: String, text: String) {
-            dispatchReply(chatId) { text }
-        }
     }
 }
 

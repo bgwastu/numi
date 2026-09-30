@@ -7,6 +7,7 @@ import android.provider.Telephony
 import android.telephony.SubscriptionManager
 import android.util.Log
 import net.wastu.numi.database.DbHelper
+import net.wastu.numi.bus.TelegramOwnerConfig
 import net.wastu.numi.utils.RecentActivity
 
 class SmsReceiver : BroadcastReceiver() {
@@ -38,7 +39,7 @@ class SmsReceiver : BroadcastReceiver() {
             // Remote forwarding is optional; the local inbox works without a bot configured.
             val prefs = context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
             val remoteReady = !prefs.getString("BOT_TOKEN", "").isNullOrBlank() &&
-                !prefs.getString("ALLOWED_USER_IDS", "").isNullOrBlank()
+                TelegramOwnerConfig.normalize(prefs.getString("TELEGRAM_OWNER_ID", null)).isNotBlank()
             if (remoteReady) {
                 val idempotencyKey = "sms:${sender.hashCode()}:$timestamp:${subscriptionId ?: "unknown"}"
                 val rowId = dbHelper.enqueueMessage(
@@ -49,9 +50,9 @@ class SmsReceiver : BroadcastReceiver() {
                     subscriptionId = subscriptionId
                 )
                 if (rowId != -1L) {
-                    Log.d("NumiSmsReceiver", "Enqueued incoming SMS from $sender for forwarding. Row ID: $rowId")
+                    Log.d("NumiSmsReceiver", "Incoming SMS queued for Telegram forwarding")
                 } else {
-                    Log.d("NumiSmsReceiver", "Duplicate SMS forwarding event from $sender at $timestamp")
+                    Log.d("NumiSmsReceiver", "Duplicate incoming SMS forwarding event ignored")
                 }
             }
         }
