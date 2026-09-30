@@ -26,6 +26,12 @@ data class GemmaDownloadStatus(
     val downloadFailed: Boolean
 )
 
+enum class SpamClassification {
+    SPAM,
+    SAFE,
+    UNAVAILABLE
+}
+
 object GemmaSpamModel {
     const val PREFS_NAME = "numi_settings"
     const val KEY_FILTER_ENABLED = "LOCAL_SPAM_FILTER_ENABLED"
@@ -147,11 +153,18 @@ class LocalGemmaSpamFilter(private val context: Context) {
     private val engineLock = Any()
     private var engine: Engine? = null
 
-    suspend fun isLikelySpam(message: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun isLikelySpam(message: String): Boolean =
+        classify(message) == SpamClassification.SPAM
+
+    suspend fun classify(message: String): SpamClassification = withContext(Dispatchers.IO) {
         val prefs = context.getSharedPreferences(GemmaSpamModel.PREFS_NAME, Context.MODE_PRIVATE)
-        if (!prefs.getBoolean(GemmaSpamModel.KEY_FILTER_ENABLED, false)) return@withContext false
+        if (!prefs.getBoolean(GemmaSpamModel.KEY_FILTER_ENABLED, false)) {
+            return@withContext SpamClassification.UNAVAILABLE
+        }
         val modelFile = GemmaSpamModel.modelFile(context)
-        if (!modelFile.isFile || modelFile.length() != GemmaSpamModel.MODEL_SIZE_BYTES) return@withContext false
+        if (!modelFile.isFile || modelFile.length() != GemmaSpamModel.MODEL_SIZE_BYTES) {
+            return@withContext SpamClassification.UNAVAILABLE
+        }
 
         try {
             synchronized(engineLock) {
@@ -169,12 +182,19 @@ class LocalGemmaSpamFilter(private val context: Context) {
                         .joinToString(separator = "") { it.text }
                         .trim()
                         .uppercase(Locale.ROOT)
-                    verdict == "SPAM"
+                    when (verdict) {
+                        "SPAM" -> SpamClassification.SPAM
+                        "SAFE" -> SpamClassification.SAFE
+                        else -> {
+                            Log.w("NumiSpamFilter", "Local Gemma returned an invalid classification; forwarding the SMS")
+                            SpamClassification.UNAVAILABLE
+                        }
+                    }
                 }
             }
         } catch (exception: Exception) {
             Log.w("NumiSpamFilter", "Local Gemma classification failed; forwarding the SMS", exception)
-            false
+            SpamClassification.UNAVAILABLE
         }
     }
 
@@ -192,7 +212,7 @@ class LocalGemmaSpamFilter(private val context: Context) {
             EngineConfig(
                 modelPath = modelFile.absolutePath,
                 backend = Backend.CPU(threadCount = 4),
-                maxNumTokens = 512,
+                maxNumTokens = MIN_MODEL_CONTEXT_TOKENS,
                 cacheDir = cacheDirectory.absolutePath
             )
         ).also(Engine::initialize)
@@ -211,6 +231,8 @@ class LocalGemmaSpamFilter(private val context: Context) {
     """.trimIndent()
 
     private companion object {
+        // The Gemma .litertlm prefill graph fails to resize its cache below this context size.
+        const val MIN_MODEL_CONTEXT_TOKENS = 1_024
         const val MAX_MESSAGE_CHARS = 1_400
     }
 }
