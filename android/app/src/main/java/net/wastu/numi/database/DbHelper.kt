@@ -196,14 +196,22 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         arrayOf(id.toString())
     )
 
-    fun listOutbox(type: String = "SMS", limit: Int = 100): List<OutboxMessage> {
+    fun incomingSmsCount(): Int = readableDatabase.rawQuery(
+        "SELECT COUNT(*) FROM $TABLE_INBOX",
+        null
+    ).use { cursor ->
+        if (cursor.moveToFirst()) cursor.getInt(0) else 0
+    }
+
+    fun listOutbox(type: String = "SMS", limit: Int = 100, offset: Int = 0): List<OutboxMessage> {
         val messages = mutableListOf<OutboxMessage>()
+        val page = if (offset > 0) "${limit.coerceAtLeast(0)} OFFSET ${offset.coerceAtLeast(0)}" else limit.coerceAtLeast(0).toString()
         readableDatabase.query(
             TABLE_OUTBOX,
             arrayOf(COL_ID, COL_RECIPIENT, COL_BODY, COL_CREATED_AT, COL_STATUS, COL_ATTEMPTS,
                 COL_NEXT_ATTEMPT, COL_SUBSCRIPTION_ID, COL_LAST_ERROR),
             "$COL_TYPE = ?",
-            arrayOf(type), null, null, "$COL_CREATED_AT DESC", limit.toString()
+            arrayOf(type), null, null, "$COL_CREATED_AT DESC, $COL_ID DESC", page
         ).use { cursor ->
             while (cursor.moveToNext()) {
                 messages += OutboxMessage(
@@ -222,13 +230,14 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         return messages
     }
 
-    fun listInbox(limit: Int = 100): List<IncomingSms> {
+    fun listInbox(limit: Int = 100, offset: Int = 0): List<IncomingSms> {
         val messages = mutableListOf<IncomingSms>()
+        val page = if (offset > 0) "${limit.coerceAtLeast(0)} OFFSET ${offset.coerceAtLeast(0)}" else limit.coerceAtLeast(0).toString()
         readableDatabase.query(
             TABLE_INBOX,
             arrayOf(COL_INBOX_ID, COL_INBOX_SENDER, COL_INBOX_BODY, COL_INBOX_RECEIVED_AT,
                 COL_INBOX_SUBSCRIPTION_ID),
-            null, null, null, null, "$COL_INBOX_RECEIVED_AT DESC", limit.toString()
+            null, null, null, null, "$COL_INBOX_RECEIVED_AT DESC, $COL_INBOX_ID DESC", page
         ).use { cursor ->
             while (cursor.moveToNext()) {
                 messages += IncomingSms(
@@ -241,6 +250,23 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             }
         }
         return messages
+    }
+
+    fun getIncomingSms(id: Long): IncomingSms? = readableDatabase.query(
+        TABLE_INBOX,
+        arrayOf(COL_INBOX_ID, COL_INBOX_SENDER, COL_INBOX_BODY, COL_INBOX_RECEIVED_AT,
+            COL_INBOX_SUBSCRIPTION_ID),
+        "$COL_INBOX_ID = ?",
+        arrayOf(id.toString()), null, null, null, "1"
+    ).use { cursor ->
+        if (!cursor.moveToFirst()) return@use null
+        IncomingSms(
+            id = cursor.getLong(0),
+            sender = cursor.getString(1),
+            body = cursor.getString(2),
+            receivedAt = cursor.getLong(3),
+            subscriptionId = if (cursor.isNull(4)) null else cursor.getInt(4)
+        )
     }
 
     fun outboxCounts(type: String = "SMS"): Map<String, Int> {

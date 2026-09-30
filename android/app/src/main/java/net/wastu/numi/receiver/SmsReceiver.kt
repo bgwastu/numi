@@ -45,7 +45,7 @@ class SmsReceiver : BroadcastReceiver() {
             val simTag = sim?.let { "SIM ${it.slotIndex + 1}" }
             val timeLabel = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
             val compactBody = body.replace(Regex("\\s+"), " ").trim()
-            val excerpt = compactBody.takeCodePoints(180)
+            val excerpt = compactBody.takeCodePoints(140)
 
             val formattedTelegramMessage = buildString {
                 append("📩 ${TelegramHtml.bold("SMS")} · ${TelegramHtml.code(sender)}")
