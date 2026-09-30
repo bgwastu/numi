@@ -34,7 +34,9 @@ class OutboxService : Service() {
         val body: String,
         val createdAt: Long,
         val attempts: Int,
-        val subscriptionId: Int?
+        val subscriptionId: Int?,
+        val telegramPartIndex: Int,
+        val telegramLastMessageId: Int?
     )
 
     private val serviceJob = SupervisorJob()
@@ -140,7 +142,11 @@ class OutboxService : Service() {
                             attempts = result.getInt(result.getColumnIndexOrThrow(DbHelper.COL_ATTEMPTS)),
                             subscriptionId = if (subscriptionColumn >= 0 && !result.isNull(subscriptionColumn)) {
                                 result.getInt(subscriptionColumn)
-                            } else null
+                            } else null,
+                            telegramPartIndex = result.getInt(result.getColumnIndexOrThrow(DbHelper.COL_TELEGRAM_PART_INDEX)),
+                            telegramLastMessageId = result.getInt(
+                                result.getColumnIndexOrThrow(DbHelper.COL_TELEGRAM_LAST_MESSAGE_ID)
+                            ).takeIf { it > 0 }
                         )
                     )
                 }
@@ -155,6 +161,8 @@ class OutboxService : Service() {
             val createdAt = message.createdAt
             val attempts = message.attempts
             val subscriptionId = message.subscriptionId
+            val telegramPartIndex = message.telegramPartIndex
+            val telegramLastMessageId = message.telegramLastMessageId
             if (!inFlightMessageIds.add(id)) return@forEach
             serviceScope.launch {
                 try {
@@ -175,7 +183,15 @@ class OutboxService : Service() {
                         arrayOf(id)
                     )
                     val success = when (type) {
-                        "TELEGRAM" -> sendTelegram(recipient, body, subscriptionId, createdAt)
+                        "TELEGRAM" -> sendTelegram(
+                            id,
+                            recipient,
+                            body,
+                            subscriptionId,
+                            createdAt,
+                            telegramPartIndex,
+                            telegramLastMessageId
+                        )
                         "SMS" -> {
                             val result = sendSmsDirect(recipient, body, subscriptionId)
                             if (result !is net.wastu.numi.device.SmsSendResult.Sent) {
@@ -230,50 +246,75 @@ class OutboxService : Service() {
     }
 
     private suspend fun sendTelegram(
+        outboxId: Long,
         recipientOrChat: String,
         body: String,
         subscriptionId: Int?,
-        receivedAt: Long
+        receivedAt: Long,
+        startPartIndex: Int,
+        savedLastMessageId: Int?
     ): Boolean {
         val activeChat = primaryChatId.ifBlank { return false }
-        val replyTo = actionStore.getThreadTip(recipientOrChat)
-        val text = IncomingSmsTelegramMessage.format(
+        val messages = IncomingSmsTelegramMessage.format(
             this,
             recipientOrChat,
             body,
             receivedAt,
             subscriptionId
         )
-        val messageId = telegramSender.sendMessageForId(
-            activeChat,
-            text,
-            replyTo,
-            includeSmsReplyButton = looksLikeSmsAddress(recipientOrChat)
-        )
-            ?: if (replyTo != null) {
-                // Parent may have been deleted; fall back to a top-level message.
+        val canReplyBySms = looksLikeSmsAddress(recipientOrChat)
+        var previousMessageId = savedLastMessageId ?: actionStore.getThreadTip(recipientOrChat)
+
+        for (partIndex in startPartIndex.coerceIn(0, messages.size) until messages.size) {
+            val isFinalPart = partIndex == messages.lastIndex
+            val repliedMessageId = telegramSender.sendMessageForId(
+                activeChat,
+                messages[partIndex],
+                previousMessageId,
+                includeSmsReplyButton = canReplyBySms && isFinalPart
+            )
+            val messageId = repliedMessageId ?: if (previousMessageId != null) {
+                // If the parent was removed, keep delivery moving as a top-level message.
                 telegramSender.sendMessageForId(
                     activeChat,
-                    text,
+                    messages[partIndex],
                     null,
-                    includeSmsReplyButton = looksLikeSmsAddress(recipientOrChat)
+                    includeSmsReplyButton = canReplyBySms && isFinalPart
                 )
             } else {
                 null
             }
-            ?: return false
-        // Keep the thread tip on the newest message so the next inbound replies here.
-        actionStore.saveThreadTip(recipientOrChat, messageId)
-        // Inbound SMS / short codes store origin in recipient; attach reply target for user replies.
-        if (looksLikeSmsAddress(recipientOrChat)) {
-            actionStore.saveReplyTarget(
-                messageId,
-                ReplyTarget(
-                    phoneNumber = recipientOrChat,
-                    subscriptionId = subscriptionId,
-                    source = "inbound_sms"
+            if (messageId == null) return false
+
+            if (!dbHelper.updateTelegramProgress(outboxId, partIndex + 1, messageId)) {
+                Log.e("OutboxService", "Could not persist Telegram batch progress for $outboxId")
+                return false
+            }
+            previousMessageId = messageId
+            actionStore.saveThreadTip(recipientOrChat, messageId)
+
+            if (isFinalPart && canReplyBySms) {
+                actionStore.saveReplyTarget(
+                    messageId,
+                    ReplyTarget(
+                        phoneNumber = recipientOrChat,
+                        subscriptionId = subscriptionId,
+                        source = "inbound_sms"
+                    )
                 )
-            )
+            }
+        }
+
+        // A crash after the final progress write may leave local Telegram actions unsaved.
+        val finalMessageId = previousMessageId
+        if (finalMessageId != null) {
+            actionStore.saveThreadTip(recipientOrChat, finalMessageId)
+            if (canReplyBySms) {
+                actionStore.saveReplyTarget(
+                    finalMessageId,
+                    ReplyTarget(recipientOrChat, subscriptionId, "inbound_sms")
+                )
+            }
         }
         return true
     }

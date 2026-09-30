@@ -1,6 +1,7 @@
 package net.wastu.numi.bus
 
 import android.content.Context
+import net.wastu.numi.utils.SmsAddress
 import org.json.JSONObject
 import java.util.UUID
 
@@ -119,13 +120,13 @@ class TelegramActionStore(context: Context) {
 
     /** Last Telegram message in the conversation thread for this SMS address. */
     fun saveThreadTip(address: String, messageId: Int) {
-        val key = normalizeAddress(address) ?: return
+        val key = SmsAddress.normalize(address) ?: return
         if (messageId <= 0) return
         prefs.edit().putInt(threadTipKey(key), messageId).apply()
     }
 
     fun getThreadTip(address: String): Int? {
-        val key = normalizeAddress(address) ?: return null
+        val key = SmsAddress.normalize(address) ?: return null
         val id = prefs.getInt(threadTipKey(key), 0)
         return id.takeIf { it > 0 }
     }
@@ -138,15 +139,5 @@ class TelegramActionStore(context: Context) {
     private companion object {
         const val PREFS_NAME = "numi_telegram_actions"
         const val COMPOSE_PROMPT_TTL_MS = 15 * 60 * 1000L
-        /** Digits for numbers/short codes; uppercase alpha for named senders (TELKOMSEL). */
-        fun normalizeAddress(raw: String): String? {
-            val trimmed = raw.trim()
-            if (trimmed.isEmpty() || trimmed.equals("Unknown", ignoreCase = true)) return null
-            val digits = trimmed.filter { it.isDigit() }
-            return when {
-                digits.length >= 3 -> digits
-                else -> trimmed.uppercase(java.util.Locale.US)
-            }
-        }
     }
 }

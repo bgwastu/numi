@@ -4,12 +4,13 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import net.wastu.numi.utils.SmsAddress
 
 class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "numi.db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 5
 
         // Table Messages
         const val TABLE_OUTBOX = "message_outbox"
@@ -24,6 +25,9 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         const val COL_IDEMPOTENCY_KEY = "idempotency_key"
         const val COL_SUBSCRIPTION_ID = "subscription_id"
         const val COL_LAST_ERROR = "last_error"
+        const val COL_TELEGRAM_PART_INDEX = "telegram_part_index"
+        const val COL_TELEGRAM_LAST_MESSAGE_ID = "telegram_last_message_id"
+        const val COL_CONVERSATION_KEY = "conversation_key"
 
         // Table Nonces
         const val TABLE_NONCES = "command_nonces"
@@ -61,7 +65,10 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
                 $COL_NEXT_ATTEMPT INTEGER DEFAULT 0,
                 $COL_IDEMPOTENCY_KEY TEXT UNIQUE,
                 $COL_SUBSCRIPTION_ID INTEGER,
-                $COL_LAST_ERROR TEXT
+                $COL_LAST_ERROR TEXT,
+                $COL_TELEGRAM_PART_INDEX INTEGER NOT NULL DEFAULT 0,
+                $COL_TELEGRAM_LAST_MESSAGE_ID INTEGER,
+                $COL_CONVERSATION_KEY TEXT
             )
         """.trimIndent()
 
@@ -94,9 +101,12 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
                 $COL_INBOX_SENDER TEXT NOT NULL,
                 $COL_INBOX_BODY TEXT NOT NULL,
                 $COL_INBOX_RECEIVED_AT INTEGER NOT NULL,
-                $COL_INBOX_SUBSCRIPTION_ID INTEGER
+                $COL_INBOX_SUBSCRIPTION_ID INTEGER,
+                $COL_CONVERSATION_KEY TEXT
             )
         """.trimIndent())
+        db.execSQL("CREATE INDEX idx_outbox_conversation ON $TABLE_OUTBOX($COL_CONVERSATION_KEY)")
+        db.execSQL("CREATE INDEX idx_inbox_conversation ON $TABLE_INBOX($COL_CONVERSATION_KEY)")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -112,6 +122,19 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
                     $COL_INBOX_SUBSCRIPTION_ID INTEGER
                 )
             """.trimIndent())
+        }
+        if (oldVersion < 3) {
+            db.execSQL("ALTER TABLE $TABLE_OUTBOX ADD COLUMN $COL_TELEGRAM_PART_INDEX INTEGER NOT NULL DEFAULT 0")
+        }
+        if (oldVersion < 4) {
+            db.execSQL("ALTER TABLE $TABLE_OUTBOX ADD COLUMN $COL_CONVERSATION_KEY TEXT")
+            db.execSQL("ALTER TABLE $TABLE_INBOX ADD COLUMN $COL_CONVERSATION_KEY TEXT")
+            backfillConversationKeys(db)
+            db.execSQL("CREATE INDEX IF NOT EXISTS idx_outbox_conversation ON $TABLE_OUTBOX($COL_CONVERSATION_KEY)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS idx_inbox_conversation ON $TABLE_INBOX($COL_CONVERSATION_KEY)")
+        }
+        if (oldVersion < 5) {
+            db.execSQL("ALTER TABLE $TABLE_OUTBOX ADD COLUMN $COL_TELEGRAM_LAST_MESSAGE_ID INTEGER")
         }
     }
 
@@ -136,6 +159,7 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
                 put(COL_IDEMPOTENCY_KEY, idempotencyKey)
             }
             if (subscriptionId != null) put(COL_SUBSCRIPTION_ID, subscriptionId)
+            put(COL_CONVERSATION_KEY, SmsAddress.normalize(recipient))
         }
         return db.insertWithOnConflict(TABLE_OUTBOX, null, values, SQLiteDatabase.CONFLICT_IGNORE)
     }
@@ -171,6 +195,7 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             put(COL_INBOX_SENDER, sender)
             put(COL_INBOX_BODY, body)
             put(COL_INBOX_RECEIVED_AT, receivedAt)
+            put(COL_CONVERSATION_KEY, SmsAddress.normalize(sender))
             if (subscriptionId != null) put(COL_INBOX_SUBSCRIPTION_ID, subscriptionId)
         }
         return writableDatabase.insert(TABLE_INBOX, null, values)
@@ -185,6 +210,7 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
             put(COL_STATUS, "SENT")
             put(COL_ATTEMPTS, 0)
             put(COL_NEXT_ATTEMPT, 0)
+            put(COL_CONVERSATION_KEY, SmsAddress.normalize(recipient))
             if (subscriptionId != null) put(COL_SUBSCRIPTION_ID, subscriptionId)
         }
         return writableDatabase.insert(TABLE_OUTBOX, null, values)
@@ -269,6 +295,106 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         )
     }
 
+    fun updateTelegramProgress(id: Long, nextPartIndex: Int, lastMessageId: Int): Boolean = writableDatabase.update(
+        TABLE_OUTBOX,
+        ContentValues().apply {
+            put(COL_TELEGRAM_PART_INDEX, nextPartIndex.coerceAtLeast(0))
+            put(COL_TELEGRAM_LAST_MESSAGE_ID, lastMessageId)
+        },
+        "$COL_ID = ? AND $COL_TYPE = 'TELEGRAM'",
+        arrayOf(id.toString())
+    ) > 0
+
+    fun conversationMessagesForAnchor(isIncoming: Boolean, id: Long): List<ConversationSms> {
+        val table = if (isIncoming) TABLE_INBOX else TABLE_OUTBOX
+        val selection = if (isIncoming) {
+            "$COL_INBOX_ID = ?"
+        } else {
+            "$COL_ID = ? AND $COL_TYPE = 'SMS' AND $COL_STATUS = 'SENT'"
+        }
+        val key = readableDatabase.query(
+            table,
+            arrayOf(COL_CONVERSATION_KEY),
+            selection,
+            arrayOf(id.toString()),
+            null,
+            null,
+            null,
+            "1"
+        ).use { cursor ->
+            if (cursor.moveToFirst()) cursor.getString(0)?.takeIf { it.isNotBlank() } else null
+        }
+        if (key == null) {
+            if (!isIncoming) return emptyList()
+            val incoming = getIncomingSms(id) ?: return emptyList()
+            return listOf(
+                ConversationSms(
+                    id = incoming.id,
+                    isIncoming = true,
+                    address = incoming.sender,
+                    body = incoming.body,
+                    sentAt = incoming.receivedAt,
+                    subscriptionId = incoming.subscriptionId
+                )
+            )
+        }
+        return conversationMessages(key)
+    }
+
+    fun conversationMessages(key: String): List<ConversationSms> {
+        val messages = mutableListOf<ConversationSms>()
+        readableDatabase.rawQuery(
+            """
+            SELECT $COL_ID, 1 AS is_incoming, $COL_INBOX_SENDER AS address, $COL_INBOX_BODY AS body,
+                   $COL_INBOX_RECEIVED_AT AS sent_at, $COL_INBOX_SUBSCRIPTION_ID AS subscription_id
+            FROM $TABLE_INBOX WHERE $COL_CONVERSATION_KEY = ?
+            UNION ALL
+            SELECT $COL_ID, 0 AS is_incoming, $COL_RECIPIENT AS address, $COL_BODY AS body,
+                   $COL_CREATED_AT AS sent_at, $COL_SUBSCRIPTION_ID AS subscription_id
+            FROM $TABLE_OUTBOX
+            WHERE $COL_CONVERSATION_KEY = ? AND $COL_TYPE = 'SMS' AND $COL_STATUS = 'SENT'
+            ORDER BY sent_at ASC, is_incoming DESC, $COL_ID ASC
+            """.trimIndent(),
+            arrayOf(key, key)
+        ).use { cursor ->
+            while (cursor.moveToNext()) {
+                messages += ConversationSms(
+                    id = cursor.getLong(0),
+                    isIncoming = cursor.getInt(1) == 1,
+                    address = cursor.getString(2),
+                    body = cursor.getString(3),
+                    sentAt = cursor.getLong(4),
+                    subscriptionId = if (cursor.isNull(5)) null else cursor.getInt(5)
+                )
+            }
+        }
+        return messages
+    }
+
+    private fun backfillConversationKeys(db: SQLiteDatabase) {
+        val outboxRows = mutableListOf<Pair<Long, String>>()
+        db.rawQuery("SELECT $COL_ID, $COL_RECIPIENT FROM $TABLE_OUTBOX", null).use { cursor ->
+            while (cursor.moveToNext()) outboxRows += cursor.getLong(0) to cursor.getString(1)
+        }
+        outboxRows.forEach { (id, address) ->
+            db.execSQL(
+                "UPDATE $TABLE_OUTBOX SET $COL_CONVERSATION_KEY = ? WHERE $COL_ID = ?",
+                arrayOf<Any?>(SmsAddress.normalize(address), id)
+            )
+        }
+
+        val inboxRows = mutableListOf<Pair<Long, String>>()
+        db.rawQuery("SELECT $COL_INBOX_ID, $COL_INBOX_SENDER FROM $TABLE_INBOX", null).use { cursor ->
+            while (cursor.moveToNext()) inboxRows += cursor.getLong(0) to cursor.getString(1)
+        }
+        inboxRows.forEach { (id, address) ->
+            db.execSQL(
+                "UPDATE $TABLE_INBOX SET $COL_CONVERSATION_KEY = ? WHERE $COL_INBOX_ID = ?",
+                arrayOf<Any?>(SmsAddress.normalize(address), id)
+            )
+        }
+    }
+
     fun outboxCounts(type: String = "SMS"): Map<String, Int> {
         val counts = mutableMapOf("PENDING" to 0, "SENDING" to 0, "SENT" to 0, "FAILED" to 0)
         readableDatabase.rawQuery(
@@ -322,5 +448,14 @@ data class IncomingSms(
     val sender: String,
     val body: String,
     val receivedAt: Long,
+    val subscriptionId: Int?
+)
+
+data class ConversationSms(
+    val id: Long,
+    val isIncoming: Boolean,
+    val address: String,
+    val body: String,
+    val sentAt: Long,
     val subscriptionId: Int?
 )

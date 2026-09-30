@@ -14,6 +14,7 @@ import net.wastu.numi.network.TelegramSender
 import net.wastu.numi.network.TelegramHtml
 import net.wastu.numi.queue.OutboxService
 import net.wastu.numi.utils.RecentActivity
+import net.wastu.numi.utils.SmsAddress
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -27,6 +28,12 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.ReentrantLock
 
 private const val SMS_LIST_PAGE_SIZE = 6
+
+private fun canReplyToSmsAddress(address: String): Boolean {
+    if (SmsAddress.normalize(address) == null) return false
+    val digits = address.filter { it.isDigit() }
+    return digits.length in 3..15 || address.any { it.isLetter() }
+}
 
 class CommandReceiver(
     private val context: Context,
@@ -434,6 +441,69 @@ class CommandReceiver(
                     val page = data.removePrefix("inbox:page:").toIntOrNull() ?: 0
                     sendInbox(chatId, page, confirmMessageId)
                 }
+                data.startsWith("inbox:open:") -> {
+                    val parts = data.removePrefix("inbox:open:").split(":", limit = 2)
+                    val rowId = parts.firstOrNull()?.toLongOrNull()
+                    val page = parts.getOrNull(1)?.toIntOrNull()?.coerceAtLeast(0) ?: 0
+                    if (rowId == null || dbHelper.getIncomingSms(rowId) == null) {
+                        sendInbox(chatId, page, confirmMessageId)
+                    } else {
+                        sendConversation(chatId, true, rowId, page, editMessageId = confirmMessageId)
+                    }
+                }
+                data.startsWith("inbox:move:") -> {
+                    val parts = data.removePrefix("inbox:move:").split(":", limit = 4)
+                    val kind = parts.getOrNull(0)
+                    val rowId = parts.getOrNull(1)?.toLongOrNull()
+                    val direction = parts.getOrNull(2)
+                    val page = parts.getOrNull(3)?.toIntOrNull()?.coerceAtLeast(0) ?: 0
+                    if ((kind != "in" && kind != "out") || rowId == null || direction == null) {
+                        sendInbox(chatId, page, confirmMessageId)
+                    } else {
+                        moveConversation(chatId, kind == "in", rowId, direction, page, confirmMessageId)
+                    }
+                }
+                data.startsWith("inbox:text:") -> {
+                    val parts = data.removePrefix("inbox:text:").split(":", limit = 4)
+                    val kind = parts.getOrNull(0)
+                    val rowId = parts.getOrNull(1)?.toLongOrNull()
+                    val offset = parts.getOrNull(2)?.toIntOrNull()?.coerceAtLeast(0) ?: 0
+                    val page = parts.getOrNull(3)?.toIntOrNull()?.coerceAtLeast(0) ?: 0
+                    if ((kind != "in" && kind != "out") || rowId == null) {
+                        sendInbox(chatId, page, confirmMessageId)
+                    } else {
+                        sendConversation(chatId, kind == "in", rowId, page, offset, confirmMessageId)
+                    }
+                }
+                data.startsWith("inbox:reply:") -> {
+                    val parts = data.removePrefix("inbox:reply:").split(":", limit = 2)
+                    val kind = parts.firstOrNull()
+                    val rowId = parts.getOrNull(1)?.toLongOrNull()
+                    val messages = if ((kind == "in" || kind == "out") && rowId != null) {
+                        dbHelper.conversationMessagesForAnchor(kind == "in", rowId)
+                    } else emptyList()
+                    val selected = messages.firstOrNull { it.id == rowId && it.isIncoming }
+                        ?: messages.lastOrNull { it.isIncoming }
+                    if (selected == null || !canReplyToSmsAddress(selected.address)) {
+                        editOrSend(chatId, confirmMessageId, "No received SMS is available to reply to in this conversation.")
+                    } else {
+                        sendReplyPrompt(
+                            chatId,
+                            confirmMessageId,
+                            ReplyTarget(selected.address, selected.subscriptionId, "inbox")
+                        )
+                    }
+                }
+                data.startsWith("inbox:delete:") -> {
+                    val parts = data.removePrefix("inbox:delete:").split(":", limit = 2)
+                    val rowId = parts.firstOrNull()?.toLongOrNull()
+                    val page = parts.getOrNull(1)?.toIntOrNull()?.coerceAtLeast(0) ?: 0
+                    if (rowId == null || dbHelper.deleteIncomingSms(rowId) == 0) {
+                        editOrSend(chatId, confirmMessageId, "That incoming SMS is no longer available.")
+                    } else {
+                        sendInbox(chatId, page, confirmMessageId)
+                    }
+                }
                 data.startsWith("outbox:page:") -> {
                     val page = data.removePrefix("outbox:page:").toIntOrNull() ?: 0
                     sendOutbox(chatId, page, confirmMessageId)
@@ -583,7 +653,10 @@ class CommandReceiver(
             data == "menu:status" -> null
             data == "menu:compose" -> "SMS composer opened"
             data == "menu:sims" -> "SIM routing viewed"
-            data == "menu:inbox" || data.startsWith("inbox:page:") -> "Inbox viewed"
+            data == "menu:inbox" || data.startsWith("inbox:page:") || data.startsWith("inbox:open:") -> "Inbox viewed"
+            data.startsWith("inbox:move:") || data.startsWith("inbox:text:") -> "Inbox message viewed"
+            data.startsWith("inbox:delete:") -> "Inbox message removed"
+            data.startsWith("inbox:reply:") -> "SMS reply started"
             data == "menu:outbox" || data.startsWith("outbox:page:") -> "Outbox viewed"
             data == "menu:help" -> "Help viewed"
             data == "menu:home" -> "Home opened"
@@ -713,48 +786,48 @@ class CommandReceiver(
         }
 
         private fun sendInbox(chatId: String, page: Int = 0, editMessageId: Int? = null) {
-            val lastPage = (dbHelper.incomingSmsCount() - 1).coerceAtLeast(0) / SMS_LIST_PAGE_SIZE
-            val safePage = page.coerceIn(0, lastPage)
-            val incomingPage = dbHelper.listInbox(SMS_LIST_PAGE_SIZE + 1, safePage * SMS_LIST_PAGE_SIZE)
-            val hasNext = incomingPage.size > SMS_LIST_PAGE_SIZE
-            val incoming = incomingPage.take(SMS_LIST_PAGE_SIZE)
-            if (incoming.isEmpty()) {
-                if (safePage > 0) {
-                    sendInbox(chatId, safePage - 1, editMessageId)
-                    return
-                }
-                sendScreen(chatId, "📥 No incoming SMS yet.", inboxKeyboard(safePage, false, false), editMessageId)
+            val total = dbHelper.incomingSmsCount()
+            val pageCount = ((total + SMS_LIST_PAGE_SIZE - 1) / SMS_LIST_PAGE_SIZE).coerceAtLeast(1)
+            val safePage = page.coerceIn(0, pageCount - 1)
+            val incoming = dbHelper.listInbox(SMS_LIST_PAGE_SIZE, safePage * SMS_LIST_PAGE_SIZE)
+            if (incoming.isEmpty() && safePage > 0) {
+                sendInbox(chatId, safePage - 1, editMessageId)
                 return
             }
+
             val sims = DeviceStatusProvider.activeSims(context).associateBy { it.subscriptionId }
-            val rows = JSONArray()
+            val keyboardRows = JSONArray()
             val text = buildString {
-                appendLine("📥 Inbox · page ${safePage + 1}")
-                appendLine()
-                incoming.forEachIndexed { index, sms ->
-                    val sim = sms.subscriptionId?.let { sims[it] }
-                    val simLabel = sim?.let { " · SIM ${it.slotIndex + 1}" }.orEmpty()
-                    val time = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
-                        .format(java.util.Date(sms.receivedAt))
-                    appendLine("${TelegramHtml.bold(sms.sender)}$simLabel · ${TelegramHtml.code(time)}")
-                    appendLine(TelegramHtml.escape(sms.body.compactExcerpt(130)))
-                    if (index < incoming.lastIndex) appendLine()
-                    rows.put(JSONArray().apply {
-                        put(JSONObject().apply {
-                            put("text", "↩ Reply")
-                            put("callback_data", "reply_inbox:${sms.id}")
-                        })
-                        put(JSONObject().apply {
-                            put("text", "✕ Remove")
-                            put("callback_data", "delete_inbox:${sms.id}:$safePage")
-                        })
-                    })
+                appendLine("📥 ${TelegramHtml.bold("Inbox")}")
+                if (total == 0) {
+                    append("No incoming SMS yet.")
+                } else {
+                    val firstNumber = safePage * SMS_LIST_PAGE_SIZE + 1
+                    val lastNumber = (firstNumber + incoming.size - 1).coerceAtMost(total)
+                    appendLine("$firstNumber–$lastNumber of $total · choose a number to open the conversation")
+                    appendLine()
+                    incoming.forEachIndexed { index, sms ->
+                        val number = firstNumber + index
+                        val sim = sms.subscriptionId?.let { sims[it] }
+                        val simLabel = sim?.let { " · SIM ${it.slotIndex + 1}" }.orEmpty()
+                        val time = java.text.SimpleDateFormat("MMM d · HH:mm", java.util.Locale.getDefault())
+                            .format(java.util.Date(sms.receivedAt))
+                        appendLine("${TelegramHtml.bold("$number. ${sms.sender}")}$simLabel · ${TelegramHtml.code(time)}")
+                        appendLine(TelegramHtml.escape(sms.body.compactExcerpt(105)))
+                        if (index < incoming.lastIndex) appendLine()
+                        keyboardRows.put(JSONArray().put(JSONObject().apply {
+                            put("text", "${number} · ${sms.sender.compactExcerpt(24)}")
+                            put("callback_data", "inbox:open:${sms.id}:$safePage")
+                        }))
+                    }
+                    appendLine()
+                    append("Page ${safePage + 1} of $pageCount")
                 }
             }
-            val navigation = inboxKeyboard(safePage, safePage > 0, hasNext)
+            val navigation = inboxKeyboard(safePage, safePage > 0, safePage < pageCount - 1)
                 .optJSONArray("inline_keyboard") ?: JSONArray()
-            for (index in 0 until navigation.length()) rows.put(navigation.getJSONArray(index))
-            sendScreen(chatId, text, JSONObject().put("inline_keyboard", rows), editMessageId)
+            for (index in 0 until navigation.length()) keyboardRows.put(navigation.getJSONArray(index))
+            sendScreen(chatId, text.trimEnd(), JSONObject().put("inline_keyboard", keyboardRows), editMessageId)
         }
 
         private fun inboxKeyboard(page: Int, hasPrevious: Boolean, hasNext: Boolean): JSONObject =
@@ -769,6 +842,94 @@ class CommandReceiver(
                     .put(JSONObject().put("text", "⌂ Home").put("callback_data", "menu:home")))
                 put(JSONArray().put(JSONObject().put("text", "🔄 Refresh").put("callback_data", "inbox:page:$page")))
             })
+
+        private fun moveConversation(
+            chatId: String,
+            isIncoming: Boolean,
+            messageId: Long,
+            direction: String,
+            page: Int,
+            editMessageId: Int?
+        ) {
+            val messages = dbHelper.conversationMessagesForAnchor(isIncoming, messageId)
+            val currentIndex = messages.indexOfFirst { it.id == messageId && it.isIncoming == isIncoming }
+            val targetIndex = when (direction) {
+                "previous" -> currentIndex - 1
+                "next" -> currentIndex + 1
+                else -> -1
+            }
+            if (currentIndex < 0 || targetIndex !in messages.indices) {
+                sendConversation(chatId, isIncoming, messageId, page, editMessageId = editMessageId)
+                return
+            }
+            val target = messages[targetIndex]
+            sendConversation(chatId, target.isIncoming, target.id, page, editMessageId = editMessageId)
+        }
+
+        private fun sendConversation(
+            chatId: String,
+            isIncoming: Boolean,
+            messageId: Long,
+            page: Int,
+            bodyOffset: Int = 0,
+            editMessageId: Int? = null
+        ) {
+            val messages = dbHelper.conversationMessagesForAnchor(isIncoming, messageId)
+            val currentIndex = messages.indexOfFirst { it.id == messageId && it.isIncoming == isIncoming }
+            if (currentIndex < 0) {
+                sendInbox(chatId, page, editMessageId)
+                return
+            }
+            val current = messages[currentIndex]
+            val bodyLength = current.body.codePointCount(0, current.body.length)
+            val chunkSize = 1500
+            val safeOffset = (bodyOffset / chunkSize * chunkSize).coerceIn(0, bodyLength)
+            val bodyStart = current.body.offsetByCodePoints(0, safeOffset)
+            val bodyEnd = current.body.offsetByCodePoints(0, minOf(safeOffset + chunkSize, bodyLength))
+            val bodyChunk = current.body.substring(bodyStart, bodyEnd)
+            val sims = DeviceStatusProvider.activeSims(context).associateBy { it.subscriptionId }
+            val time = java.text.SimpleDateFormat("MMM d, yyyy · HH:mm", java.util.Locale.getDefault())
+                .format(java.util.Date(current.sentAt))
+            val simLabel = current.subscriptionId?.let { sims[it]?.let { sim -> " · SIM ${sim.slotIndex + 1}" } }.orEmpty()
+            val directionLabel = if (current.isIncoming) "← Received" else "→ Sent from Numi"
+            val text = buildString {
+                appendLine("📱 ${TelegramHtml.bold(current.address.compactExcerpt(128))}")
+                appendLine("${currentIndex + 1} of ${messages.size} · $directionLabel · ${TelegramHtml.code(time)}$simLabel")
+                appendLine()
+                if (bodyChunk.isEmpty()) append("<i>(empty message)</i>")
+                else append(TelegramHtml.escape(bodyChunk))
+                if (bodyLength > chunkSize) {
+                    val shownThrough = minOf(safeOffset + chunkSize, bodyLength)
+                    appendLine()
+                    appendLine()
+                    append("Text ${safeOffset + 1}–$shownThrough of $bodyLength")
+                }
+            }
+            val keyboard = JSONArray()
+            if (currentIndex > 0 || currentIndex < messages.lastIndex) {
+                keyboard.put(JSONArray().apply {
+                    if (currentIndex > 0) put(JSONObject().put("text", "‹ Previous").put("callback_data", "inbox:move:${if (current.isIncoming) "in" else "out"}:${current.id}:previous:$page"))
+                    if (currentIndex < messages.lastIndex) put(JSONObject().put("text", "Next ›").put("callback_data", "inbox:move:${if (current.isIncoming) "in" else "out"}:${current.id}:next:$page"))
+                })
+            }
+            if (bodyLength > chunkSize) {
+                keyboard.put(JSONArray().apply {
+                    if (safeOffset > 0) put(JSONObject().put("text", "‹ Earlier text").put("callback_data", "inbox:text:${if (current.isIncoming) "in" else "out"}:${current.id}:${safeOffset - chunkSize}:$page"))
+                    if (safeOffset + chunkSize < bodyLength) put(JSONObject().put("text", "More text ›").put("callback_data", "inbox:text:${if (current.isIncoming) "in" else "out"}:${current.id}:${safeOffset + chunkSize}:$page"))
+                })
+            }
+            val actions = JSONArray()
+            if (messages.any { it.isIncoming && canReplyToSmsAddress(it.address) }) {
+                actions.put(JSONObject().put("text", "↩ Reply").put("callback_data", "inbox:reply:${if (current.isIncoming) "in" else "out"}:${current.id}"))
+            }
+            if (current.isIncoming) {
+                actions.put(JSONObject().put("text", "✕ Remove").put("callback_data", "inbox:delete:${current.id}:$page"))
+            }
+            if (actions.length() > 0) keyboard.put(actions)
+            keyboard.put(JSONArray().put(JSONObject().put("text", "‹ Inbox").put("callback_data", "inbox:page:$page"))
+                .put(JSONObject().put("text", "⌂ Home").put("callback_data", "menu:home")))
+            sendScreen(chatId, text, JSONObject().put("inline_keyboard", keyboard), editMessageId)
+        }
 
         private fun sendOutbox(chatId: String, page: Int = 0, editMessageId: Int? = null) {
             val total = dbHelper.outboxCounts().values.sum()
