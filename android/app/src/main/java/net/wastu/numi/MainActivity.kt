@@ -33,10 +33,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -46,6 +48,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,10 +70,13 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.wastu.numi.device.DeviceStatusProvider
 import net.wastu.numi.queue.OutboxService
+import net.wastu.numi.spam.GemmaDownloadStatus
+import net.wastu.numi.spam.GemmaSpamModel
 import net.wastu.numi.utils.SmsRoleManager
 
 private val NumiLightColors = lightColorScheme(
@@ -132,7 +138,9 @@ private fun NumiGatewayScreen() {
     val scope = rememberCoroutineScope()
 
     var phoneAccess by remember { mutableStateOf(PhoneAccess()) }
+    var gemmaStatus by remember { mutableStateOf(GemmaSpamModel.status(context)) }
     var showTelegramSetup by remember { mutableStateOf(false) }
+    var showGemmaDownloadConfirmation by remember { mutableStateOf(false) }
     var isSavingSettings by remember { mutableStateOf(false) }
     var botToken by remember { mutableStateOf(prefs.getString("BOT_TOKEN", "") ?: "") }
     var allowedUserIds by remember {
@@ -175,6 +183,23 @@ private fun NumiGatewayScreen() {
         lifecycleOwner.lifecycle.addObserver(observer)
         refreshPhoneAccess()
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    LaunchedEffect(gemmaStatus.downloadId, gemmaStatus.downloadInProgress) {
+        while (gemmaStatus.downloadInProgress) {
+            delay(1_000)
+            val latestStatus = withContext(Dispatchers.IO) { GemmaSpamModel.status(context) }
+            gemmaStatus = latestStatus
+        }
+    }
+
+    fun setSpamFilterEnabled(enabled: Boolean) {
+        if (enabled && !gemmaStatus.modelReady) {
+            showGemmaDownloadConfirmation = true
+            return
+        }
+        prefs.edit().putBoolean(GemmaSpamModel.KEY_FILTER_ENABLED, enabled).apply()
+        gemmaStatus = gemmaStatus.copy(filterEnabled = enabled)
     }
 
     val telegramConfigured = botToken.isNotBlank() && allowedUserIds.isNotEmpty()
@@ -230,6 +255,58 @@ private fun NumiGatewayScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
             ) {
+                Column(
+                    Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+                            Text("Local spam filter", style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                when {
+                                    gemmaStatus.downloadInProgress -> "Downloading Gemma 4 over Wi-Fi${gemmaStatus.progressPercent?.let { " · $it%" } ?: ""}"
+                                    gemmaStatus.filterEnabled -> "Gemma 4 checks SMS on this phone."
+                                    gemmaStatus.modelReady -> "Gemma 4 is ready to check incoming SMS."
+                                    gemmaStatus.downloadFailed -> "Download failed. Tap to try again."
+                                    else -> "Optional Gemma 4 model · ${GemmaSpamModel.MODEL_SIZE_LABEL}"
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = gemmaStatus.filterEnabled,
+                            enabled = !gemmaStatus.downloadInProgress,
+                            onCheckedChange = ::setSpamFilterEnabled
+                        )
+                    }
+                    if (gemmaStatus.downloadInProgress) {
+                        LinearProgressIndicator(
+                            progress = { (gemmaStatus.progressPercent ?: 0) / 100f },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            TextButton(
+                                onClick = {
+                                    gemmaStatus.downloadId?.let { id -> GemmaSpamModel.cancelDownload(context, id) }
+                                    gemmaStatus = GemmaDownloadStatus(false, false, null, false, null, false)
+                                }
+                            ) { Text("Cancel download") }
+                        }
+                    } else if (!gemmaStatus.modelReady) {
+                        Text(
+                            "SMS stays in your inbox; likely spam is only skipped in Telegram.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+            ) {
                 Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
                     Text(
                         "Phone access",
@@ -264,6 +341,34 @@ private fun NumiGatewayScreen() {
                 }
             }
         }
+    }
+
+    if (showGemmaDownloadConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showGemmaDownloadConfirmation = false },
+            title = { Text("Download local spam filter?") },
+            text = {
+                Text(
+                    "Download the Gemma 4 model (${GemmaSpamModel.MODEL_SIZE_LABEL}) over Wi-Fi. SMS is classified on this phone. Likely spam stays in the local inbox and is skipped in Telegram."
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showGemmaDownloadConfirmation = false
+                        scope.launch {
+                            gemmaStatus = withContext(Dispatchers.IO) {
+                                GemmaSpamModel.enqueueDownload(context)
+                                GemmaSpamModel.status(context)
+                            }
+                        }
+                    }
+                ) { Text("Download model") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showGemmaDownloadConfirmation = false }) { Text("Cancel") }
+            }
+        )
     }
 
     if (showTelegramSetup) {

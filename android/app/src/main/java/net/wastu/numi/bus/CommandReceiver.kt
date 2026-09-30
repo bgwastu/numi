@@ -16,6 +16,7 @@ import net.wastu.numi.database.IncomingSms
 import net.wastu.numi.network.TelegramSender
 import net.wastu.numi.network.TelegramHtml
 import net.wastu.numi.queue.OutboxService
+import net.wastu.numi.utils.RecentActivity
 import okhttp3.Call
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -257,6 +258,14 @@ class CommandReceiver(
             val text = message.optString("text", "")
             if (text.isBlank()) return
 
+            val command = text.trim().substringBefore('@').substringBefore(' ')
+            when {
+                text.startsWith("NUMI_CMD v1") -> RecentActivity.record(context, "Telegram control command")
+                command.equals("/status", ignoreCase = true) -> Unit
+                text.startsWith("/") -> RecentActivity.record(context, command.take(40))
+                else -> RecentActivity.record(context, "Telegram reply")
+            }
+
             // -- REPLY-TO-MESSAGE --
             val replyTo = message.optJSONObject("reply_to_message")
             if (replyTo != null && text.isNotBlank()) {
@@ -275,8 +284,6 @@ class CommandReceiver(
                 dispatchReply(chatId) { executor.execute(text) }
                 return
             }
-
-            val command = text.trim().substringBefore('@').substringBefore(' ')
 
             if (command.equals("/start", ignoreCase = true)) {
                 sendHome(chatId)
@@ -348,6 +355,8 @@ class CommandReceiver(
 
             val data = callback.optString("data", "")
             val confirmMessageId = message.optInt("message_id", 0).takeIf { it > 0 }
+
+            callbackActivity(data)?.let { RecentActivity.record(context, it) }
 
             // Answer callback query to stop the spinner
             answerCallback(callbackId)
@@ -525,6 +534,30 @@ class CommandReceiver(
             }
         }
 
+        private fun callbackActivity(data: String): String? = when {
+            data == "menu:status" -> null
+            data == "menu:compose" -> "SMS composer opened"
+            data == "menu:sims" -> "SIM routing viewed"
+            data == "menu:inbox" || data.startsWith("inbox:page:") -> "Inbox viewed"
+            data == "menu:outbox" || data.startsWith("outbox:page:") -> "Outbox viewed"
+            data == "menu:help" -> "Help viewed"
+            data == "menu:home" -> "Home opened"
+            data.startsWith("default_sim:") -> "Default SIM changed"
+            data.startsWith("retry_outbox:") -> "SMS retry requested"
+            data.startsWith("delete_outbox:") -> "Outbox message removed"
+            data.startsWith("delete_inbox:") -> "Inbox message removed"
+            data.startsWith("reply_inbox:") -> "SMS reply started"
+            data.startsWith("confirm_sms:") -> "SMS send confirmed"
+            data.startsWith("cancel_sms:") -> "SMS send cancelled"
+            else -> "Telegram control action"
+        }
+
+        private fun recentActivityLine(): String {
+            val recent = RecentActivity.read(context)
+                ?: return "Last activity: none yet"
+            return "Last activity: ${TelegramHtml.escape(recent.label)} · ${RecentActivity.relativeTime(recent.timestamp)}"
+        }
+
         private fun gatewayStatusText(): String = buildString {
             val sims = DeviceStatusProvider.activeSims(context)
             val defaultSimId = prefs.getInt("DEFAULT_SUBSCRIPTION_ID", -1)
@@ -534,11 +567,12 @@ class CommandReceiver(
                 PackageManager.PERMISSION_GRANTED
             val defaultSms = net.wastu.numi.utils.SmsRoleManager.isDefaultSmsApp(context)
 
-            appendLine("📟 ${TelegramHtml.bold("Numi SMS Gateway")}")
+            appendLine("📟 ${TelegramHtml.bold("Numi")}")
             appendLine("Service: ${if (OutboxService.isServiceRunning()) "✅ running" else "⚠️ stopped"}")
             appendLine("Default SMS app: ${if (defaultSms) "✅ enabled" else "⚠️ needed for incoming SMS"}")
             appendLine("Send permission: ${if (smsPermission) "✅ granted" else "⚠️ missing"}")
             appendLine("Outbox: ${TelegramHtml.code("$queued queued · ${counts["SENT"] ?: 0} accepted · ${counts["FAILED"] ?: 0} failed")}")
+            appendLine(recentActivityLine())
             appendLine()
             appendLine(TelegramHtml.bold("Active SIMs · ${sims.size}"))
             if (sims.isEmpty()) {
@@ -577,11 +611,12 @@ class CommandReceiver(
             val queued = (counts["PENDING"] ?: 0) + (counts["SENDING"] ?: 0)
             val failed = counts["FAILED"] ?: 0
             val sims = DeviceStatusProvider.activeSims(context)
-            val status = if (OutboxService.isServiceRunning()) "online" else "stopped"
+            val status = if (OutboxService.isServiceRunning()) "running" else "stopped"
             val text = buildString {
-                appendLine("📡 ${TelegramHtml.bold("Numi SMS Gateway")}")
-                appendLine("Service $status · ${sims.size} active SIM${if (sims.size == 1) "" else "s"}")
-                append("$queued queued · $failed failed")
+                appendLine("📡 ${TelegramHtml.bold("Numi")}")
+                appendLine("Service: $status · ${sims.size} active SIM${if (sims.size == 1) "" else "s"}")
+                appendLine("$queued queued · $failed failed")
+                append(recentActivityLine())
             }
             sendScreen(chatId, text, homeKeyboard(), editMessageId)
         }
@@ -655,7 +690,7 @@ class CommandReceiver(
             val sims = DeviceStatusProvider.activeSims(context).associateBy { it.subscriptionId }
             val rows = JSONArray()
             val text = buildString {
-                appendLine("📥 ${TelegramHtml.bold("Incoming SMS")} · page ${safePage + 1}")
+                appendLine("📥 Inbox · page ${safePage + 1}")
                 appendLine()
                 incoming.forEachIndexed { index, sms ->
                     val sim = sms.subscriptionId?.let { sims[it] }

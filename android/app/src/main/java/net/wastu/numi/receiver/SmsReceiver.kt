@@ -7,11 +7,7 @@ import android.provider.Telephony
 import android.telephony.SubscriptionManager
 import android.util.Log
 import net.wastu.numi.database.DbHelper
-import net.wastu.numi.device.DeviceStatusProvider
-import net.wastu.numi.network.TelegramHtml
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import net.wastu.numi.utils.RecentActivity
 
 class SmsReceiver : BroadcastReceiver() {
 
@@ -37,23 +33,7 @@ class SmsReceiver : BroadcastReceiver() {
             ).takeIf { it != SubscriptionManager.INVALID_SUBSCRIPTION_ID }
 
             dbHelper.recordIncomingSms(sender, body, timestamp, subscriptionId)
-
-            val sim = subscriptionId?.let { id ->
-                runCatching { DeviceStatusProvider.activeSims(context).firstOrNull { it.subscriptionId == id } }
-                    .getOrNull()
-            }
-            val simTag = sim?.let { "SIM ${it.slotIndex + 1}" }
-            val timeLabel = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
-            val compactBody = body.replace(Regex("\\s+"), " ").trim()
-            val excerpt = compactBody.takeCodePoints(140)
-
-            val formattedTelegramMessage = buildString {
-                append("📩 ${TelegramHtml.bold("SMS")} · ${TelegramHtml.code(sender)}")
-                if (simTag != null) append(" · ${TelegramHtml.bold(simTag)}")
-                append(" · ${TelegramHtml.code(timeLabel)}\n")
-                append(TelegramHtml.escape(excerpt))
-                if (excerpt.length < compactBody.length) append("…")
-            }
+            RecentActivity.record(context, "SMS received", timestamp)
 
             // Remote forwarding is optional; the local inbox works without a bot configured.
             val prefs = context.getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
@@ -64,7 +44,7 @@ class SmsReceiver : BroadcastReceiver() {
                 val rowId = dbHelper.enqueueMessage(
                     type = "TELEGRAM",
                     recipient = sender,
-                    body = formattedTelegramMessage,
+                    body = body,
                     idempotencyKey = idempotencyKey,
                     subscriptionId = subscriptionId
                 )
@@ -75,10 +55,5 @@ class SmsReceiver : BroadcastReceiver() {
                 }
             }
         }
-    }
-
-    private fun String.takeCodePoints(limit: Int): String {
-        if (codePointCount(0, length) <= limit) return this
-        return substring(0, offsetByCodePoints(0, limit))
     }
 }

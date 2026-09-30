@@ -14,11 +14,26 @@ import net.wastu.numi.R
 import net.wastu.numi.bus.ReplyTarget
 import net.wastu.numi.bus.TelegramActionStore
 import net.wastu.numi.database.DbHelper
+import net.wastu.numi.network.IncomingSmsTelegramMessage
 import net.wastu.numi.network.TelegramSender
+import net.wastu.numi.spam.LocalGemmaSpamFilter
+import net.wastu.numi.spam.GemmaSpamModel
+import net.wastu.numi.utils.RecentActivity
 import kotlinx.coroutines.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 class OutboxService : Service() {
+
+    private data class PendingOutboxMessage(
+        val id: Long,
+        val type: String,
+        val recipient: String,
+        val body: String,
+        val createdAt: Long,
+        val attempts: Int,
+        val subscriptionId: Int?
+    )
 
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
@@ -26,9 +41,11 @@ class OutboxService : Service() {
     private lateinit var dbHelper: DbHelper
     private lateinit var telegramSender: TelegramSender
     private lateinit var actionStore: TelegramActionStore
+    private lateinit var localGemmaSpamFilter: LocalGemmaSpamFilter
     private var commandReceiver: net.wastu.numi.bus.CommandReceiver? = null
     private val isRunning = AtomicBoolean(false)
     private var pollJob: Job? = null
+    private val inFlightMessageIds = ConcurrentHashMap.newKeySet<Long>()
 
     companion object {
         private const val CHANNEL_ID = "NumiOutboxChannel"
@@ -51,6 +68,7 @@ class OutboxService : Service() {
         serviceActive = true
         dbHelper = DbHelper(this)
         actionStore = TelegramActionStore(this)
+        localGemmaSpamFilter = LocalGemmaSpamFilter(this)
 
         // Read persistent config FIRST, then create the sender
         val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
@@ -103,68 +121,124 @@ class OutboxService : Service() {
             arrayOf(System.currentTimeMillis().toString())
         )
 
-        while (cursor.moveToNext()) {
-            val id = cursor.getLong(cursor.getColumnIndexOrThrow(DbHelper.COL_ID))
-            val type = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_TYPE))
-            val recipient = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_RECIPIENT))
-            val body = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COL_BODY))
-            val attempts = cursor.getInt(cursor.getColumnIndexOrThrow(DbHelper.COL_ATTEMPTS))
-            val subscriptionColumn = cursor.getColumnIndex(DbHelper.COL_SUBSCRIPTION_ID)
-            val subscriptionId = if (subscriptionColumn >= 0 && !cursor.isNull(subscriptionColumn)) {
-                cursor.getInt(subscriptionColumn)
-            } else null
-
-            // Update state to SENDING
-            db.execSQL(
-                "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'SENDING' WHERE ${DbHelper.COL_ID} = ?",
-                arrayOf(id)
-            )
-
-            serviceScope.launch {
-                val success = when (type) {
-                    "TELEGRAM" -> sendTelegram(recipient, body, subscriptionId)
-                    "SMS" -> {
-                        val result = sendSmsDirect(recipient, body, subscriptionId)
-                        if (result !is net.wastu.numi.device.SmsSendResult.Sent) {
-                            val reason = when (result) {
-                                net.wastu.numi.device.SmsSendResult.PermissionDenied -> "SMS permission is missing"
-                                net.wastu.numi.device.SmsSendResult.NoSim -> "Selected SIM is unavailable"
-                                is net.wastu.numi.device.SmsSendResult.Error -> result.reason
-                            }
-                            db.execSQL(
-                                "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_LAST_ERROR} = ? WHERE ${DbHelper.COL_ID} = ?",
-                                arrayOf<Any>(reason, id)
-                            )
-                        }
-                        result is net.wastu.numi.device.SmsSendResult.Sent
-                    }
-                    else -> false
-                }
-
-                if (success) {
-                    db.execSQL(
-                        "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'SENT', ${DbHelper.COL_LAST_ERROR} = NULL WHERE ${DbHelper.COL_ID} = ?",
-                        arrayOf(id)
+        val messages = buildList {
+            cursor.use { result ->
+                while (result.moveToNext()) {
+                    val subscriptionColumn = result.getColumnIndex(DbHelper.COL_SUBSCRIPTION_ID)
+                    add(
+                        PendingOutboxMessage(
+                            id = result.getLong(result.getColumnIndexOrThrow(DbHelper.COL_ID)),
+                            type = result.getString(result.getColumnIndexOrThrow(DbHelper.COL_TYPE)),
+                            recipient = result.getString(result.getColumnIndexOrThrow(DbHelper.COL_RECIPIENT)),
+                            body = result.getString(result.getColumnIndexOrThrow(DbHelper.COL_BODY)),
+                            createdAt = result.getLong(result.getColumnIndexOrThrow(DbHelper.COL_CREATED_AT)),
+                            attempts = result.getInt(result.getColumnIndexOrThrow(DbHelper.COL_ATTEMPTS)),
+                            subscriptionId = if (subscriptionColumn >= 0 && !result.isNull(subscriptionColumn)) {
+                                result.getInt(subscriptionColumn)
+                            } else null
+                        )
                     )
-                } else {
-                    val nextAttempts = attempts + 1
-                    // Exponential backoff: 5s, 10s, 20s, 40s...
-                    val delayMs = (5000 * Math.pow(2.0, attempts.toDouble())).toLong().coerceAtMost(300000)
-                    val nextAttemptAt = System.currentTimeMillis() + delayMs
-                    db.execSQL(
-                        "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'FAILED', ${DbHelper.COL_ATTEMPTS} = ?, ${DbHelper.COL_NEXT_ATTEMPT} = ? WHERE ${DbHelper.COL_ID} = ?",
-                        arrayOf<Any>(nextAttempts, nextAttemptAt, id)
-                    )
-                    Log.e("OutboxService", "Message $id failed. Retrying in ${delayMs / 1000}s")
                 }
             }
         }
-        cursor.close()
+
+        messages.forEach { message ->
+            val id = message.id
+            val type = message.type
+            val recipient = message.recipient
+            val body = message.body
+            val createdAt = message.createdAt
+            val attempts = message.attempts
+            val subscriptionId = message.subscriptionId
+            if (!inFlightMessageIds.add(id)) return@forEach
+            serviceScope.launch {
+                try {
+                    val spamFilterEnabled = getSharedPreferences(GemmaSpamModel.PREFS_NAME, Context.MODE_PRIVATE)
+                        .getBoolean(GemmaSpamModel.KEY_FILTER_ENABLED, false)
+                    val filteredAsSpam = type == "TELEGRAM" && spamFilterEnabled &&
+                        localGemmaSpamFilter.isLikelySpam(body)
+                    if (filteredAsSpam) {
+                        if (dbHelper.deleteFilteredIncomingSms(id) > 0) {
+                            RecentActivity.record(this@OutboxService, "Potential spam skipped")
+                            Log.i("OutboxService", "Potential spam SMS notification skipped locally")
+                        }
+                        return@launch
+                    }
+
+                    db.execSQL(
+                        "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'SENDING' WHERE ${DbHelper.COL_ID} = ?",
+                        arrayOf(id)
+                    )
+                    val success = when (type) {
+                        "TELEGRAM" -> sendTelegram(recipient, body, subscriptionId, createdAt)
+                        "SMS" -> {
+                            val result = sendSmsDirect(recipient, body, subscriptionId)
+                            if (result !is net.wastu.numi.device.SmsSendResult.Sent) {
+                                val reason = when (result) {
+                                    net.wastu.numi.device.SmsSendResult.PermissionDenied -> "SMS permission is missing"
+                                    net.wastu.numi.device.SmsSendResult.NoSim -> "Selected SIM is unavailable"
+                                    is net.wastu.numi.device.SmsSendResult.Error -> result.reason
+                                }
+                                db.execSQL(
+                                    "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_LAST_ERROR} = ? WHERE ${DbHelper.COL_ID} = ?",
+                                    arrayOf<Any>(reason, id)
+                                )
+                            }
+                            result is net.wastu.numi.device.SmsSendResult.Sent
+                        }
+                        else -> false
+                    }
+
+                    if (success) {
+                        db.execSQL(
+                            "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'SENT', ${DbHelper.COL_LAST_ERROR} = NULL WHERE ${DbHelper.COL_ID} = ?",
+                            arrayOf(id)
+                        )
+                        RecentActivity.record(
+                            this@OutboxService,
+                            if (type == "SMS") "SMS sent" else "SMS forwarded to Telegram"
+                        )
+                    } else {
+                        val nextAttempts = attempts + 1
+                        // Exponential backoff: 5s, 10s, 20s, 40s...
+                        val delayMs = (5000 * Math.pow(2.0, attempts.toDouble())).toLong().coerceAtMost(300000)
+                        val nextAttemptAt = System.currentTimeMillis() + delayMs
+                        db.execSQL(
+                            "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'FAILED', ${DbHelper.COL_ATTEMPTS} = ?, ${DbHelper.COL_NEXT_ATTEMPT} = ? WHERE ${DbHelper.COL_ID} = ?",
+                            arrayOf<Any>(nextAttempts, nextAttemptAt, id)
+                        )
+                        Log.e("OutboxService", "Message $id failed. Retrying in ${delayMs / 1000}s")
+                    }
+                } catch (exception: Exception) {
+                    Log.e("OutboxService", "Message $id processing failed", exception)
+                    val nextAttempts = attempts + 1
+                    val delayMs = (5000 * Math.pow(2.0, attempts.toDouble())).toLong().coerceAtMost(300000)
+                    db.execSQL(
+                        "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'FAILED', ${DbHelper.COL_ATTEMPTS} = ?, ${DbHelper.COL_NEXT_ATTEMPT} = ? WHERE ${DbHelper.COL_ID} = ?",
+                        arrayOf<Any>(nextAttempts, System.currentTimeMillis() + delayMs, id)
+                    )
+                } finally {
+                    inFlightMessageIds.remove(id)
+                }
+            }
+        }
     }
 
-    private suspend fun sendTelegram(recipientOrChat: String, text: String, subscriptionId: Int?): Boolean {
+    private suspend fun sendTelegram(
+        recipientOrChat: String,
+        body: String,
+        subscriptionId: Int?,
+        receivedAt: Long
+    ): Boolean {
         val activeChat = primaryChatId.ifBlank { return false }
         val replyTo = actionStore.getThreadTip(recipientOrChat)
+        val text = IncomingSmsTelegramMessage.format(
+            this,
+            recipientOrChat,
+            body,
+            receivedAt,
+            subscriptionId
+        )
         val messageId = telegramSender.sendMessageForId(
             activeChat,
             text,
@@ -260,6 +334,7 @@ class OutboxService : Service() {
         commandReceiver?.stop()
         pollJob?.cancel()
         serviceJob.cancel()
+        localGemmaSpamFilter.close()
         telegramSender.close()
     }
 

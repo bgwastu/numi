@@ -297,6 +297,12 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         "$COL_ID = ? AND $COL_TYPE = 'SMS' AND $COL_STATUS != 'SENDING'",
         arrayOf(id.toString())
     )
+
+    fun deleteFilteredIncomingSms(id: Long): Int = writableDatabase.delete(
+        TABLE_OUTBOX,
+        "$COL_ID = ? AND $COL_TYPE = 'TELEGRAM' AND $COL_STATUS IN ('PENDING', 'FAILED')",
+        arrayOf(id.toString())
+    )
 }
 
 data class OutboxMessage(
