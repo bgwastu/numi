@@ -5,13 +5,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.PowerManager
-import android.util.Log
 import androidx.core.content.ContextCompat
-import net.wastu.numi.util.PremiumSmsAutoAllow
-import net.wastu.numi.util.RootChecker
 import net.wastu.numi.utils.SmsRoleManager
 import net.wastu.numi.network.TelegramHtml
-import java.util.concurrent.TimeUnit
 
 data class PermissionCheck(
     val label: String,
@@ -45,10 +41,6 @@ data class PermissionHealth(
 }
 
 object DevicePermissionFixer {
-    private const val TAG = "DevicePermissionFixer"
-    private const val PKG = "net.wastu.numi"
-    private val SU_PATHS = arrayOf("/system/bin/su", "/system/xbin/su", "su")
-
     private val RUNTIME_PERMS: List<Pair<String, String>> = buildList {
         add(Manifest.permission.SEND_SMS to "SEND_SMS")
         add(Manifest.permission.RECEIVE_SMS to "RECEIVE_SMS")
@@ -94,62 +86,21 @@ object DevicePermissionFixer {
         return PermissionHealth(checks)
     }
 
-    /**
-     * Root-fix SMS role, runtime permissions, battery whitelist, and premium SMS allow.
-     * Returns a short human-readable result line.
-     */
+    /** Reports the Android settings the user must change; Numi never escalates through su. */
     fun fix(context: Context): String {
-        if (!RootChecker.isRootAvailable()) {
-            return "Fix failed: root (su) unavailable"
-        }
+        val missing = health(context).checks.filterNot { it.ok }.map { it.label }
+        if (missing.isEmpty()) return "All Android permissions and settings are ready."
 
-        val grants = RUNTIME_PERMS.joinToString(" && ") { (perm, _) ->
-            "pm grant $PKG $perm"
-        }
-        runRoot(grants)
-
-        runRoot(
-            "cmd role add-role-holder android.app.role.SMS $PKG && " +
-                "settings put secure sms_default_application $PKG && " +
-                "settings put global sms_default_application $PKG"
-        )
-
-        runRoot(
-            "dumpsys deviceidle whitelist +$PKG >/dev/null; " +
-                "cmd deviceidle whitelist +$PKG >/dev/null; " +
-                "cmd appops set $PKG RUN_ANY_IN_BACKGROUND allow; " +
-                "cmd appops set $PKG RUN_IN_BACKGROUND allow"
-        )
-
-        PremiumSmsAutoAllow.ensureAllowed()
-
-        val after = health(context)
-        return if (after.needsFix) {
-            val bad = after.checks.filter { !it.ok }.joinToString(", ") { it.label }
-            "Fix applied, still unhealthy: $bad"
-        } else {
-            "Fix applied — all permissions OK"
-        }
-    }
-
-    private fun runRoot(cmd: String, timeoutMs: Long = 12_000): String {
-        for (suPath in SU_PATHS) {
-            try {
-                val process = Runtime.getRuntime().exec(arrayOf(suPath, "-c", cmd))
-                process.outputStream.close()
-                val died = process.waitFor(timeoutMs, TimeUnit.MILLISECONDS)
-                if (!died) {
-                    process.destroyForcibly()
-                    continue
-                }
-                val out = process.inputStream.bufferedReader().readText()
-                if (process.exitValue() == 0 || out.isNotBlank()) return out
-            } catch (_: java.io.IOException) {
-                // try next su path
-            } catch (e: Exception) {
-                Log.w(TAG, "su via $suPath failed", e)
+        val actions = buildList {
+            if ("SMS role" in missing) add("set Numi as the default SMS app")
+            val runtimePermissions = missing - setOf("SMS role", "Battery")
+            if (runtimePermissions.isNotEmpty()) {
+                add("grant ${runtimePermissions.joinToString(", ")} in Android permissions")
             }
+            if ("Battery" in missing) add("set Numi battery use to Unrestricted")
         }
-        return ""
+
+        return "No root commands were run. Please ${actions.joinToString("; ")}. " +
+            "Android handles premium SMS confirmations."
     }
 }

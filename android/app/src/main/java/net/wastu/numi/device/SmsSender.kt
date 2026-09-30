@@ -4,7 +4,6 @@ import android.content.Context
 import android.telephony.SmsManager
 import android.telephony.SubscriptionManager
 import android.util.Log
-import net.wastu.numi.util.PremiumSmsAutoAllow
 
 sealed class SmsSendResult {
     data object Sent : SmsSendResult()
@@ -27,9 +26,6 @@ class SmsSender(private val context: Context) {
         }
 
         return try {
-            // Short codes (e.g. 3636) trigger Android's premium-SMS cost dialog unless allowed.
-            PremiumSmsAutoAllow.ensureAllowed()
-
             val smsManager: SmsManager = if (subscriptionId != null) {
                 val subManager = context.getSystemService(SubscriptionManager::class.java)
                 val subInfo = subManager.activeSubscriptionInfoList
@@ -52,7 +48,6 @@ class SmsSender(private val context: Context) {
                 smsManager.sendMultipartTextMessage(recipient, null, messages, null, null)
             }
 
-            PremiumSmsAutoAllow.dismissConfirmDialogAsync()
             Log.d("SmsSender", "SMS queued to $recipient (${messages.size} parts)")
             SmsSendResult.Sent
         } catch (e: SecurityException) {

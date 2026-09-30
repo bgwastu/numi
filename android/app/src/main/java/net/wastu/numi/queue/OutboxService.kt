@@ -59,9 +59,6 @@ class OutboxService : Service() {
         updateConfig(token, allowedIds)
         telegramSender = TelegramSender(BOT_TOKEN)
 
-        // Avoid blocking short-code SMS behind the premium/cost confirmation dialog.
-        Thread { net.wastu.numi.util.PremiumSmsAutoAllow.ensureAllowed() }.start()
-
         createNotificationChannel()
         try {
             startForeground(NOTIFICATION_ID, createNotification())
