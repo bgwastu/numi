@@ -37,4 +37,3 @@ Thumbs.db
 !/android/messages/schemas/**/*.json
 !/tools/release.json
 !/tools/spam-sources.json
-!/docs/evidence/gemma-*.json
