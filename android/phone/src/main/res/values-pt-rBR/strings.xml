@@ -22,8 +22,8 @@
     <string name="numi_phone_decline">Rejeitar</string>
     <string name="numi_phone_decline_call">Rejeitar chamada</string>
     <string name="numi_phone_unknown_caller">Chamada Desconhecida</string>
-    <string name="numi_phone_is_calling">Está chamando…</string>
-    <string name="numi_phone_dialing">Discando…</string>
+    <string name="numi_phone_is_calling">Está chamando</string>
+    <string name="numi_phone_dialing">Discando</string>
     <string name="numi_phone_call_ended">Chamada encerrada</string>
     <string name="numi_phone_call_ending">Encerrando chamada</string>
     <string name="numi_phone_ongoing_call">Chamada em andamento</string>
@@ -68,7 +68,7 @@
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_import_call_history">Importar histórico de chamadas</string>
     <string name="numi_phone_audio_route_wired_or_earpiece">Com fio ou fone de ouvido</string>
-    <string name="numi_phone_call_is_being_connected">Sua chamada está sendo conectada…</string>
+    <string name="numi_phone_call_is_being_connected">Sua chamada está sendo conectada</string>
     <string name="numi_phone_faq_3_title">Por que alguns dos meus contatos estão faltando no aplicativo?</string>
     <string name="numi_phone_hashtag">Jogo da velha</string>
     <string name="numi_phone_faq_2_title">Por que as chamadas de emergência não funcionam corretamente?</string>

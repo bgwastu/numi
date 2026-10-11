@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Peringatan: Beberapa peluncur tidak dapat menangani perubahan ikon aplikasi dengan benar. Jika ikon hilang, coba luncurkan aplikasi melalui Google Play atau widget jika tersedia. Setelah meluncurkan, pulihkan warna ikon hijau #106D1F bawaan. Dalam kasus tertentu, memasang ulang aplikasi dapat dilakukan.</string>
+    <string name="app_on_sd_card">Kelihatannya anda memasang aplikasi ini di kartu SD, sehingga widget tidak tersedia. Anda tidak akan melihatnya di daftar widget yang tersedia. Ini adalah keterbatasan sistem, jika anda ingin menggunakan widget, anda harus memindahkan aplikasi ke penyimpanan internal.</string>
+    <string name="cancel">Batalkan</string>
+    <string name="contributors">Kontributor</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Daftar ini berisi semua orang yang secara nyata membantu aplikasi apa pun dalam rangkaian Fossify, bukan hanya aplikasi ini. Terjemahan ditangani oleh relawan,\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020beri tahu kami jika Anda juga ingin membantu. Panduan penerjemahan ada di &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;situs web ini&lt;/a&gt;, atau hubungi kami di &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; jika ada pertanyaan.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Terima kasih kepada semua kontributor dan pendukung lainnya!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">Salin ke</string>
+    <string name="copying">Menyalin</string>
+    <string name="edit_with">Sunting dengan</string>
+    <string name="exporting">Mengekspor</string>
+    <string name="faq_6_text_commons">Isu ini muncul ketika peluncur Anda tidak mendukung kustomisasi ikon secara penuh. Coba luncurkan aplikasi melalui Google Play atau widget jika tersedia. Setelah meluncurkan, pulihkan warna ikon hijau #106D1F bawaan. Dalam beberapa kasus, memasang ulang aplikasi dapat dilakukan.</string>
+    <string name="faq_9_text_commons">Ada beberapa cara untuk melakukan itu. Cara pertama adalah memulai mode pemilihan dengan menekan lama satu item, kemudian klik pendek pada item lain untuk memilihnya. Cara kedua mirip dengan memilih item pada PC dengan mouse, cukup mulai mode pemilihan dengan menekan lama satu item, kemudian dengan jari Anda masih di bawah seret ke item lain untuk memilih. Cara ketiga untuk memilih beberapa item adalah dengan menekan lama satu item, kemudian menekan lama item lainnya dan semua yang ada di antaranya akan dipilih. Jika Anda ingin memilih semua item, cukup tekan lama satu item, kemudian klik pada penghitung item yang dipilih di sudut kiri atas. Itu akan memilih atau membatalkan pemilihan semua item.</string>
+    <string name="fingerprint_setup_successfully">Perlindungan berhasil dibuat. Silakan pasang ulang aplikasi jika ada masalah dalam menyetel ulang.</string>
+    <string name="importing">Mengimpor</string>
+    <string name="loading">Memuat</string>
+    <string name="move_to">Pindah ke</string>
+    <string name="moving">Memindahkan</string>
+    <string name="open_with">Buka dengan</string>
+    <string name="pro_app_refund">Jangan lupa, jika Anda mencopot aplikasi berbayar apa pun dalam waktu 2 jam, uang Anda akan otomatis dikembalikan. Jika Anda ingin pengembalian dilakukan lain waktu, cukup hubungi hello@fossify.org dan Anda akan mendapatkannya. Itu mempermudah Anda untuk mencobanya terlebih dahulu. :)</string>
+    <string name="protection_setup_successfully">Sandi berhasil dibuat. Silakan pasang ulang aplikasi jika anda melupakannya.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Silakan beli &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; untuk menggunakan fitur ini dan mendukung pengembangan. Terima kasih!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Memohon izin yang diperlukan</string>
+    <string name="save_as">Simpan sebagai</string>
+    <string name="saving">Menyimpan</string>
+    <string name="scanning">Memindai</string>
+    <string name="select_font_file">Pilih file font</string>
+    <string name="set_as">Atur sebagai</string>
+    <string name="share_via">Bagikan via</string>
+    <string name="sort_by">Urutkan menurut</string>
+    <string name="translation_welsh">Welsh</string>
+    <string name="updating">Memperbarui</string>
+</resources>

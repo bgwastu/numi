@@ -21,8 +21,8 @@
     <string name="numi_phone_decline">Declinar</string>
     <string name="numi_phone_decline_call">Declinar le appello</string>
     <string name="numi_phone_unknown_caller">Numero incognite</string>
-    <string name="numi_phone_is_calling">es appellante…</string>
-    <string name="numi_phone_dialing">Telephonante…</string>
+    <string name="numi_phone_is_calling">es appellante</string>
+    <string name="numi_phone_dialing">Telephonante</string>
     <string name="numi_phone_call_ended">Appello finite</string>
     <string name="numi_phone_always_use_this_sim">Sempre usar iste carta SIM pro iste numero</string>
     <string name="numi_phone_unset_default_sim">Disactivar le SIM predeterminate</string>

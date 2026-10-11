@@ -13,6 +13,8 @@ import net.wastu.numi.messaging.SendPolicy
 import net.wastu.numi.queue.OutboxService
 import net.wastu.numi.telephony.CallBridge
 import net.wastu.numi.network.TelegramEvents
+import net.wastu.numi.ui.attachNavigation
+import org.fossify.commons.extensions.baseConfig
 import org.fossify.messages.helpers.refreshConversations
 import org.fossify.messages.helpers.refreshMessages
 import java.util.concurrent.Executors
@@ -24,6 +26,10 @@ class NumiApplication : org.fossify.messages.App() {
         super.onCreate()
         if (!initializeMessaging) return
         val prefs = getSharedPreferences("numi_settings", MODE_PRIVATE)
+        if (android.os.Build.VERSION.SDK_INT >= 31 && !prefs.getBoolean("numi_monet_default_v1", false)) {
+            baseConfig.isSystemThemeEnabled = true
+            prefs.edit().putBoolean("numi_monet_default_v1", true).apply()
+        }
         if (!prefs.contains("numi_legacy_bot_identity")) {
             prefs.edit().putString("numi_legacy_bot_identity", prefs.getString("BOT_TOKEN", "").orEmpty().substringBefore(':'))
                 .putString("numi_legacy_owner", prefs.getString("TELEGRAM_OWNER_ID", "").orEmpty()).apply()
@@ -32,6 +38,7 @@ class NumiApplication : org.fossify.messages.App() {
         NumiHooks.openCalls = { it.startActivity(Intent(it, org.fossify.phone.activities.SplashActivity::class.java)) }
         NumiHooks.openMessages = { it.startActivity(Intent(it, MainActivity::class.java)) }
         NumiHooks.openSpam = { it.startActivity(Intent(it, net.wastu.numi.spam.SpamActivity::class.java)) }
+        NumiHooks.bindNavigation = ::attachNavigation
         NumiHooks.spamIds = { net.wastu.numi.spam.SpamStore(it).hiddenIds() }
         NumiHooks.inboxSummary = net.wastu.numi.spam.SpamCoordinator::summary
         NumiHooks.messagesOpened = { context -> synchronizeHistory(context) }

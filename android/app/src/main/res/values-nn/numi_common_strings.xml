@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="cancel">Avbryt</string>
+    <string name="edit_with">Gjer om med</string>
+    <string name="open_with">Opna med</string>
+    <string name="save_as">Lagra som</string>
+    <string name="scanning">Søkjer</string>
+    <string name="set_as">Nytta som</string>
+    <string name="updating">Oppdaterer</string>
+</resources>

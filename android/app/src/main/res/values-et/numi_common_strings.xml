@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Hoiatus: Mõned käivitajad ei käsitse rakenduste ikoonide kohandamist korralikult. Kui ikoon kaob, proovi käivitada rakendus Google Play\'st või mõne muu olemasoleva vidina abil. Kui oled käivitanud rakenduse, seadista lihtsalt ikooni vaikimisi roheline toon #106D1F tagasi. Halvemal juhul pead rakenduse võib-olla uuesti paigaldama.</string>
+    <string name="app_on_sd_card">Tundub, et oled rakenduse paigaldanud SD-kaardile, mis muudab rakenduse vidinad mittekasutatavateks. Sa isegi ei näe neid olemasolevate vidinate nimekirjas. Tegemist on süsteemipiiranguga, seega kui soovid vidinaid kasutada, pead rakenduse tagasi sisemällu tõstma.</string>
+    <string name="cancel">Katkesta</string>
+    <string name="contributors">Kaasautorid</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Selles loendis on kõik, kes aitasid märgatavalt arendada või tõlkida mis tahes rakendust komplektis „Fossify nutitarvikud“.Tõlkimisega tegelevad vabatahtlikud,\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020anna meile teada, kui soovid ka osaleda. Tõlkimise juhend asub &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;meie Githubi lehel&lt;/a&gt; või kui sul on küsimusi, siis võta meiega ühendust aadressil &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt;.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Aitäh kõigile panustajatele ja teistele toetajatele!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">Kopeeri asukohta</string>
+    <string name="copying">Kopeerime</string>
+    <string name="edit_with">Muuda rakendusega</string>
+    <string name="exporting">Ekspordime</string>
+    <string name="faq_6_text_commons">Selle põhjuseks on asjaolu, et see käivitaja ei toeta ikoonide kohandamist korralikult. Proovi käivitada rakendus Google Play või mõne sarnase saadaoleva vidina abil. Peale käivitamist, seadista lihtsalt tagasi ikooni vaikimisi roheline toon #106D1F. Halvemal juhul pead rakenduse võib-olla uuesti paigaldama.</string>
+    <string name="faq_9_text_commons">Selleks on mitu võimalust. Esimene neist on valikurežiimi käivitamine, vajutades pikalt ühe objektile ja seejärel teiste valimine lühikese vajutusega. Teine viis on sarnane arvutites kasutatavale sisu valimisele hiirega, lihtsalt alusta valimist vajutades pikalt ühele kirjel, seejärel lohista teiste kirjete valimiseks sõrmega üle nende. Kolmas viis mitme kirje valimiseks on ühe kirje pikalt vajutamine, seejärel teise kirje pikalt vajutamine ja kõik vahepealsed kirjed saavad ka valituks. Kui soovid valida kõik kirjed, vajuta pikalt ühte kirjet, seejärel klõpsa vasakus ülanurgas asuval valitud kirjete loenduril. See valib või tühistab kõikide kirjete valiku.</string>
+    <string name="fingerprint_setup_successfully">Turvamise seadistamine õnnestus. Juhul, kui selle lähtestamisel tekib vigu, siis palun paigalda rakendus uuesti.</string>
+    <string name="importing">Impordime</string>
+    <string name="loading">Laadin</string>
+    <string name="move_to">Teisalda asukohta</string>
+    <string name="moving">Teisaldame</string>
+    <string name="open_with">Ava rakendusega</string>
+    <string name="pro_app_refund">Palun arvesta, et kui eemaldad tasulise rakenduse nutiseadmest 2 tunni jooksul, siis ostusumma tagastatakse automaatselt. Kui soovit tagastust hiljem, siis saada e-kiri hello@fossify.org aadressile ning korraldame tagastuse. Mõlemal juhul on sul võimalik meie tasulisi rakendusi testida :)</string>
+    <string name="protection_setup_successfully">Salasõna seadistamine õnnestus. Juhul, kui unustad salasõna, siis paigalda rakendus uuesti.</string>
+    <string name="purchase_thank_you">"\n            Selle funktsionaalsuse kasutamiseks ja meie arendustöö toetamiseks palun osta &lt;a href=https://play.google.com/store/apps/details?id=org.fossify.thankyou&gt;Fossify Suur Tänu&lt;/a&gt;. Täname sind juba ette!\n        "</string>
+    <string name="request_the_required_permissions">Taotle vajalikke õigusi</string>
+    <string name="save_as">Salvesta kui</string>
+    <string name="saving">Salvestame</string>
+    <string name="scanning">Uurime andmeid</string>
+    <string name="select_font_file">Vali kirjatüübi fail</string>
+    <string name="set_as">Seadista kui</string>
+    <string name="share_via">Jaga rakendusega</string>
+    <string name="sort_by">Järjesta</string>
+    <string name="translation_welsh">kõmri keel</string>
+    <string name="updating">Uuendame</string>
+</resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Rašykite žinutę…</string>
+    <string name="type_a_message">Rašykite žinutę</string>
     <string name="message_not_sent_short">Pranešimas neišsiųstas</string>
     <string name="message_not_sent_touch_retry">Neišsiųsta. Palieskite , kad bandytumėte dar kartą.</string>
     <string name="message_sending_error">Jūsų žinutė \'%s\' nebuvo išsiųstas</string>
@@ -10,16 +10,16 @@
     <string name="start_conversation">Pradėtipokalbį</string>
     <string name="reply">Atsakyti</string>
     <string name="show_character_counter">Rodyti simbolių skaitiklį rašant pranešimus</string>
-    <string name="loading_messages">Įkeliami pranešimai…</string>
+    <string name="loading_messages">Įkeliami pranešimai</string>
     <string name="no_reply_support">Siuntėjas nepalaiko atsakymų</string>
     <string name="draft">Projektas</string>
-    <string name="sending">Siunčiame…</string>
+    <string name="sending">Siunčiame</string>
     <string name="pin_conversation">Prisegti prie viršaus</string>
     <string name="unpin_conversation">Atjunkite</string>
     <string name="forward_message">Pirmyn</string>
     <string name="compress_error">Nepavyksta suspausti vaizdo iki pasirinkto dydžio</string>
     <string name="new_conversation">Naujas pokalbis</string>
-    <string name="add_contact_or_number">Pridėti kontaktą arba numerį…</string>
+    <string name="add_contact_or_number">Pridėti kontaktą arba numerį</string>
     <string name="suggestions">Pasiūlymai</string>
     <string name="me">Aš</string>
     <string name="channel_received_sms">Gautos žinutės</string>

@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Keeldu</string>
     <string name="numi_phone_decline_call">Keeldu kõnest</string>
     <string name="numi_phone_unknown_caller">Tundmatu helistaja</string>
-    <string name="numi_phone_is_calling">Helistab…</string>
-    <string name="numi_phone_dialing">Valin numbrit…</string>
+    <string name="numi_phone_is_calling">Helistab</string>
+    <string name="numi_phone_dialing">Valin numbrit</string>
     <string name="numi_phone_call_ended">Kõne on lõppenud</string>
     <string name="numi_phone_call_ending">Kõne on lõppemas</string>
     <string name="numi_phone_ongoing_call">Käsil olev kõne</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_faq_1_text">Üldist vastust pole, sellistel probleemidel võib olla palju seadme- ja süsteemispetsiifilisi põhjusi. Peaksid oma nutiseadme seadistustes ringi vaatama ja veenduma, et rakendusel on lubatud taustalt aknaid avada ja lubada kuvamist rakenduste peal.</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
-    <string name="numi_phone_call_is_being_connected">Sinu kõne on ühendamisel…</string>
+    <string name="numi_phone_call_is_being_connected">Sinu kõne on ühendamisel</string>
     <string name="numi_phone_faq_3_title">Miks mõned minu kontaktid pole rakenduses näha?</string>
     <string name="numi_phone_faq_3_text">Fossify telefon näitab vaid kontakte, millega on seotud telefoninumber. Telefonikirjeta kontakte pole rakenduses näha.</string>
     <string name="numi_phone_faq_2_text">Androidi süsteemi poolt seatud piirangute tõttu saab hädaabikõnesid teha vaid süsteemi vaikimisi telefonirakendusega. Selleks, et hädaabikõned alati toimiks, palun hoia süsteemi vaikimisi telefonirakendus paigaldatuna ja kasutatavana.</string>

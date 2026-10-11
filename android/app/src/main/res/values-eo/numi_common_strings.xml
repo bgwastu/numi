@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Atentu: Kelkaj lanĉiloj eble ne traktos ĝuste la tajloradon de aplikaĵaj bildsimboloj. Se la bildsimbolo malaperas, provu lanĉi la aplikaĵon per Google Play aŭ fenestraĵo, se tio eblas. Post lanĉi ĝin, restaŭru la defaŭltan verdan koloron #106D1F de la bildsimbolo. En ekstremaj kazoj, eble endos reinstali la aplikaĵon.</string>
+    <string name="app_on_sd_card">Vi ŝajne instalis la aplikaĵon sur SD-karto, kiu maldisponebligas aplikaĵajn fenestraĵojn. Vi nek vidos ilin en la listo de disponeblaj fenestraĵoj. Tiu ĉi estas limigo de la sistemo, tial se vi volas uzi la fenestraĵojn, vi devas movi la aplikaĵon al la interna memoro.</string>
+    <string name="cancel">Nuligi</string>
+    <string name="contributors">Kontribuantoj</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Tiu ĉi listo enhavas ĉiujn kiuj rimarkeble helpis iun ajn aplikaĵon de Fossify, ne nur tiu ĉi. La tradukado estas traktita pro volontuloj.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Sciigu nin se vi ankaŭ ŝatus helpi nin. La traduka gvido troviĝas &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;ĉi tie&lt;/a&gt;, aŭ vi povas kontakti nin je &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; se vi havas demandojn.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Dankon al ĉiuj kontribuantoj kaj aliaj subtenantoj!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">Kopii al</string>
+    <string name="copying">Kopiado</string>
+    <string name="edit_with">Redakti per</string>
+    <string name="exporting">Eksportado</string>
+    <string name="faq_6_text_commons">Tiu ĉi problemo aperas kiam via lanĉilo ne tute subtenas la tajloradon de bildsimboloj. Provu lanĉi la aplikaĵon per Google Play aŭ fenestraĵo, se tio eblas. Post lanĉi ĝin, restaŭru la defaŭltan verdan koloron #106D1F de la bildsimbolo. En ekstremaj kazoj, eble endos reinstali la aplikaĵon.</string>
+    <string name="faq_9_text_commons">Ekzistas kelkaj manieroj de tion fari. La unua estas longe premi elementon por aktivigi la elektan reĝimon, kaj poste frapeti aliajn por elekti ilin. La dua similas al elekti elementojn sur komputilo per muso. Simple aktivigu la elektan reĝimon per longe premi elementon, kaj kun via fingro ankoraŭ sur la ekrano, movu vian fingron trans aliaj elementoj. La tria maniero estas longe premi elementon kaj poste longe premi alian por elekti ĉion inter ili. Se vi volas elekti ĉiujn elementojn, simple longe premu unu kaj poste frapetu la nombrilon de elektitaj elementoj supre-maldekstre. Tio ĉion elektos aŭ malelektos.</string>
+    <string name="fingerprint_setup_successfully">Protektado sukcese agordita. Bonvolu reinstali la aplikaĵon se estas problemoj de rekomencigi ĝin.</string>
+    <string name="importing">Importado</string>
+    <string name="loading">Ŝargado</string>
+    <string name="move_to">Movi al</string>
+    <string name="moving">Movado</string>
+    <string name="open_with">Malfermi per</string>
+    <string name="pro_app_refund">Ne forgesu, ke se vi malinstalas iun ajn pagan aplikaĵon ene de du horoj, vi estos aŭtomate repagita. Se vi volas repagon post tiam, simple kontaktu nin je hello@fossify.org, kaj vi ricevos repagon. Tiel, facilas provi ĝin :)</string>
+    <string name="protection_setup_successfully">Pasvorto sukcese registrita. Bonvolu reinstali la aplikaĵon se vi forgesas ĝin.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Bonvolu aĉeti &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Dankon&lt;/a&gt; por uzi ĉi tiun funkcion kaj subteni la programadon. Dankon!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Peti bezonatajn permesojn</string>
+    <string name="save_as">Konservi kiel</string>
+    <string name="saving">Konservado</string>
+    <string name="scanning">Skanante</string>
+    <string name="select_font_file">Elekti tiparodosieron</string>
+    <string name="set_as">Difini kiel</string>
+    <string name="share_via">Kunhavigi per</string>
+    <string name="sort_by">Ordigi laŭ</string>
+    <string name="translation_welsh">Kimra</string>
+    <string name="updating">Ĝisdatigante</string>
+</resources>

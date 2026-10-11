@@ -22,8 +22,8 @@
     <string name="numi_phone_decline">Відхилити</string>
     <string name="numi_phone_decline_call">Відхилити дзвінок</string>
     <string name="numi_phone_unknown_caller">Невідомий абонент</string>
-    <string name="numi_phone_is_calling">Дзвонить…</string>
-    <string name="numi_phone_dialing">Набір номера…</string>
+    <string name="numi_phone_is_calling">Дзвонить</string>
+    <string name="numi_phone_dialing">Набір номера</string>
     <string name="numi_phone_call_ended">Виклик завершено</string>
     <string name="numi_phone_call_ending">Завершення виклику</string>
     <string name="numi_phone_ongoing_call">Поточний виклик</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_asterisk">Зірочка</string>
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
-    <string name="numi_phone_call_is_being_connected">Триває з\'єднання…</string>
+    <string name="numi_phone_call_is_being_connected">Триває з\'єднання</string>
     <string name="numi_phone_faq_2_title">Чому екстрені виклики не працюють належним чином?</string>
     <string name="numi_phone_faq_2_text">Через системні обмеження екстрені виклики можна здійснювати лише через стандартний набір номера або телефонний застосунок вашої системи. Щоби екстрені виклики працювали належним чином, вам потрібно тримати системний застосунок встановленим та увімкненим.</string>
     <string name="numi_phone_faq_3_title">Чому деякі з моїх контактів відсутні в застосунку?</string>

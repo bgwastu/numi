@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="cancel">پاشگەزبونەوە</string>
+    <string name="edit_with">دەستکاریکردن لەڕێی</string>
+    <string name="open_with">کردنەوە وەک</string>
+    <string name="save_as">پاراستن وەک</string>
+</resources>

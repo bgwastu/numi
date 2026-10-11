@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="cancel">ரத்துசெய்</string>
+    <string name="copy_to">இதற்கு நகலெடு</string>
+    <string name="copying">நகலெடுக்கிறது</string>
+    <string name="edit_with">இதனுடன் திருத்து</string>
+    <string name="exporting">இறக்குகிறது</string>
+    <string name="importing">ஏற்றுகிறது</string>
+    <string name="move_to">இதற்கு நகர்த்து</string>
+    <string name="moving">நகர்த்துகிறது</string>
+    <string name="open_with">இதனுடன் திற</string>
+    <string name="request_the_required_permissions">தேவையான அனுமதிகளைக் கோருங்கள்</string>
+    <string name="save_as">இவ்வாறு சேமி</string>
+    <string name="saving">சேமிக்கிறது</string>
+    <string name="set_as">இதுவாக அமை</string>
+    <string name="share_via">இதன்மூலம் பகிர்</string>
+    <string name="sort_by">இதன்படி வரிசைபடுத்து</string>
+</resources>

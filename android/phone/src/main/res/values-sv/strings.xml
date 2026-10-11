@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Avvisa</string>
     <string name="numi_phone_decline_call">Avvisa samtal</string>
     <string name="numi_phone_unknown_caller">Okänd uppringare</string>
-    <string name="numi_phone_is_calling">Ringer…</string>
-    <string name="numi_phone_dialing">Ringer upp…</string>
+    <string name="numi_phone_is_calling">Ringer</string>
+    <string name="numi_phone_dialing">Ringer upp</string>
     <string name="numi_phone_call_ended">Samtalet har avslutats</string>
     <string name="numi_phone_call_ending">Samtalet avslutas</string>
     <string name="numi_phone_ongoing_call">Pågående samtal</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_faq_1_text">Sådana problem kan ha många enhets- och systemspecifika orsaker, det är svårt att svara på generellt. Titta i enhetens inställningar och se till att appen tillåts visas när den är i bakgrunden och tillåts visas ovanpå andra appar.</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
-    <string name="numi_phone_call_is_being_connected">Samtalet kopplas…</string>
+    <string name="numi_phone_call_is_being_connected">Samtalet kopplas</string>
     <string name="numi_phone_faq_2_title">Varför fungerar inte nödsamtal korrekt?</string>
     <string name="numi_phone_faq_3_title">Varför saknas vissa av mina kontakter i appen?</string>
     <string name="numi_phone_faq_3_text">Fossify Phone visar bara kontakter som har ett telefonummer. Kontakter utan ett telefonnummer visas inte i appen.</string>

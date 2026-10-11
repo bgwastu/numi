@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Afwijzen</string>
     <string name="numi_phone_decline_call">Gesprek afwijzen</string>
     <string name="numi_phone_unknown_caller">Nummer onbekend</string>
-    <string name="numi_phone_is_calling">Belt…</string>
-    <string name="numi_phone_dialing">Kiezen…</string>
+    <string name="numi_phone_is_calling">Belt</string>
+    <string name="numi_phone_dialing">Kiezen</string>
     <string name="numi_phone_call_ended">Gesprek beëindigd</string>
     <string name="numi_phone_call_ending">Einde gesprek</string>
     <string name="numi_phone_ongoing_call">Huidig gesprek</string>
@@ -70,7 +70,7 @@
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_faq_2_title">Waarom werken noodoproepen niet goed?</string>
-    <string name="numi_phone_call_is_being_connected">Verbinding maken…</string>
+    <string name="numi_phone_call_is_being_connected">Verbinding maken</string>
     <string name="numi_phone_faq_3_text">Fossify Telefoon toont alleen contacten waaraan een telefoonnummer is gekoppeld. Contacten zonder telefoonnummer worden dus niet weergegeven in de app.</string>
     <string name="numi_phone_faq_3_title">Waarom ontbreken sommige van mijn contacten in de app?</string>
     <string name="numi_phone_faq_2_text">Wegens systeembeperkingen kunnen noodoproepen alleen worden gedaan via de telefoonapp van je systeem. Om ervoor te zorgen dat noodoproepen goed werken, moet de systeemapp geïnstalleerd en ingeschakeld blijven.</string>

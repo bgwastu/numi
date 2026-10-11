@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Въведете съобщение…</string>
+    <string name="type_a_message">Въведете съобщение</string>
     <string name="message_not_sent_short">Съобщението не е изпратено</string>
     <string name="message_not_sent_touch_retry">Не е изпратено. Докоснете за нов опит.</string>
     <string name="message_sending_error">Съобщението до „%s“ не е изпратено</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Започнете разговор</string>
     <string name="reply">Отговор</string>
     <string name="show_character_counter">Брояч на символите при въвеждане на съобщение</string>
-    <string name="loading_messages">Зареждане на съобщенията…</string>
+    <string name="loading_messages">Зареждане на съобщенията</string>
     <string name="no_reply_support">Изпращачът не поддържа отговори</string>
     <string name="draft">Чернова</string>
-    <string name="sending">Изпращане…</string>
+    <string name="sending">Изпращане</string>
     <string name="pin_conversation">Закачане най-горе</string>
     <string name="unpin_conversation">Премахване от закачените</string>
     <string name="forward_message">Препращане</string>
@@ -24,7 +24,7 @@
         <item quantity="other">и %d други</item>
     </plurals>
     <string name="new_conversation">Нов разговор</string>
-    <string name="add_contact_or_number">Добавете контакт или номер…</string>
+    <string name="add_contact_or_number">Добавете контакт или номер</string>
     <string name="suggestions">Предложения</string>
     <string name="members">Участници</string>
     <string name="conversation_name">Заглавие на разговора</string>

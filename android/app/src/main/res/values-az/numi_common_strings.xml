@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_on_sd_card">Görünür tətbiqi SD karta yükləmisiniz, bu widgetlərin işləməsinin qarşısını alır. Siz widgetləri əlçatan widgetlər siyahısında belə görə bilməyəcəksiniz. Bu sistem məhdudiyyətidir, əgər vidjetlərin işləməsini istəyirsinizsə, tətbiqi daxili yaddaşa köçürməlisiniz.</string>
+    <string name="cancel">Ləğv Et</string>
+    <string name="copy_to">Bura kopyala</string>
+    <string name="copying">Kopyalanır</string>
+    <string name="exporting">Çıxarılır</string>
+    <string name="fingerprint_setup_successfully">Qoruma təyini uğurludur. Əgər təzələmə problemi yaşasanız, tətbiqi yenidən yükləyin.</string>
+    <string name="importing">Daxil edilir</string>
+    <string name="move_to">Yerini bura dəyiş</string>
+    <string name="moving">Yerini dəyişir</string>
+    <string name="open_with">Bununla aç</string>
+    <string name="protection_setup_successfully">Şifrə təyini uğurludur. Əgər şifrəni unutsanız, tətbiqi yenidən yükləyin.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Lütfən bağış edin &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Bu funksiyanı açdığınız və təkmilləşdirməni dəstəklədiyiniz üçün Sadə Təşəkkür&lt;/a&gt;. Çox Sağolun!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Lazım olan icazələri istə</string>
+    <string name="save_as">Saxla</string>
+    <string name="saving">Saxlanılır</string>
+    <string name="set_as">Təyin et</string>
+    <string name="share_via">Paylaş</string>
+    <string name="sort_by">Sırala</string>
+    <string name="updating">Yenilənir</string>
+</resources>

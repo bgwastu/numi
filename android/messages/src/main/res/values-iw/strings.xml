@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">נא להקליד הודעה…</string>
+    <string name="type_a_message">נא להקליד הודעה</string>
     <string name="message_not_sent_short">ההודעה לא נשלחה</string>
     <string name="message_not_sent_touch_retry">ההודעה לא נשלחה. יש להקיש לניסיון חוזר.</string>
     <string name="message_sending_error">ההודעה שלך אל ‚%s’ לא נשלחה</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">התחלת שיחה</string>
     <string name="reply">תגובה</string>
     <string name="show_character_counter">הצגת מונה תווים בעת כתיבת הודעות</string>
-    <string name="loading_messages">ההודעות נטענות…</string>
+    <string name="loading_messages">ההודעות נטענות</string>
     <string name="no_reply_support">שולח זה אינו מקבל תגובות</string>
     <string name="draft">טיוטה</string>
-    <string name="sending">מתבצעת שליחה…</string>
+    <string name="sending">מתבצעת שליחה</string>
     <string name="pin_conversation">הצמדה לחלק העליון</string>
     <string name="unpin_conversation">ביטול הצמדה</string>
     <string name="forward_message">קדימה</string>
@@ -24,7 +24,7 @@
         <item quantity="other">ועוד %d נוספים</item>
     </plurals>
     <string name="new_conversation">שיחה חדשה</string>
-    <string name="add_contact_or_number">הוספת איש קשר או מספר…</string>
+    <string name="add_contact_or_number">הוספת איש קשר או מספר</string>
     <string name="suggestions">הצעות</string>
     <string name="channel_received_sms">הודעות נכנסות</string>
     <string name="new_message">הודעה חדשה</string>

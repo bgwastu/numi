@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Napisz wiadomość…</string>
+    <string name="type_a_message">Napisz wiadomość</string>
     <string name="message_not_sent_short">Wiadomość nie została wysłana</string>
     <string name="message_not_sent_touch_retry">Nie wysłano. Naciśnij, aby spróbować ponownie.</string>
     <string name="message_sending_error">Twoja wiadomość do „%s” nie została wysłana</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Rozpocznij rozmowę</string>
     <string name="reply">Odpowiedz</string>
     <string name="show_character_counter">Pokazuj licznik znaków podczas pisania wiadomości</string>
-    <string name="loading_messages">Ładowanie wiadomości…</string>
+    <string name="loading_messages">Ładowanie wiadomości</string>
     <string name="no_reply_support">Nadawca nie obsługuje odpowiedzi</string>
     <string name="draft">Szkic</string>
-    <string name="sending">Wysyłanie…</string>
+    <string name="sending">Wysyłanie</string>
     <string name="pin_conversation">Przypnij na górze</string>
     <string name="unpin_conversation">Odepnij</string>
     <string name="forward_message">Przekaż dalej</string>
@@ -26,7 +26,7 @@
         <item quantity="other">i %d innych</item>
     </plurals>
     <string name="new_conversation">Nowa rozmowa</string>
-    <string name="add_contact_or_number">Dodaj kontakt lub numer…</string>
+    <string name="add_contact_or_number">Dodaj kontakt lub numer</string>
     <string name="suggestions">Propozycje</string>
     <string name="members">Członkowie</string>
     <string name="conversation_name">Nazwa rozmowy</string>

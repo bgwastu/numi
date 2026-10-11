@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Rifiuta</string>
     <string name="numi_phone_decline_call">Rifiuta la chiamata</string>
     <string name="numi_phone_unknown_caller">Sconosciuto</string>
-    <string name="numi_phone_is_calling">Chiamata in corso…</string>
-    <string name="numi_phone_dialing">Composizione…</string>
+    <string name="numi_phone_is_calling">Chiamata in corso</string>
+    <string name="numi_phone_dialing">Composizione</string>
     <string name="numi_phone_call_ended">Chiamata terminata</string>
     <string name="numi_phone_call_ending">Chiamata in terminazione</string>
     <string name="numi_phone_ongoing_call">Chiamata in corso</string>
@@ -73,7 +73,7 @@
     <string name="numi_phone_faq_3_title">Perché non sono presenti alcuni dei miei contatti nell\'app?</string>
     <string name="numi_phone_faq_3_text">Fossify Phone mostra solo i contatti che hanno un numero di telefono associato. I contatti senza un numero di telefono non vengono mostrati nell\'app.</string>
     <string name="numi_phone_faq_2_text">A causa delle restrizioni del sistema, le chiamate di emergenza possono essere effettuate solo attraverso il dialer o l\'app telefonica predefinita del sistema. Per garantire il corretto funzionamento delle chiamate di emergenza, è necessario mantenere l\'app di sistema installata e abilitata.</string>
-    <string name="numi_phone_call_is_being_connected">La tua chiamata si sta connettendo…</string>
+    <string name="numi_phone_call_is_being_connected">La tua chiamata si sta connettendo</string>
     <string name="numi_phone_call_notification_channel">Stato della chiamata</string>
     <string name="numi_phone_call_notification_channel_high_priority">Stato della chiamata (priorità elevata)</string>
     <string name="numi_phone_calling_accounts">Account di chiamata</string>

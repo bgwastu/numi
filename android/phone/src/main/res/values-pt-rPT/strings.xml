@@ -15,7 +15,7 @@
     <string name="numi_phone_call_merge">Unir chamadas</string>
     <string name="numi_phone_call_ending">A terminar chamada</string>
     <string name="numi_phone_select_sim">Selecione o SIM para esta chamada</string>
-    <string name="numi_phone_dialing">A ligar…</string>
+    <string name="numi_phone_dialing">A ligar</string>
     <string name="numi_phone_dialer">Marcador</string>
     <string name="numi_phone_show_dialpad">Mostrar marcador</string>
     <string name="numi_phone_call_split">Separar chamadas</string>
@@ -29,7 +29,7 @@
     <string name="numi_phone_call_ended">Chamada terminada</string>
     <string name="numi_phone_resume_call">Retomar chamada</string>
     <string name="numi_phone_clear_history_confirmation">Tem a certeza de que pretende remover tudo do histórico de chamadas?</string>
-    <string name="numi_phone_is_calling">A chamar…</string>
+    <string name="numi_phone_is_calling">A chamar</string>
     <string name="numi_phone_decline_call">Recusar chamada</string>
     <string name="numi_phone_could_not_access_the_call_history">Não foi possível aceder ao histórico de chamadas</string>
     <string name="numi_phone_dialpad">Marcador</string>
@@ -71,7 +71,7 @@
     <string name="numi_phone_speed_dial">Ligação rápida</string>
     <string name="numi_phone_faq_3_title">Por que alguns dos meus contactos faltam na app?</string>
     <string name="numi_phone_faq_3_text">O Fossify Phone exibe apenas contactos que tenham um número de telefone lhes associado. Contactos sem um número de telefone não são exibidos na app.</string>
-    <string name="numi_phone_call_is_being_connected">A sua chamada está a ser efetuada…</string>
+    <string name="numi_phone_call_is_being_connected">A sua chamada está a ser efetuada</string>
     <string name="numi_phone_faq_2_title">Por que chamadas de emergência não estão a funcionar corretamente?</string>
     <string name="numi_phone_call_notification_channel">Estado da chamada</string>
     <string name="numi_phone_call_notification_channel_high_priority">Estado da chamada (alta prioridade)</string>

@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Отказване</string>
     <string name="numi_phone_decline_call">Отказване на обаждането</string>
     <string name="numi_phone_unknown_caller">Неизвестен номер</string>
-    <string name="numi_phone_is_calling">Звъни…</string>
-    <string name="numi_phone_dialing">Набиране на телефонния номер…</string>
+    <string name="numi_phone_is_calling">Звъни</string>
+    <string name="numi_phone_dialing">Набиране на телефонния номер</string>
     <string name="numi_phone_call_ended">Край на разговора</string>
     <string name="numi_phone_call_ending">Завършване на разговора</string>
     <string name="numi_phone_ongoing_call">Текущ разговор</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_faq_1_text">Такива проблеми могат да имат много специфични за устройството и системата причини, трудно е да се каже като цяло. Трябва да се огледате в настройките на устройството и да се уверите, че приложението има разрешение да се показва, когато е във фонов режим и може да се показва върху други приложения.</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
-    <string name="numi_phone_call_is_being_connected">Свързване…</string>
+    <string name="numi_phone_call_is_being_connected">Свързване</string>
     <string name="numi_phone_faq_2_title">Защо спешните обаждания не работят както трябва?</string>
     <string name="numi_phone_faq_3_text">Fossify Phone показва само контактите с въведен телефонен номер. Тези с липсващ телефон не се показват.</string>
     <string name="numi_phone_faq_2_text">Поради ограничения на системата спешните обаждания трябва да бъдат извършвани само през стандартното приложение „Телефон“. За да работят спешните обаждания нормално трябва системното приложение да е инсталирано и включено.</string>

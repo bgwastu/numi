@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Ketik pesan…</string>
+    <string name="type_a_message">Ketik pesan</string>
     <string name="message_not_sent_short">Pesan tidak terkirim</string>
     <string name="message_not_sent_touch_retry">Tidak terkirim. Sentuh untuk mencoba lagi.</string>
     <string name="message_sending_error">Pesan Anda ke \'%s\' belum dikirim</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Mulailah percakapan</string>
     <string name="reply">Balas</string>
     <string name="show_character_counter">Tunjukkan penghitung karakter saat menulis pesan</string>
-    <string name="loading_messages">Memuat pesan…</string>
+    <string name="loading_messages">Memuat pesan</string>
     <string name="no_reply_support">Pengirim tidak mendukung balasan</string>
     <string name="draft">Draf</string>
-    <string name="sending">Mengirim…</string>
+    <string name="sending">Mengirim</string>
     <string name="unpin_conversation">Lepas sematan</string>
     <string name="forward_message">Teruskan</string>
     <string name="compress_error">Tidak dapat mengompres gambar ke ukuran yang dipilih</string>
@@ -22,7 +22,7 @@
         <item quantity="other">dan %d lainnya</item>
     </plurals>
     <string name="new_conversation">Percakapan baru</string>
-    <string name="add_contact_or_number">Tambahkan Kontak atau Nomor…</string>
+    <string name="add_contact_or_number">Tambahkan Kontak atau Nomor</string>
     <string name="suggestions">Saran</string>
     <string name="members">Anggota</string>
     <string name="conversation_name">Nama percakapan</string>

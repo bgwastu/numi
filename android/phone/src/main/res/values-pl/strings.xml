@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Odrzuć</string>
     <string name="numi_phone_decline_call">Odrzuć połączenie</string>
     <string name="numi_phone_unknown_caller">Nieznany rozmówca</string>
-    <string name="numi_phone_is_calling">Dzwoni…</string>
-    <string name="numi_phone_dialing">Dzwonię…</string>
+    <string name="numi_phone_is_calling">Dzwoni</string>
+    <string name="numi_phone_dialing">Dzwonię</string>
     <string name="numi_phone_call_ended">Połączenie zakończone</string>
     <string name="numi_phone_call_ending">Kończenie połączenia</string>
     <string name="numi_phone_ongoing_call">Trwające połączenie</string>
@@ -71,7 +71,7 @@
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_faq_2_text">Ze względu na ograniczenia systemowe połączenia alarmowe mogą być wykonywane tylko przez domyślną systemową aplikację do dzwonienia. Aby mieć pewność, że połączenia alarmowe działają prawidłowo, musisz mieć zainstalowaną i włączoną aplikację systemową.</string>
     <string name="numi_phone_faq_2_title">Dlaczego połączenia alarmowe nie działają prawidłowo?</string>
-    <string name="numi_phone_call_is_being_connected">Trwa nawiązywanie połączenia…</string>
+    <string name="numi_phone_call_is_being_connected">Trwa nawiązywanie połączenia</string>
     <string name="numi_phone_faq_3_text">Fossify Phone wyświetla tylko te kontakty, które mają przypisany numer telefonu. Kontakty bez numeru telefonu nie są wyświetlane w aplikacji.</string>
     <string name="numi_phone_faq_3_title">Dlaczego niektórych moich kontaktów brakuje w aplikacji?</string>
     <string name="numi_phone_call_notification_channel">Status połączenia</string>

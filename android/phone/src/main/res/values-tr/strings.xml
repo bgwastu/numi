@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Reddet</string>
     <string name="numi_phone_decline_call">Aramayı reddet</string>
     <string name="numi_phone_unknown_caller">Bilinmeyen Arama</string>
-    <string name="numi_phone_is_calling">Arıyor…</string>
-    <string name="numi_phone_dialing">Çağrı yapılıyor…</string>
+    <string name="numi_phone_is_calling">Arıyor</string>
+    <string name="numi_phone_dialing">Çağrı yapılıyor</string>
     <string name="numi_phone_call_ended">Arama Sona Erdi</string>
     <string name="numi_phone_call_ending">Arama Sonlandırılıyor</string>
     <string name="numi_phone_ongoing_call">Devam Eden Arama</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_faq_1_text">Bu tür sorunların cihaza ve sisteme göre birçok nedeni olabilir. Cihaz ayarlarında uygulamanın arka plandayken açılmasına ve diğer uygulamaların üzerinde görüntülenmesine izin verildiğinden emin olmalısınız.</string>
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
-    <string name="numi_phone_call_is_being_connected">Aramanız bağlanıyor…</string>
+    <string name="numi_phone_call_is_being_connected">Aramanız bağlanıyor</string>
     <string name="numi_phone_faq_2_text">Sistem kısıtlamaları nedeniyle, acil durum çağrıları yalnızca sisteminizin varsayılan çeviricisi veya telefon uygulaması aracılığıyla yapılabilir. Acil durum çağrılarının düzgün çalışmasını sağlamak için sistem uygulamasını yüklemeli ve etkin tutmanız gerekir.</string>
     <string name="numi_phone_faq_2_title">Acil durum çağrıları neden düzgün çalışmıyor?</string>
     <string name="numi_phone_faq_3_title">Neden uygulamada bazı kişiler eksik?</string>

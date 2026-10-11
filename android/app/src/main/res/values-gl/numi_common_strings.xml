@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Precaución: Certos Lanzadores non xestionan correctamente a personalización. Se a icona desparece, intenta iniciar a app a través de Google Play ou un widget, se está accesible. Despois de iniciar, restablece a cor verde #106D1F. En casos extremos pode que precises reinstalar a app.</string>
+    <string name="app_on_sd_card">Parece que tes o aplicativo instalado na tarxeta SD, o que ocasiona que os widgets do aplicativo non estean dispoñibles. Non os verás na lista de widgets dispoñibles. Isto é unha limitación do sistema, así que se queres usar os widgets, tes que mover o aplicativo ao almacenamento interno.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="contributors">Colaboradores</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Nesta lista están todas as persoas que colaborarón significativamente con Fossify, non só esta app. As traducións fanas persoas voluntarias,\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020contacta con nós se tamén queres axudar. As instruccións para traducir están &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;nesta páxina web&lt;/a&gt;, ou simplemente contacta con nós en &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; se tes algunha pregunta.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Grazas a todas as colaboradoras e persoas que nos apoian!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">Copiar a</string>
+    <string name="copying">Copiando</string>
+    <string name="edit_with">Editar con</string>
+    <string name="exporting">Exportando</string>
+    <string name="faq_6_text_commons">Este problema xurde cando o lanzador non é compatible coa personalización das iconas. Intenta iniciar a app a través de Google Play ou un widget, se é accesible. Após iniciala, restablece a cor verde #106D1F orixinal. En casos extremos pode ser preciso ter que reinstalar a aplicación.</string>
+    <string name="faq_9_text_commons">Atoparas diferentes formas de facelo. O primeiro é iniciar o modo de selección mantendo presionado un elemento e, a continuación, premendo brevemente sobre outros para seleccionalos. A segunda forma é semellante a seleccionar elementos nos ordenadores cun rato, só tes que iniciar o modo de selección mantendo presionado un elemento e, a continuación, co dedo aínda para abaixo arrástralo por outros elementos para seleccionalo. A terceira forma de seleccionar varios elementos é premendo un elemento durante moito tempo, despois premendo outro e seleccionando todo o que hai entre eles. Se queres seleccionar todos os elementos, só tes que premer un elemento e, a continuación, fai clic no contador de elementos seleccionados na esquina superior esquerda. Isto seleccionará ou deseleccionará todo.</string>
+    <string name="fingerprint_setup_successfully">Protección configurada correctamente. Volve a instalar a aplicación no caso de que teñas problemas ao restablecela.</string>
+    <string name="importing">Importando</string>
+    <string name="loading">Cargando</string>
+    <string name="move_to">Mover a</string>
+    <string name="moving">Movendo</string>
+    <string name="open_with">Abrir con</string>
+    <string name="pro_app_refund">Non esquezas que se desinstalas calquera app de pago antes de 2 horas, devolveránseche os cartos automáticamente. Se queres unha devolución máis tarde, contáctanos en hello@fossify.org e terala. Isto fai que sexa fácil probala :)</string>
+    <string name="protection_setup_successfully">Engadiuse o contrasinal correctamente. Por favor, volve a instalar o aplicativo en caso de que te esquezas dela.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Por favor merca &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; para usar esta característica e axudar ao desenvolvemento. Grazas!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Solicitar os permisos necesarios</string>
+    <string name="save_as">Gardar como</string>
+    <string name="saving">Gardando</string>
+    <string name="scanning">Escaneando</string>
+    <string name="select_font_file">Escolmar arquivo de fonte</string>
+    <string name="set_as">Establecer como</string>
+    <string name="share_via">Compartir con</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="translation_welsh">Galés</string>
+    <string name="updating">Actualizando</string>
+</resources>

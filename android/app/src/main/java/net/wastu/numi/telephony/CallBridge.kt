@@ -54,7 +54,7 @@ object CallBridge {
             context.getSystemService(TelephonyManager::class.java).getSubscriptionId(tracked.call.details.accountHandle)
         }.getOrNull()?.takeIf { it >= 0 } else null
         val connectedAt = tracked.call.details.connectTimeMillis
-        val body = if (state == Call.STATE_DISCONNECTED && connectedAt > 0) "$title · ${(System.currentTimeMillis() - connectedAt).coerceAtLeast(0) / 1000}s" else title
+        val body = if (state == Call.STATE_DISCONNECTED && connectedAt > 0) "$title, ${(System.currentTimeMillis() - connectedAt).coerceAtLeast(0) / 1000}s" else title
         TelegramEvents.call(context, address, sub, key, body, JSONObject().apply {
             put("kind", "call"); put("call_id", tracked.id); put("call_state", state)
             put("state", title)

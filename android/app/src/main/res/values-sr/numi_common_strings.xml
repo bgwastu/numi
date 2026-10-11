@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_on_sd_card">Апликација је већ инсталирана на СД картици, зато су виџети недоступни. То је ограничење система, и ако желите да користите виџете морате да преместите апликацију назад у унутрашње складиште.</string>
+    <string name="cancel">Поништи</string>
+    <string name="contributors">Сарадници</string>
+    <string name="copy_to">Копирај у</string>
+    <string name="copying">Копирам</string>
+    <string name="edit_with">Измени са</string>
+    <string name="exporting">Извозим</string>
+    <string name="faq_9_text_commons">Постоји више начина да се то уради. Први је покретање режима селекције дугим притиском на једну ставку, а затим кратким кликом на друге да бисте их изабрали. Други начин је сличан одабиру ставки на рачунарима помоћу миша, само покрените режим селекције дугим притиском на једну ставку, а затим је прстом и даље доле превуците преко других ставки да бисте изабрали. Трећи начин одабира више ставки је дуго притискање једне ставке, затим дуго притискање друге и све између се бира. Ако желите да изаберете све ставке, само дуго притисните једну ставку, а затим кликните на бројач изабраних ставки у горњем левом углу. То ће све изабрати или поништити избор.</string>
+    <string name="fingerprint_setup_successfully">Заштита је успешно подешена. Поново инсталирајте апликацију за случај да имате проблема са ресетовањем отиска прста.</string>
+    <string name="importing">Увозим</string>
+    <string name="loading">Учитавање</string>
+    <string name="move_to">Премести у</string>
+    <string name="moving">Премештам</string>
+    <string name="open_with">Отвори са</string>
+    <string name="pro_app_refund">Не заборавите да ако деинсталирате било коју плаћену апликацију у року од 2 сата, новац ће вам аутоматски бити враћен. Ако желите повраћај новца било када касније, само нас контактирајте на hello@fossify.org и добићете га. То олакшава испробавање :)</string>
+    <string name="protection_setup_successfully">Успешно подешена шифра. Поново инсталирајте апликацију за случај да изгубите шифру.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Молимо вас купите &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; да бисте откључали ову функцију и подржали наш развој. Хвала вам!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Затражите потребне дозволе</string>
+    <string name="save_as">Сачувај као</string>
+    <string name="saving">Чувам</string>
+    <string name="set_as">Подеси као</string>
+    <string name="share_via">Подели путем</string>
+    <string name="sort_by">Сортирај према</string>
+    <string name="updating">Ажурирање</string>
+</resources>

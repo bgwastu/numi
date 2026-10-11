@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Введите сообщение…</string>
+    <string name="type_a_message">Введите сообщение</string>
     <string name="message_not_sent_short">Сообщение не отправлено</string>
     <string name="message_not_sent_touch_retry">Не отправлено. Нажмите, чтобы повторить попытку.</string>
     <string name="message_sending_error">Ваше сообщение для \"%s\" не было отправлено</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Начать переписку</string>
     <string name="reply">Ответ</string>
     <string name="show_character_counter">Показывать счётчик символов при написании сообщений</string>
-    <string name="loading_messages">Загрузка сообщений…</string>
+    <string name="loading_messages">Загрузка сообщений</string>
     <string name="no_reply_support">Отправитель не поддерживает ответы</string>
     <string name="draft">Черновик</string>
-    <string name="sending">Отправка…</string>
+    <string name="sending">Отправка</string>
     <string name="pin_conversation">Закрепить сверху</string>
     <string name="unpin_conversation">Открепить</string>
     <string name="forward_message">Переслать</string>
@@ -26,7 +26,7 @@
         <item quantity="other">и ещё %d</item>
     </plurals>
     <string name="new_conversation">Новая переписка</string>
-    <string name="add_contact_or_number">Добавить контакт или номер…</string>
+    <string name="add_contact_or_number">Добавить контакт или номер</string>
     <string name="suggestions">Предложения</string>
     <string name="members">Участники</string>
     <string name="conversation_name">Название переписки</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Skriv ett meddelande…</string>
+    <string name="type_a_message">Skriv ett meddelande</string>
     <string name="message_not_sent_short">Meddelandet har inte skickats</string>
     <string name="message_not_sent_touch_retry">Det gick inte att skicka. Tryck om du vill försöka igen.</string>
     <string name="message_sending_error">Meddelandet till \'%s\' har inte skickats</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Starta en konversation</string>
     <string name="reply">Svara</string>
     <string name="show_character_counter">Visa antal tecken när jag skriver meddelanden</string>
-    <string name="loading_messages">Läser in meddelanden…</string>
+    <string name="loading_messages">Läser in meddelanden</string>
     <string name="no_reply_support">Avsändaren stöder inte svar</string>
     <string name="draft">Utkast</string>
-    <string name="sending">Skickar…</string>
+    <string name="sending">Skickar</string>
     <string name="pin_conversation">Fäst högst upp</string>
     <string name="unpin_conversation">Lossa</string>
     <string name="forward_message">Vidarebefordra</string>
@@ -24,7 +24,7 @@
         <item quantity="other">och %d andra</item>
     </plurals>
     <string name="new_conversation">Ny konversation</string>
-    <string name="add_contact_or_number">Lägg till kontakt eller nummer…</string>
+    <string name="add_contact_or_number">Lägg till kontakt eller nummer</string>
     <string name="suggestions">Förslag</string>
     <string name="members">Medlemmar</string>
     <string name="conversation_name">Konversationsnamn</string>

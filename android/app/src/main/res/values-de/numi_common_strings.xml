@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Achtung! Bestimmte Launcher können das Anpassen von App-Symbolen nicht richtig verarbeiten. Wenn das Symbol verschwindet, versuche, falls möglich, die App über Google Play oder ein Widget zu starten. Stelle nach dem Start die grüne Standard-Symbolfarbe #106D1F wieder her. In extremen Fällen kann es notwendig sein, die App neu zu installieren.</string>
+    <string name="app_on_sd_card">Die App wurde anscheinend auf der SD-Karte installiert, daher sind die Widgets nicht verfügbar. Sie werden auch in der Liste der Widgets nicht angezeigt. Dies ist systemseitig so beschränkt. Für die Verwendung der Widgets muss die App wieder im internen Speicher installiert werden.</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="contributors">Beitragende</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Diese Liste enthält alle Personen, die bei irgendeiner App innerhalb der Fossify-Suite merklich geholfen haben, nicht nur bei dieser. Die Übersetzungen werden von Freiwilligen erledigt,\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020sag uns Bescheid, wenn auch du helfen willst. Die Anleitung zum Übersetzen findest du auf &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;dieser Website&lt;/a&gt;, oder kontaktiere uns einfach unter &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt;, wenn du Fragen hast.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Vielen Dank an alle Mitwirkenden und sonstigen Unterstützer!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">Kopieren nach</string>
+    <string name="copying">Kopieren </string>
+    <string name="edit_with">Bearbeiten mit</string>
+    <string name="exporting">Exportieren </string>
+    <string name="faq_6_text_commons">Dieses Problem tritt auf, wenn dein Launcher das Anpassen der Symbole nicht vollständig unterstützt. Versuche, die App über Google Play oder ein Widget zu starten, falls dies möglich ist. Stelle nach dem Start die standardmäßige grüne Symbolfarbe #106D1F wieder her. In extremen Fällen kann eine Neuinstallation der App erforderlich sein.</string>
+    <string name="faq_9_text_commons">Es gibt mehrere Möglichkeiten, dies zu tun. Die erste ist, den Auswahlmodus durch langes Drücken eines Elements zu starten und anschließend die anderen Elemente durch kurzes Antippen auszuwählen. Die zweite Möglichkeit ähnelt dem Auswählen von Elementen auf PCs mit einer Maus: Starte den Auswahlmodus durch langes Drücken eines Elements und streiche, ohne den Finger vom Display abzuheben, über die anderen Elemente, um sie auszuwählen. Die dritte Möglichkeit, mehrere Elemente auszuwählen, besteht darin, nacheinander zwei Elemente lange zu drücken und dadurch auch alles dazwischen auszuwählen. Wenn du alle Elemente auswählen möchtest, drücke einfach lange auf ein beliebiges Element und tippe dann auf den Zähler für ausgewählte Elemente in der oberen linken Ecke. Durch Antippen des Zählers wird alles aus- oder abgewählt.</string>
+    <string name="fingerprint_setup_successfully">Schutz erfolgreich eingerichtet. Falls beim Zurücksetzen Probleme auftreten, bitte die App neu installieren.</string>
+    <string name="importing">Importieren </string>
+    <string name="loading">Wird geladen </string>
+    <string name="move_to">Verschieben nach</string>
+    <string name="moving">Verschieben </string>
+    <string name="open_with">Öffnen mit</string>
+    <string name="pro_app_refund">Vergiss nicht, dass dir der Betrag erstattet wird, wenn du eine bezahlte App innerhalb von zwei Stunden wieder deinstallierst. Falls du später eine Rückerstattung wünschst, kontaktiere uns einfach unter hello@fossify.org, und du wirst sie bekommen. So kann man ganz einfach die App ausprobieren :)</string>
+    <string name="protection_setup_successfully">Muster/PIN erfolgreich gespeichert. Falls vergessen, muss die App neu installiert werden.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Bitte kaufe &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; um diese Funktion nutzen zu können und die Entwicklung zu unterstützen. Vielen Dank!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Benötigte Berechtigungen anfordern</string>
+    <string name="save_as">Speichern unter</string>
+    <string name="saving">Speichern </string>
+    <string name="scanning">Durchsuchen </string>
+    <string name="select_font_file">Schriftartdatei auswählen </string>
+    <string name="set_as">Festlegen als</string>
+    <string name="share_via">Teilen via</string>
+    <string name="sort_by">Sortieren nach</string>
+    <string name="translation_welsh">Walisisch</string>
+    <string name="updating">Aktualisieren </string>
+</resources>

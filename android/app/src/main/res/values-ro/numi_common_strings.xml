@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_on_sd_card">Se pare că aplicația este instalată pe un card SD, ceea ce face ca widgeturile aplicației să nu fie disponibile. Nu le veți vedea nici măcar în lista de widgeturi disponibile. Este o limitare a sistemului, așa că, dacă doriți să folosiți widgeturile, trebuie să mutați aplicația înapoi în memoria internă.</string>
+    <string name="cancel">Anulează</string>
+    <string name="contributors">Contribuitori</string>
+    <string name="copy_to">Copiază la</string>
+    <string name="copying">Copiere</string>
+    <string name="edit_with">Editează cu</string>
+    <string name="exporting">Exportare</string>
+    <string name="faq_9_text_commons">Există mai multe modalități de a face acest lucru. Prima este pornirea modului de selectare prin apăsarea lungă a unui element, apoi prin apăsarea scurtă pe celelalte pentru a le selecta. Al doilea mod este similar cu selectarea elementelor de pe PC-uri cu ajutorul mouse-ului, porniți modul de selecție prin apăsarea lungă a unui element, apoi, cu degetul încă apăsat, trageți-l peste alte elemente pentru a le selecta. Al treilea mod de a selecta mai multe elemente este apăsarea lungă a unui element, apoi apăsarea lungă a altui element și tot ce se află între ele este selectat. Dacă doriți să selectați toate elementele, trebuie doar să apăsați lung pe un element, apoi faceți clic pe contorul de elemente selectate din colțul din stânga sus. Astfel, veți selecta sau deselecta totul.</string>
+    <string name="fingerprint_setup_successfully">Configurarea protecției a fost efectuată cu succes. Vă rugăm să reinstalați aplicația în cazul în care aveți probleme cu resetarea acesteia.</string>
+    <string name="importing">Importare</string>
+    <string name="loading">Încărcare</string>
+    <string name="move_to">Mută la</string>
+    <string name="moving">Mutare</string>
+    <string name="open_with">Deschide cu</string>
+    <string name="pro_app_refund">Nu uitați că, dacă dezinstalați orice aplicație plătită în termen de 2 ore, veți fi rambursat automat. Dacă doriți o rambursare oricând mai târziu, contactați-ne la hello@fossify.org și o veți obține. Astfel, este ușor să o încercați. :)</string>
+    <string name="protection_setup_successfully">Configurarea parolei a fost efectuată cu succes. Vă rugăm să reinstalați aplicația în cazul în care o uitați.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Vă rugăm cumpăraţi &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; pentru a debloca această funcţie şi pentru a sprijini dezvoltatorii. Vă mulţumim!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Solicită permisiunile necesare</string>
+    <string name="save_as">Salvează ca</string>
+    <string name="saving">Salvare</string>
+    <string name="scanning">Scanare</string>
+    <string name="set_as">Setează ca</string>
+    <string name="share_via">Distribuie prin</string>
+    <string name="sort_by">Sortează după</string>
+    <string name="translation_welsh">Galeză</string>
+    <string name="updating">Actualizare</string>
+</resources>

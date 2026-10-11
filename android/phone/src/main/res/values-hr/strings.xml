@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Odbij</string>
     <string name="numi_phone_decline_call">Odbij poziv</string>
     <string name="numi_phone_unknown_caller">Nepoznat pozivatelj</string>
-    <string name="numi_phone_is_calling">Zove…</string>
-    <string name="numi_phone_dialing">Biranje …</string>
+    <string name="numi_phone_is_calling">Zove</string>
+    <string name="numi_phone_dialing">Biranje </string>
     <string name="numi_phone_call_ended">Poziv je završio</string>
     <string name="numi_phone_call_ending">Poziv se završava</string>
     <string name="numi_phone_ongoing_call">Poziv u tijeku</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_export_call_history">Izvezi povijest poziva</string>
     <string name="numi_phone_import_call_history">Uvezi povijest poziva</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
-    <string name="numi_phone_call_is_being_connected">Tvoj se poziv povezuje …</string>
+    <string name="numi_phone_call_is_being_connected">Tvoj se poziv povezuje </string>
     <string name="numi_phone_faq_2_title">Zašto pozivi za hitne slučajeve ne rade ispravno?</string>
     <string name="numi_phone_faq_3_title">Zašto neki moji kontakti nedostaju u aplikaciji?</string>
     <string name="numi_phone_faq_3_text">Fossify Telefon prikazuje samo kontakte koji sadrže telefonski broj. Kontakti bez telefonskog broja ne prikazuju se u aplikaciji.</string>

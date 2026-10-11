@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="cancel">Cancellar</string>
+    <string name="edit_with">Editar con</string>
+    <string name="loading">Cargamento in curso</string>
+    <string name="open_with">Aperir con</string>
+    <string name="request_the_required_permissions">Demanda le permissiones requirite</string>
+    <string name="save_as">Salvar como</string>
+    <string name="scanning">Scannation in curso</string>
+    <string name="set_as">Definir como</string>
+    <string name="updating">Actualisation in curso</string>
+</resources>

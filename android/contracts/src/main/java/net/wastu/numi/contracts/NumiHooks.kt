@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.telecom.Call
+import android.view.ViewGroup
 
 /** Optional connector boundary: native messaging and calling work with no delegate installed. */
 object NumiHooks {
@@ -21,6 +22,7 @@ object NumiHooks {
     var openConnector: ((Activity) -> Unit)? = null
     var openCalls: ((Activity) -> Unit)? = null
     var openMessages: ((Activity) -> Unit)? = null
+    var bindNavigation: ((Activity, ViewGroup, String) -> Unit)? = null
     var messagesOpened: ((Context) -> Unit)? = null
 }
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="numi_phone_call_settings">Call settings</string>
+    <string name="numi_phone_recents">Recents</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_default_phone_app_prompt">Please make this app the default Phone app</string>
     <string name="numi_phone_allow_displaying_over_other_apps">Please allow displaying over other apps for reliable behaviour</string>
@@ -32,8 +34,8 @@
     <string name="numi_phone_decline">Decline</string>
     <string name="numi_phone_decline_call">Decline call</string>
     <string name="numi_phone_unknown_caller">Unknown Caller</string>
-    <string name="numi_phone_is_calling">Is Calling…</string>
-    <string name="numi_phone_dialing">Dialing…</string>
+    <string name="numi_phone_is_calling">Is Calling</string>
+    <string name="numi_phone_dialing">Dialing</string>
     <string name="numi_phone_call_ended">Call Ended</string>
     <string name="numi_phone_call_ending">Call Ending</string>
     <string name="numi_phone_ongoing_call">Ongoing Call</string>
@@ -64,7 +66,7 @@
     <string name="numi_phone_audio_route_wired_or_earpiece">Wired or Earpiece</string>
     <string name="numi_phone_choose_audio_route">Choose audio route</string>
     <string name="numi_phone_calling_blocked_number">The number you are calling is blocked</string>
-    <string name="numi_phone_call_is_being_connected">Your call is being connected…</string>
+    <string name="numi_phone_call_is_being_connected">Your call is being connected</string>
     <string name="numi_phone_call_notification_channel">Call status</string>
     <string name="numi_phone_call_notification_channel_high_priority">Call status (high priority)</string>
 

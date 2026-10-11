@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_launcher_name">Numi</string>
-    <string name="type_a_message">Skriv en besked…</string>
+    <string name="type_a_message">Skriv en besked</string>
     <string name="message_not_sent_short">Beskeden blev ikke sendt</string>
     <string name="message_not_sent_touch_retry">Blev ikke sendt. Tryk for at prøve igen.</string>
     <string name="message_sending_error">Din besked til \'%s\' blev ikke sendt</string>
@@ -11,17 +11,17 @@
     <string name="start_conversation">Start en samtale</string>
     <string name="reply">Svar</string>
     <string name="show_character_counter">Vis en tegntæller ved skrivning af beskeder</string>
-    <string name="loading_messages">Indlæser beskeder…</string>
+    <string name="loading_messages">Indlæser beskeder</string>
     <string name="no_reply_support">Afsender understøtter ikke svar</string>
     <string name="draft">Udkast</string>
-    <string name="sending">Sender…</string>
+    <string name="sending">Sender</string>
     <string name="pin_conversation">Fastgør til toppen</string>
     <string name="unpin_conversation">Frigør</string>
     <string name="forward_message">Videresend</string>
     <string name="compress_error">Billedet kan ikke komprimeres til den valgte størrelse</string>
     <string name="duplicate_item_warning">Duplikat blev ikke inkluderet</string>
     <string name="new_conversation">Ny samtale</string>
-    <string name="add_contact_or_number">Tilføj kontakt eller nummer…</string>
+    <string name="add_contact_or_number">Tilføj kontakt eller nummer</string>
     <string name="suggestions">Forslag</string>
     <string name="members">Medlemmer</string>
     <string name="conversation_name">Samtalenavn</string>

@@ -21,8 +21,8 @@
     <string name="numi_phone_decline">Refuzaţi</string>
     <string name="numi_phone_decline_call">Refuzaţi apelul</string>
     <string name="numi_phone_unknown_caller">Apelant necunoscut</string>
-    <string name="numi_phone_is_calling">Apelează…</string>
-    <string name="numi_phone_dialing">Apelare…</string>
+    <string name="numi_phone_is_calling">Apelează</string>
+    <string name="numi_phone_dialing">Apelare</string>
     <string name="numi_phone_call_ended">Apel terminat</string>
     <string name="numi_phone_call_ending">Încheierea apelului</string>
     <string name="numi_phone_ongoing_call">Apel în curs de desfășurare</string>

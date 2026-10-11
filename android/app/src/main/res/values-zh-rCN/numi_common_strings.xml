@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">注意：某些启动器无法正确处理自定义的应用图标。如图标消失，请尝试通过 Google Play 商店或者微件启动对应的应用。启动后请还原为默认的绿色图标色 #106D1F。在某些情形下你可能要重新安装应用。</string>
+    <string name="app_on_sd_card">您似乎把本应用安装到了 SD 卡中，这使得本应用的微件不可用。您将无法在微件列表里看到它们。这是系统限制造成的。如果您想要使用这些微件，您必须将本应用移动回内部存储空间。</string>
+    <string name="cancel">取消</string>
+    <string name="contributors">贡献者</string>
+    <string name="contributors_label">此列表包含了每一个显著帮助了 Fossify 套件内任何应用的人，而不仅是这个应用。翻译由志愿者处理，\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020如果您也想帮忙，也请让我们知晓。 翻译指南位于 &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;此网站&lt;/a&gt;，或者如果您有任何问题可以通过 &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt;联系我们。\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020感谢所有贡献者和其他支持者！</string>
+    <string name="copy_to">复制到</string>
+    <string name="copying">正在复制</string>
+    <string name="edit_with">编辑方式</string>
+    <string name="exporting">正在导出</string>
+    <string name="faq_6_text_commons">如果您正在使用的启动器不能完全支持自定义图标的话会发生此问题。您可以尝试通过 Google Play 商店或者微件启动应用。应用启动后，请还原默认的绿色图标色 #106D1F。在某些情形下，你可能需要重新安装应用。</string>
+    <string name="faq_9_text_commons">您可以通过多种方式同时选中多个项目。第一种方式是长按一个项目进入选择模式，然后点击其他项目即可选择它们。第二种方式类似于在电脑上使用鼠标选择项目， 长按一个项目进入选择模式并且不要松手，然后将手指向拖动到其他项目上面即可选择它们。第三种方式是先长按一个项目，然后再长按另一个项目，即可选择它们和位于两者之间的所有项目。如果您想要选择所有项目，先长按一个项目，然后点击位于视图左上角的项目计数器，即可选择或者取消选择所有项目。</string>
+    <string name="fingerprint_setup_successfully">保护设置成功。如果重置保护时发生问题，请重新安装本应用。</string>
+    <string name="importing">正在导入</string>
+    <string name="loading">正在加载</string>
+    <string name="move_to">移动到</string>
+    <string name="moving">正在移动</string>
+    <string name="open_with">打开方式</string>
+    <string name="pro_app_refund">别忘了：如果您在付款 2 小时以内卸载了任意一款付费应用，系统将自动为您退款。如果您想在超过 2 小时之后退款，请通过 hello@fossify.org 联系我们为您办理。请放心试用 :)</string>
+    <string name="protection_setup_successfully">密码设置成功。如果您不慎遗忘了密码，请重新安装本应用。</string>
+    <string name="purchase_thank_you">请购买 &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; 以使用此功能并支持开发。谢谢！</string>
+    <string name="request_the_required_permissions">请求必要的权限</string>
+    <string name="save_as">另存为</string>
+    <string name="saving">正在保存</string>
+    <string name="scanning">正在扫描</string>
+    <string name="select_font_file">选择字体文件</string>
+    <string name="set_as">设置为</string>
+    <string name="share_via">分享到</string>
+    <string name="sort_by">排序方式</string>
+    <string name="translation_welsh">威尔士语</string>
+    <string name="updating">正在更新</string>
+</resources>

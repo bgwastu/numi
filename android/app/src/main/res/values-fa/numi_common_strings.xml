@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="cancel">لغو</string>
+    <string name="copy_to">رونوشت به</string>
+    <string name="copying">درحال رونوشت</string>
+    <string name="edit_with">ویرایش با</string>
+    <string name="exporting">درحال برون‌ریزی</string>
+    <string name="importing">درحال درون‌ریزی</string>
+    <string name="move_to">جابه‌جایی به</string>
+    <string name="moving">درحال جابه‌جایی</string>
+    <string name="open_with">بازکردن با</string>
+    <string name="request_the_required_permissions">درخواست مجوزهای مورد نیاز</string>
+    <string name="save_as">ذخیره به عنوان</string>
+    <string name="saving">درحال ذخیره</string>
+    <string name="set_as">تنظیم به عنوان</string>
+    <string name="share_via">اشتراک گذاری به وسیلهٔ</string>
+    <string name="sort_by">مرتب سازی بر اساس</string>
+    <string name="updating">در حال به‌روزرسانی</string>
+</resources>

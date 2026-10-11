@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">拒絕</string>
     <string name="numi_phone_decline_call">拒絕來電</string>
     <string name="numi_phone_unknown_caller">未知來電者</string>
-    <string name="numi_phone_is_calling">正在撥打……</string>
-    <string name="numi_phone_dialing">撥號中……</string>
+    <string name="numi_phone_is_calling">正在撥打</string>
+    <string name="numi_phone_dialing">撥號中</string>
     <string name="numi_phone_call_ended">通話結束</string>
     <string name="numi_phone_call_ending">通話即將結束</string>
     <string name="numi_phone_select_sim">選擇此通話的 SIM 卡</string>
@@ -72,7 +72,7 @@
     <string name="numi_phone_faq_3_title">為什麼我的部份聯絡人從應用程式中消失了？</string>
     <string name="numi_phone_faq_3_text">Fossify Phone 只會顯示有電話號碼的聯絡人。沒有電話號碼的聯絡人不會顯示在應用程式中。</string>
     <string name="numi_phone_faq_2_text">因為系統限制，緊急電話只能透過系統預設的撥號程式或電話應用程式撥打。為了確保緊急通話正常運作，您需要維持系統應用程式已安裝並啟用。</string>
-    <string name="numi_phone_call_is_being_connected">正在接通您的通話……</string>
+    <string name="numi_phone_call_is_being_connected">正在接通您的通話</string>
     <string name="numi_phone_faq_2_title">為什麼緊急電話無法正常運作？</string>
     <string name="numi_phone_call_notification_channel">通話狀態</string>
     <string name="numi_phone_call_notification_channel_high_priority">通話狀態（高優先層級）</string>

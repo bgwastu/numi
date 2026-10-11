@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Адхіліць</string>
     <string name="numi_phone_decline_call">Адхіліць выклік</string>
     <string name="numi_phone_unknown_caller">Невядомы абанент</string>
-    <string name="numi_phone_is_calling">Тэлефануе…</string>
-    <string name="numi_phone_dialing">Набор нумара…</string>
+    <string name="numi_phone_is_calling">Тэлефануе</string>
+    <string name="numi_phone_dialing">Набор нумара</string>
     <string name="numi_phone_call_ended">Выклік завершаны</string>
     <string name="numi_phone_call_ending">Завяршэнне выкліку</string>
     <string name="numi_phone_ongoing_call">Бягучы выклік</string>
@@ -64,7 +64,7 @@
     <string name="numi_phone_audio_route_wired_or_earpiece">Правадная гарнітура ці вушны дынамік</string>
     <string name="numi_phone_choose_audio_route">Выберыце аўдыёвыхад</string>
     <string name="numi_phone_calling_blocked_number">Набраны вамі нумар заблакіраваны</string>
-    <string name="numi_phone_call_is_being_connected">Злучэнне…</string>
+    <string name="numi_phone_call_is_being_connected">Злучэнне</string>
     <string name="numi_phone_call_notification_channel">Статус выкліку</string>
     <string name="numi_phone_call_notification_channel_high_priority">Статус выкліку (прыярытэтны)</string>
     <string name="numi_phone_hide_dialpad_numbers">Схаваць лічбы нумаранабіральніка</string>

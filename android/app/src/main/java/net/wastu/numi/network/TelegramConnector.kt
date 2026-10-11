@@ -70,7 +70,7 @@ class TelegramConnector(private val context: Context, token: String) {
         val state = when (event.optString("state")) {
             "SENT" -> "Sent"
             "DELIVERED" -> "Delivered"
-            "FAILED" -> "Failed · ${event.optString("error", "Open Numi for details.").take(200)}"
+            "FAILED" -> "Failed, ${event.optString("error", "Open Numi for details.").take(200)}"
             else -> null
         }
         val messages = IncomingSmsTelegramMessage.format(context, row.address, row.body, row.createdAt, row.subscriptionId, state)
@@ -111,7 +111,7 @@ class TelegramConnector(private val context: Context, token: String) {
         store.topic(storageKey, address, sub)?.let { return it }
         val name = MessagesRepository(context).name(address)
         val sim = DeviceStatusProvider.activeSims(context).firstOrNull { it.subscriptionId == sub }
-        val title = "$name${sim?.let { " · SIM ${it.slotIndex + 1}" }.orEmpty()}".take(128)
+        val title = "$name${sim?.let { ", SIM ${it.slotIndex + 1}" }.orEmpty()}".take(128)
         return try {
             val result = api.request("createForumTopic", JSONObject().put("chat_id", owner).put("name", title)) as JSONObject
             result.getInt("message_thread_id").also { store.saveTopic(storageKey, address, sub, it) }

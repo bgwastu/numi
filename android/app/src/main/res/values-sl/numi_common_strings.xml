@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Pozor: Nekateri zaganjalniki morda ne bodo pravilno prilagodili ikon aplikacij. Če ikona izgine, poskusite zagnati aplikacijo prek trgovine Google Play ali pripomočka, če je na voljo. Po zagonu obnovite privzeto zeleno barvo ikone #106D1F. V skrajnih primerih bo morda potrebna ponovna namestitev aplikacije.</string>
+    <string name="app_on_sd_card">Aplikacijo ste namestili na SD kartico, zaradi tega pripomočki ne bodo delovali. Ne boste jih niti videli na seznamu. To je sistemska omejitev. Če želite uporabljati pripomočke, morate aplikacijo premakniti nazaj v notranjo shrambo.</string>
+    <string name="cancel">Prekliči</string>
+    <string name="contributors">Sodelujoči</string>
+    <string name="contributors_label">\nTa seznam vsebuje vse, ki so opazno pomagali kateri koli aplikaciji v paketu Fossify, ne le tej. Prevode opravljajo prostovoljci,\nsporočite nam, če želite pomagati tudi vi. Vodnik za prevajanje je na &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;tej spletni strani&lt;/a&gt; ali pa nas preprosto kontaktirajte na &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt;, če imate kakršna koli vprašanja.\nHvala vsem sodelujočim in drugim podpornikom!\n</string>
+    <string name="copy_to">Kopiraj v</string>
+    <string name="copying">Kopiranje</string>
+    <string name="edit_with">Uredi z</string>
+    <string name="exporting">Izvažanje</string>
+    <string name="faq_6_text_commons">Do te težave pride, če vaš zaganjalnik ne podpira v celoti prilagajanja ikon. Poskusite zagnati aplikacijo prek trgovine Google Play ali pripomočka, če je na voljo. Po zagonu obnovite privzeto zeleno barvo ikone #106D1F. V skrajnih primerih bo morda potrebna ponovna namestitev aplikacije.</string>
+    <string name="faq_9_text_commons">To lahko storite na več načinov. Prvi je, da začnete izbiro z dolgim pritiskom na en element, nato pa s kratkim klikom na druge elemente, da jih izberete. Drugi način je podoben izbiranju elementov na osebnih računalnikih z miško: način izbiranja zaženete tako, da dolgo pritisnete en element, nato pa ga s prstom še vedno vlečete navzdol čez druge elemente, da jih izberete. Tretji način izbiranja več elementov je, da dolgo pritisnete en element, nato dolgo pritisnete drugega in vse, kar je vmes, bo izbrano. Če želite izbrati vse elemente, preprosto dolgo pritisnite en element, nato pa kliknite na števec izbranih elementov v zgornjem levem kotu. Tako boste izbrali ali preklicali izbor vseh elementov.</string>
+    <string name="fingerprint_setup_successfully">Zaščita uspešno nastavljena. Če pride do težav s ponastavitvijo, izbrišite in ponovno naložite aplikacijo.</string>
+    <string name="importing">Uvažanje</string>
+    <string name="loading">Nalaganje</string>
+    <string name="move_to">Premakni v</string>
+    <string name="moving">Premikanje</string>
+    <string name="open_with">Odpri z</string>
+    <string name="pro_app_refund">Ne pozabite - če odstranite katerokoli plačljivo aplikacijo v dveh urah, dobite povrnjen avtomatično denar. Če želite povrnitev denarja po preteku tega časa, nas kontaktirajte na hello@fossify.org in poskrbeli bomo za to. Zaradi tega je preizkušanje aplikacije še bolj preprosto. :)</string>
+    <string name="protection_setup_successfully">Geslo uspešno nastavljeno. Če ga pozabite, izbrišite in ponovno naložite aplikacijo.</string>
+    <string name="purchase_thank_you">\nZa uporabo te funkcije in podporo razvoju kupite aplikacijo &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt;. Hvala!\n</string>
+    <string name="request_the_required_permissions">Zahtevajte potrebna dovoljenja</string>
+    <string name="save_as">Shrani kot</string>
+    <string name="saving">Shranjevanje</string>
+    <string name="scanning">Skeniranje </string>
+    <string name="select_font_file">Izberite datoteko pisave </string>
+    <string name="set_as">Nastavi kot</string>
+    <string name="share_via">Deli preko</string>
+    <string name="sort_by">Razvrsti po</string>
+    <string name="translation_welsh">Valižanščina</string>
+    <string name="updating">Posodabljam </string>
+</resources>

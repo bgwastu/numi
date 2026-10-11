@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Introdu un mesaj…</string>
+    <string name="type_a_message">Introdu un mesaj</string>
     <string name="message_not_sent_short">Mesajul nu a fost trimis</string>
     <string name="message_not_sent_touch_retry">Mesajul nu a fost trimis. Apasă pentru a încerca din nou.</string>
     <string name="message_sending_error">Mesajul tău către \'%s\' nu a fost trimis</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Începe o conversație</string>
     <string name="reply">Răspunde</string>
     <string name="show_character_counter">Afișează un contor de caractere la scrierea mesajelor</string>
-    <string name="loading_messages">Încărcare mesaje…</string>
+    <string name="loading_messages">Încărcare mesaje</string>
     <string name="no_reply_support">Expeditorul nu suportă funcția de a răspunde la mesaje</string>
     <string name="draft">Ciornă</string>
-    <string name="sending">Trimitere…</string>
+    <string name="sending">Trimitere</string>
     <string name="pin_conversation">Fixare în partea de sus</string>
     <string name="unpin_conversation">Elimină fixarea</string>
     <string name="forward_message">Redirecționare</string>
@@ -24,7 +24,7 @@
         <item quantity="other">și încă %d</item>
     </plurals>
     <string name="new_conversation">Conversație nouă</string>
-    <string name="add_contact_or_number">Adaugă contact sau număr de telefon…</string>
+    <string name="add_contact_or_number">Adaugă contact sau număr de telefon</string>
     <string name="suggestions">Sugestii</string>
     <string name="channel_received_sms">SMS-uri primite</string>
     <string name="new_message">Mesaj nou</string>

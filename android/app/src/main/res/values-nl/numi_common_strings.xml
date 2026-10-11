@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Let op: Sommige launchers verwerken het aanpassen van het icoon mogelijk niet goed. Als het icoon verdwijnt, probeer dan de app te starten via Google Play, F-Droid of een widget. Herstel na het starten de groene standaardkleur #106D1F. In extreme gevallen kan het zijn dat de app opnieuw geïnstalleerd moet worden.</string>
+    <string name="app_on_sd_card">Het lijkt erop dat de app is geïnstalleerd op een SD-kaart. Dit zorgt ervoor dat Android de widgets van deze app blokkeert. Dit is een beperking van het systeem en alleen het verplaatsen van de app naar het interne geheugen zal de widgets beschikbaar maken.</string>
+    <string name="cancel">Annuleren</string>
+    <string name="contributors">Bijdragers</string>
+    <string name="contributors_label">"\n            Deze lijst bevat de namen van iedereen die aan een app binnen de Fossify suite heeft bijgedragen. Vertalingen worden gedaan door vrijwilligers,\n            dus laat het ons weten als je ook wilt helpen. Lees de instructies &lt;a href=https://github.com/FossifyOrg/General-Discussion#contributing-translations&gt;op deze website&lt;/a&gt;, of stuur bij vragen een bericht naar &lt;a href=mailto:hello@fossify.org&gt;hello@fossify.org&lt;/a&gt;.\n            Bedankt voor alle bijdragen en andere ondersteuning!\n        "</string>
+    <string name="copy_to">Kopiëren naar</string>
+    <string name="copying">Kopiëren</string>
+    <string name="edit_with">Bewerken met</string>
+    <string name="exporting">Exporteren</string>
+    <string name="faq_6_text_commons">Dit probleem doet zich voor wanneer je launcher het aanpassen van pictogrammen niet volledig ondersteunt. Probeer de app te starten via Google Play of een widget, indien mogelijk. Herstel na het starten de standaard groene icoonkleur #106D1F. In extreme gevallen kan het nodig zijn om de app opnieuw te installeren.</string>
+    <string name="faq_9_text_commons">Dit kan op verschillende manieren. De eerste is door met een lange druk op een enkel item de selectiemodus in te schakelen, waarna kort klikken op andere items de selectie zal uitbreiden. De tweede manier is vergelijkbaar met het selecteren van items op een PC met de muis: druk lang op een item en sleep vervolgens over andere items om ook die te selecteren. De derde manier is door lang te drukken op het eerste item en vervolgens ook lang te drukken op het laatste item, waarna alle items ertussen zullen worden geselecteerd. Om alle items te selecteren kan na het lang drukken op een item geklikt worden op de teller in de linkerbovenhoek. Dit zal alle items selecteren of de gehele selectie ongedaan maken.</string>
+    <string name="fingerprint_setup_successfully">Bescherming instellen is gelukt. Installeer de app opnieuw bij problemen met het resetten van de bescherming.</string>
+    <string name="importing">Importeren</string>
+    <string name="loading">Laden</string>
+    <string name="move_to">Verplaatsen naar</string>
+    <string name="moving">Verplaatsen</string>
+    <string name="open_with">Openen met</string>
+    <string name="pro_app_refund">Bij het verwijderen van de app binnen 2 uur na aanschaf wordt het aankoopbedrag automatisch teruggestort. Wilt u op een later tijdstip een terugbetaling, neem dan contact op via hello@fossify.org en het wordt geregeld. Zodoende blijft het gemakkelijk om de app uit te proberen :)</string>
+    <string name="protection_setup_successfully">Wachtwoord succesvol ingesteld. App opnieuw installeren als het wachtwoord kwijt is.</string>
+    <string name="purchase_thank_you">"\n            Overweeg om &lt;a href=https://play.google.com/store/apps/details?id=org.fossify.thankyou&gt;Fossify Bedankje&lt;/a&gt; aan te schaffen om deze functie te kunnen gebruiken en om verdere ontwikkeling te ondersteunen. Alvast bedankt!\n        "</string>
+    <string name="request_the_required_permissions">Vereiste rechten vragen</string>
+    <string name="save_as">Opslaan als</string>
+    <string name="saving">Opslaan</string>
+    <string name="scanning">Bezig met zoeken</string>
+    <string name="select_font_file">Bestand kiezen</string>
+    <string name="set_as">Instellen als</string>
+    <string name="share_via">Delen via</string>
+    <string name="sort_by">Sorteren op</string>
+    <string name="translation_welsh">Welsh</string>
+    <string name="updating">Bijwerken</string>
+</resources>

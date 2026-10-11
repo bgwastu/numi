@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">செய்தியை உள்ளிடவும்…</string>
+    <string name="type_a_message">செய்தியை உள்ளிடவும்</string>
     <string name="message_not_sent_short">செய்தி அனுப்பப்படவில்லை</string>
     <string name="message_not_sent_touch_retry">அனுப்பப்படவில்லை. மீண்டும் முயற்சிக்க, தொடவும்.</string>
     <string name="message_sending_error">\'%s\'க்கான உங்கள் செய்தி அனுப்பப்படவில்லை</string>
@@ -10,15 +10,15 @@
     <string name="start_conversation">உரையாடலைத் தொடங்குங்கள்</string>
     <string name="reply">பதில்</string>
     <string name="show_character_counter">செய்திகளை எழுதும் போது எழுத்து கவுண்டரைக் காட்டு</string>
-    <string name="loading_messages">செய்திகளை ஏற்றுகிறது…</string>
+    <string name="loading_messages">செய்திகளை ஏற்றுகிறது</string>
     <string name="no_reply_support">அனுப்புநர் பதில்களை ஆதரிக்கவில்லை</string>
     <string name="draft">வரைவு</string>
-    <string name="sending">அனுப்புகிறது…</string>
+    <string name="sending">அனுப்புகிறது</string>
     <string name="pin_conversation">மேலே பொருத்தவும்</string>
     <string name="unpin_conversation">பின் நீக்கு</string>
     <string name="forward_message">முன்னோக்கி</string>
     <string name="new_conversation">புதிய உரையாடல்</string>
-    <string name="add_contact_or_number">தொடர்பு அல்லது எண்ணைச் சேர்க்கவும்…</string>
+    <string name="add_contact_or_number">தொடர்பு அல்லது எண்ணைச் சேர்க்கவும்</string>
     <string name="suggestions">பரிந்துரைகள்</string>
     <string name="channel_received_sms">SMS கிடைத்தது</string>
     <string name="new_message">புதிய செய்தி</string>

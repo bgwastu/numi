@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">זהירות: ייתכן שחלק מהמשגרים לא יטפלו בהתאמה אישית של סמלי אפליקציה בצורה נכונה. אם הסמל נעלם, נסו להפעיל את האפליקציה דרך Google Play או ווידג\'ט, אם זמין. לאחר ההפעלה, שחזרו את צבע הסמל הירוק המוגדר כברירת מחדל #106D1F. במקרים קיצוניים, ייתכן שיהיה צורך להתקין מחדש את האפליקציה.</string>
+    <string name="app_on_sd_card">נראה שהאפליקציה מותקנת על כרטיס SD, מה שהופך את הווידג\'טים של האפליקציה ללא זמינים. לא תוכל לראות אותם ברשימת הווידג\'טים הזמינים. זוהי מגבלה של המערכת, כך שאם אתה רוצה להשתמש בווידג\'טים, עליך להעביר את האפליקציה בחזרה לאחסון הפנימי.</string>
+    <string name="cancel">ביטול</string>
+    <string name="contributors">תורמים</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020רשימה זו כוללת את כל מי שעזר באופן בולט לכל אפליקציה בחבילת Fossify, לא רק זו. תרגומים מטופלים על ידי מתנדבים,\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020ספרו לנו אם גם אתם רוצים לעזור. המדריך לתרגום נמצא בכתובת &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;באתר זה&lt;/a&gt;, או פשוט צרו איתנו קשר בכתובת &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; אם יש לכם שאלות.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020תודה לכל התורמים ולתומכים אחרים!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">העתקה אל</string>
+    <string name="copying">מתבצעת העתקה</string>
+    <string name="edit_with">עריכה באמצעות</string>
+    <string name="exporting">מייצא</string>
+    <string name="faq_6_text_commons">בעיה זו קורה כאשר המשגר שלך אינו תומך באופן מלא בהתאמה אישית של סמלים. נסה להפעיל את האפליקציה דרך Google Play או ווידג\'ט, אם זמין. לאחר ההפעלה, שחזר את צבע הסמל הירוק המוגדר כברירת מחדל #106D1F. במקרים קיצוניים, ייתכן שיהיה צורך להתקין מחדש את האפליקציה.</string>
+    <string name="faq_9_text_commons">ישנן מספר דרכים לעשות זאת. הראשונה היא הפעלת מצב הבחירה על ידי לחיצה ארוכה על פריט אחד, ולאחר מכן לחיצה קצרה על אחרים כדי לבחור אותם. הדרך השנייה דומה לבחירת פריטים במחשבים אישיים באמצעות עכבר, פשוט הפעל את מצב הבחירה על ידי לחיצה ארוכה על פריט אחד, ולאחר מכן, כאשר האצבע עדיין מופנית, גרור אותה על פני פריטים אחרים לבחירה. הדרך השלישית לבחירת פריטים מרובים היא לחיצה ארוכה על פריט אחד, לאחר מכן לחיצה ארוכה על אחר וכל מה שביניהם ייבחר. אם ברצונך לבחור את כל הפריטים, פשוט לחץ לחיצה ארוכה על פריט אחד, ולאחר מכן לחץ על מונה הפריטים שנבחרו בפינה השמאלית העליונה. פעולה זו תסמן או תבטל את הבחירה של הכל.</string>
+    <string name="fingerprint_setup_successfully">ההגנה הוגדרה בהצלחה. במקרה של בעיות באיפוס, אנא התקן מחדש את האפליקציה.</string>
+    <string name="importing">מייבא</string>
+    <string name="loading">טוען</string>
+    <string name="move_to">העברה אל</string>
+    <string name="moving">מתבצעת העברה</string>
+    <string name="open_with">פתיחה באמצעות</string>
+    <string name="pro_app_refund">זכור שאם תסיר כל אפליקציה בתשלום בתוך שעתיים, תקבל החזר כספי אוטומטי. אם תרצה החזר בכל עת מאוחר יותר, פשוט צור איתנו קשר בכתובת hello@fossify.org ותקבל אותו. זה מקל על ההתנסות :)</string>
+    <string name="protection_setup_successfully">סיסמה הוגדרה בהצלחה. נא להתקין שוב את האפליקציה במיקרה של איבוד הסיסמה.</string>
+    <string name="purchase_thank_you">\nאנא רכשו &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;תודה Fossify&lt;/a&gt; כדי להשתמש בתכונה זו ולתמוך בפיתוח. תודה!\n</string>
+    <string name="request_the_required_permissions">בקש את ההרשאות הנדרשות</string>
+    <string name="save_as">שמירה בשם</string>
+    <string name="saving">מתבצעת שמירה</string>
+    <string name="scanning">סורק</string>
+    <string name="select_font_file">בחר קובץ גופן</string>
+    <string name="set_as">שימוש בתור</string>
+    <string name="share_via">שיתוף באמצעות</string>
+    <string name="sort_by">מיין לפי</string>
+    <string name="translation_welsh">וולשית</string>
+    <string name="updating">מעדכן</string>
+</resources>

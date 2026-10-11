@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Napište zprávu…</string>
+    <string name="type_a_message">Napište zprávu</string>
     <string name="message_not_sent_short">Zpráva nebyla odeslána</string>
     <string name="message_not_sent_touch_retry">Nebyla odeslána. Klepnutím to zkuste znovu.</string>
     <string name="message_sending_error">Vaše zpráva pro „%s“ nebyla odeslána</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Zahájit konverzaci</string>
     <string name="reply">Odpovědět</string>
     <string name="show_character_counter">Zobrazit počítadlo znaků při psaní zpráv</string>
-    <string name="loading_messages">Načítání zpráv…</string>
+    <string name="loading_messages">Načítání zpráv</string>
     <string name="no_reply_support">Odesílatel nepodporuje odpovědi</string>
     <string name="draft">Koncept</string>
-    <string name="sending">Odesílá se…</string>
+    <string name="sending">Odesílá se</string>
     <string name="pin_conversation">Připnout nahoru</string>
     <string name="unpin_conversation">Odepnout</string>
     <string name="forward_message">Přeposlat</string>
@@ -25,7 +25,7 @@
         <item quantity="other">a %d dalších</item>
     </plurals>
     <string name="new_conversation">Nová konverzace</string>
-    <string name="add_contact_or_number">Přidejte kontakt nebo číslo…</string>
+    <string name="add_contact_or_number">Přidejte kontakt nebo číslo</string>
     <string name="suggestions">Návrhy</string>
     <string name="members">Členové</string>
     <string name="conversation_name">Název konverzace</string>

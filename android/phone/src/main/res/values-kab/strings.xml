@@ -13,7 +13,7 @@
     <string name="numi_phone_dialpad_vibrations">Rmed asenhez ɣef usiti n tqeffalt n unasiw n wuṭṭunen</string>
     <string name="numi_phone_accept">Qbel</string>
     <string name="numi_phone_decline_call">Agi asiwel</string>
-    <string name="numi_phone_dialing">Tiɣri…</string>
+    <string name="numi_phone_dialing">Tiɣri</string>
     <string name="numi_phone_call_ended">Tekfa tiɣri</string>
     <string name="numi_phone_unset_default_sim">Kkes asbadu n SIM amezwer</string>
     <string name="numi_phone_calls">Tiɣriwin</string>
@@ -25,8 +25,8 @@
     <string name="numi_phone_resume_call">Kemmel asiwel</string>
     <string name="numi_phone_conference_manage">Sefrek tiɣri n usarag</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
-    <string name="numi_phone_default_phone_app_prompt">Ttxil-k·m, err asnas-agi d Tiliɣri amezwer</string>
-    <string name="numi_phone_could_not_access_contacts">Ur yezmir ara ad yekcem inermisen-inek·inem</string>
+    <string name="numi_phone_default_phone_app_prompt">Ttxil-k,m, err asnas-agi d Tiliɣri amezwer</string>
+    <string name="numi_phone_could_not_access_contacts">Ur yezmir ara ad yekcem inermisen-inek,inem</string>
     <string name="numi_phone_no_previous_calls">Ulac isawalen yezrin yettwafen</string>
     <string name="numi_phone_remove_confirmation">D tidet tebɣiḍ ad tekkseḍ iferdisen yettwafernen seg umazray n usiwel?</string>
     <string name="numi_phone_clear_history_confirmation">D tidet tebɣiḍ ad tekkseḍ kullec seg umazray n usiwel?</string>
@@ -40,7 +40,7 @@
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
     <string name="numi_phone_choose_audio_route">Fren abrid n umeslaw</string>
     <string name="numi_phone_calling_blocked_number">Amḍan i d-tessawleḍ yettusewḥel</string>
-    <string name="numi_phone_call_is_being_connected">Tiɣri-inek·inem attan deg ubrid n tuqqna…</string>
+    <string name="numi_phone_call_is_being_connected">Tiɣri-inek,inem attan deg ubrid n tuqqna</string>
     <string name="numi_phone_call_notification_channel">Addad n usiwel</string>
     <string name="numi_phone_call_notification_channel_high_priority">Addad n usiwel (tazwart tafellayt)</string>
     <string name="numi_phone_faq_3_title">Acuɣer kra seg inermisen-iw xuṣṣen seg usnas?</string>
@@ -50,7 +50,7 @@
     <string name="numi_phone_accept_call">Qbel asiwel</string>
     <string name="numi_phone_decline">Agi</string>
     <string name="numi_phone_unknown_caller">Asiwel arussin</string>
-    <string name="numi_phone_is_calling">Deg usiwel…</string>
+    <string name="numi_phone_is_calling">Deg usiwel</string>
     <string name="numi_phone_call_ending">Tagara n usiwel</string>
     <string name="numi_phone_ongoing_call">Asiwel itteddu</string>
     <string name="numi_phone_group_subsequent_calls">Segrew isawalen i d-iteddun s yiwen n wuṭṭun deg usiwel n uɣmis</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_manage_speed_dial">sefrek asiwel arurad</string>
     <string name="numi_phone_hide_dialpad_numbers">Ffer uṭṭunen n unasiw n wuṭṭunen</string>
     <string name="numi_phone_speed_dial_label">Ssit ɣef umḍan akken ad t-tmuddeḍ i unermis. Tzemred ad tessiwleḍ s tɣawla i unermis s usiti aɣezzfan ɣef wuṭṭun i d-yettwamudden deg unasiw n yimḍanen.</string>
-    <string name="numi_phone_faq_1_text">Uguren am wi zemren ad sɛun aṭas n sebbat seg yibenk akked ssebbat uzzigen n unagraw, yewɛer ad d-tiniḍ s umata. Ilaq ad twaliḍ deg yiɣewwaṛen n yibenk-ik·im yerna ad tḥeqq belli asnas yettwasireg ad d-yekker deg ugilal yerna ad yizmir ad ibeqqeḍ sufella n isnasen-nniḍen.</string>
+    <string name="numi_phone_faq_1_text">Uguren am wi zemren ad sɛun aṭas n sebbat seg yibenk akked ssebbat uzzigen n unagraw, yewɛer ad d-tiniḍ s umata. Ilaq ad twaliḍ deg yiɣewwaṛen n yibenk-ik,im yerna ad tḥeqq belli asnas yettwasireg ad d-yekker deg ugilal yerna ad yizmir ad ibeqqeḍ sufella n isnasen-nniḍen.</string>
     <string name="numi_phone_faq_2_title">Acuɣer isawalen n tetrabt ur tteddun ara akken iwatan ?</string>
-    <string name="numi_phone_faq_2_text">Ɣef sebba n tlisa n unagraw, isawalen n tetrabt zemren kan ad d-gen deg unasiw n yimḍanen umezwer n unagraw-ik·im neɣ n yisnasen n tiliɣri-ik·im.Iwakken ad neḍmen isawalen n tetrabt akken iwata, ilaq-ak·am ad tḥerzeḍ asebdad n usnas n unagraw yerna ad yili yermed.</string>
+    <string name="numi_phone_faq_2_text">Ɣef sebba n tlisa n unagraw, isawalen n tetrabt zemren kan ad d-gen deg unasiw n yimḍanen umezwer n unagraw-ik,im neɣ n yisnasen n tiliɣri-ik,im.Iwakken ad neḍmen isawalen n tetrabt akken iwata, ilaq-ak,am ad tḥerzeḍ asebdad n usnas n unagraw yerna ad yili yermed.</string>
 </resources>

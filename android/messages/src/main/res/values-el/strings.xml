@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Πληκτρολογήστε ένα μήνυμα…</string>
+    <string name="type_a_message">Πληκτρολογήστε ένα μήνυμα</string>
     <string name="message_not_sent_short">Το μήνυμα δεν εστάλη</string>
     <string name="message_not_sent_touch_retry">Δεν εστάλη. Αγγίξτε για επανάληψη.</string>
     <string name="message_sending_error">Το μήνυμά σας προς το \'%s\' δεν έχει αποσταλεί</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Έναρξη συνομιλίας</string>
     <string name="reply">Απάντηση</string>
     <string name="show_character_counter">Εμφάνιση μετρητή χαρακτήρων κατά την πληκτρολόγηση μηνυμάτων</string>
-    <string name="loading_messages">Φόρτωση μηνυμάτων…</string>
+    <string name="loading_messages">Φόρτωση μηνυμάτων</string>
     <string name="no_reply_support">Ο αποστολέας δεν υποστηρίζει απαντήσεις</string>
     <string name="draft">Πρόχειρο</string>
-    <string name="sending">Γίνεται αποστολή…</string>
+    <string name="sending">Γίνεται αποστολή</string>
     <string name="pin_conversation">Καρφίτσωμα στην κορυφή</string>
     <string name="unpin_conversation">Ξεκαρφίτσωμα</string>
     <string name="forward_message">Προώθηση</string>
@@ -24,7 +24,7 @@
         <item quantity="other">και άλλοι %d</item>
     </plurals>
     <string name="new_conversation">Νέα συνομιλία</string>
-    <string name="add_contact_or_number">Προσθήκη επαφής ή αριθμού…</string>
+    <string name="add_contact_or_number">Προσθήκη επαφής ή αριθμού</string>
     <string name="suggestions">Προτάσεις</string>
     <string name="members">Μέλη</string>
     <string name="conversation_name">Όνομα συνομιλίας</string>

@@ -1,5 +1,7 @@
 package org.fossify.phone.adapters
 
+import org.fossify.commons.extensions.beGone
+
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.provider.CallLog.Calls
@@ -514,12 +516,7 @@ class RecentCallsAdapter(
                     setTextSize(TypedValue.COMPLEX_UNIT_PX, currentFontSize * 0.8f)
                 }
 
-                itemRecentsDateTimeDurationSeparator.apply {
-                    text = "•"
-                    setTextSize(TypedValue.COMPLEX_UNIT_PX, currentFontSize * 0.8f)
-                    setTextColor(textColor)
-                    beVisibleIf(shouldShowDuration)
-                }
+                itemRecentsDateTimeDurationSeparator.beGone()
 
                 itemRecentsDuration.apply {
                     text = context.formatSecondsToShortTimeString(call.duration)

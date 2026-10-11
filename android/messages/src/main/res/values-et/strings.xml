@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Kirjuta sõnum…</string>
+    <string name="type_a_message">Kirjuta sõnum</string>
     <string name="message_not_sent_short">Sõnum ei ole saadetud</string>
     <string name="message_not_sent_touch_retry">Saamata. Uuesti saatmiseks puuduta.</string>
     <string name="message_sending_error">Sinu sõnum adressaadile „%s“ on saatmata</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Alusta vestlust</string>
     <string name="reply">Vasta</string>
     <string name="show_character_counter">Sõnumite kirjutamisel näita tähemärkide loendurit</string>
-    <string name="loading_messages">Laadime sõnumeid…</string>
+    <string name="loading_messages">Laadime sõnumeid</string>
     <string name="no_reply_support">Sõnumi saatja ei toeta vastuste võimalust</string>
     <string name="draft">Kavand</string>
-    <string name="sending">Saadame…</string>
+    <string name="sending">Saadame</string>
     <string name="pin_conversation">Kinnita ülaossa</string>
     <string name="unpin_conversation">Eemalda kinnitus</string>
     <string name="forward_message">Edasta</string>
@@ -24,7 +24,7 @@
         <item quantity="other">ja %d muud</item>
     </plurals>
     <string name="new_conversation">Uus vestlus</string>
-    <string name="add_contact_or_number">Lisa kontakt või number…</string>
+    <string name="add_contact_or_number">Lisa kontakt või number</string>
     <string name="suggestions">Ettepanekud</string>
     <string name="members">Liikmed</string>
     <string name="conversation_name">Vestluse nimi</string>

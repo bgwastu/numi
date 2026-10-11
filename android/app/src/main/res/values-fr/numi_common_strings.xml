@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Attention : Certains lanceurs peuvent ne pas manipuler correctement la personnalisation de l\'icône d\'application. Si l\'icône disparaît, essayez de lancer l\'application via Google Play ou un widget, si accessible. Après le lancement, restaurer la couleur d\'icône verte par défaut #106D1F. Dans les cas extrêmes, réinstaller l\'application peut être nécessaire.</string>
+    <string name="app_on_sd_card">L\'application semble être installée sur une carte SD, ce qui empêche l\'utilisation des widgets de l\'application. Vous ne les verrez même pas dans la liste des widgets disponibles. Il s\'agit d\'une limitation système. Si vous souhaitez utiliser les widgets, vous devez déplacer l\'application vers l\'espace de stockage interne.</string>
+    <string name="cancel">Annuler</string>
+    <string name="contributors">Contributeurs</string>
+    <string name="contributors_label">\nCette liste contient toutes les personnes qui ont sensiblement contribué à une application de la suite Fossify, et pas seulement celle-ci. Les traductions sont assurées par des bénévoles,\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020faites-nous savoir si vous souhaitez aider aussi. Le guide de traduction se trouve sur &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;ce site web&lt;/a&gt;, ou contactez-nous simplement à &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; si vous avez des questions.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Merci à tous les contributeurs et tous ceux qui nous soutiennent !\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">Copier vers</string>
+    <string name="copying">Copie en cours</string>
+    <string name="edit_with">Modifier avec</string>
+    <string name="exporting">Exportation en cours</string>
+    <string name="faq_6_text_commons">Ce problème survient lorsque votre lanceur ne prend pas totalement en charge la personnalisation des icônes. Essayez de lancer l\'application via Google Play ou un widget, s\'il est accessible. Après le lancement, rétablissez la couleur verte par défaut de l\'icône #106D1F. Dans les cas extrêmes, il peut être nécessaire de réinstaller l\'application.</string>
+    <string name="faq_9_text_commons">Il existe plusieurs façons de procéder. La première consiste à démarrer le mode de sélection en appuyant longuement sur un élément, puis à cliquer brièvement sur les autres pour les sélectionner. La deuxième méthode est similaire à la sélection d\'éléments sur un ordinateur avec une souris. Démarrez simplement le mode de sélection en appuyant longuement sur un élément, puis, avec votre doigt toujours vers le bas, faites-le glisser sur d\'autres éléments pour les sélectionner. La troisième façon de sélectionner plusieurs éléments consiste à appuyer longuement sur un élément, puis à appuyer longuement sur un autre. Le reste sera alors sélectionné. Si vous souhaitez sélectionner tous les éléments, appuyez longuement sur un élément, puis cliquez sur le compteur d\'éléments sélectionnés dans le coin supérieur gauche. Cela sélectionnera ou désélectionnera l\'ensemble.</string>
+    <string name="fingerprint_setup_successfully">Configuration de la protection réussie. Veuillez réinstaller l\'application en cas de problèmes de réinitialisation.</string>
+    <string name="importing">Importation en cours</string>
+    <string name="loading">Chargement</string>
+    <string name="move_to">Déplacer vers</string>
+    <string name="moving">Déplacement en cours</string>
+    <string name="open_with">Ouvrir avec</string>
+    <string name="pro_app_refund">N\'oubliez pas que si vous désinstallez une application payante dans les deux heures qui suivent son achat, le remboursement sera automatique. À tout moment, si vous souhaitez un remboursement, contactez-nous à l\'adresse électronique suivante : hello@fossify.org et vous l\'obtiendrez dans les plus brefs délais. Cela facilite l\'essai de nos applications :)</string>
+    <string name="protection_setup_successfully">Configuration du mot de passe réussie. Veuillez réinstaller l\'application en cas d\'oubli.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Veuillez acheter &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; pour utiliser cette fonctionnalité et soutenir le développement. Merci !\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Demander les autorisations nécessaires</string>
+    <string name="save_as">Enregistrer sous</string>
+    <string name="saving">Enregistrement en cours</string>
+    <string name="scanning">Balayage</string>
+    <string name="select_font_file">Sélectionner le fichier de police de caractère</string>
+    <string name="set_as">Définir en tant que</string>
+    <string name="share_via">Partager via</string>
+    <string name="sort_by">Trier par</string>
+    <string name="translation_welsh">Gallois</string>
+    <string name="updating">Mise à jour</string>
+</resources>

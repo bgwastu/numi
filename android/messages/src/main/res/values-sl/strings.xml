@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Vtipkajte sporočilo …</string>
+    <string name="type_a_message">Vtipkajte sporočilo </string>
     <string name="message_not_sent_short">Sporočilo ni bilo poslano</string>
     <string name="message_not_sent_touch_retry">Ni poslano. Dotaknite se za ponovni poskus.</string>
     <string name="message_sending_error">Vaše sporočilo \'%s\' ni bilo poslano</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Začni pogovor</string>
     <string name="reply">Odgovori</string>
     <string name="show_character_counter">Prikaži števec znakov pri pisanju sporočil</string>
-    <string name="loading_messages">Nalaganje sporočil …</string>
+    <string name="loading_messages">Nalaganje sporočil </string>
     <string name="no_reply_support">Pošiljatelj ne podpira odgovorov</string>
     <string name="draft">Osnutek</string>
-    <string name="sending">Pošiljanje …</string>
+    <string name="sending">Pošiljanje </string>
     <string name="pin_conversation">Pripni na vrh</string>
     <string name="unpin_conversation">Odpni</string>
     <string name="forward_message">Posreduj</string>
@@ -26,7 +26,7 @@
         <item quantity="other">in %d drugih</item>
     </plurals>
     <string name="new_conversation">Nov pogovor</string>
-    <string name="add_contact_or_number">Dodaj stik ali številko …</string>
+    <string name="add_contact_or_number">Dodaj stik ali številko </string>
     <string name="suggestions">Predlogi</string>
     <string name="members">Člani</string>
     <string name="conversation_name">Ime pogovora</string>

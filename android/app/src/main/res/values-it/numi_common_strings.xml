@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Attenzione: alcuni launcher potrebbero non gestire correttamente la personalizzazione dell\'icona dell\'app. Se l\'icona scompare, prova ad avviare l\'applicazione tramite Google Play o un widget, se accessibile. Dopo l\'avvio, ripristina il colore predefinito dell\'icona verde #106D1F. In casi estremi, potrebbe essere necessario reinstallare l\'applicazione.</string>
+    <string name="app_on_sd_card">Sembra che l\'app sia installata nella scheda SD, ciò impedisce l\'uso dei widget dell\'app. Non li vedrai neppure nell\'elenco dei widget disponibili. È una limitazione di sistema, quindi se si vuole utilizzare i widget, si deve spostare l\'app nella memoria interna.</string>
+    <string name="cancel">Annulla</string>
+    <string name="contributors">Contributori</string>
+    <string name="contributors_label">
+            Questo elenco contiene tutti coloro che hanno aiutato in modo significativo qualsiasi applicazione della suite Fossify, non solo questa. Le traduzioni sono gestite da volontari,
+            fateci sapere se volete aiutare anche voi. La guida alla traduzione si trova su &lt;a href=https://github.com/FossifyOrg/General-Discussion#contributing-translations&gt;questo sito&lt;/a&gt;, oppure contattaci all\'indirizzo &lt;a href=mailto:hello@fossify.org&gt;hello@fossify.org&lt;/a&gt; per qualsiasi domanda.
+            Grazie a tutti i collaboratori e agli altri sostenitori!
+        </string>
+    <string name="copy_to">Copia in</string>
+    <string name="copying">Copia in corso</string>
+    <string name="edit_with">Modifica con</string>
+    <string name="exporting">Esportazione</string>
+    <string name="faq_6_text_commons">Questo problema si verifica quando il launcher non supporta completamente la personalizzazione delle icone. Prova ad avviare l\'applicazione tramite Google Play o un widget, se accessibile. Dopo l\'avvio, ripristina il colore predefinito dell\'icona verde #106D1F. In casi estremi, potrebbe essere necessario reinstallare l\'applicazione.</string>
+    <string name="faq_9_text_commons">Ci sono diversi modi per farlo. Il primo è aprire la modalità di selezione premendo a lungo un elemento, poi toccare gli altri elementi da selezionare. Il secondo è simile alla selezione di elementi sul PC con il mouse, apri la modalità di selezione premendo a lungo un elemento, poi con il dito ancora premuto trascinalo sugli altri elementi da selezionare. Il terzo modo di selezionare più elementi è premendone a lungo uno, poi premere a lungo un altro e tutti quelli in mezzo vegono selezionati. Se vuoi selezionare tutti gli elementi, premine uno a lungo, poi tocca il contatore di elementi selezionati nell\'angolo in alto a sinistra. Ciò selezionerà o deselezionerà tutto in un colpo solo.</string>
+    <string name="fingerprint_setup_successfully">Protezione impostata correttamente. Reinstallare l\'app in caso di problemi nel ripristinarla.</string>
+    <string name="importing">Importazione</string>
+    <string name="loading">Caricamento</string>
+    <string name="move_to">Sposta in</string>
+    <string name="moving">Spostamento in corso</string>
+    <string name="open_with">Apri con</string>
+    <string name="pro_app_refund">Non dimenticarti che se disinstalli qualsiasi app a pagamento entro le due ore dall\'acquisto, verrai automaticamente rimborsato. Se vuoi essere rimborsato quando vuoi dopo le due ore, puoi contattarci a hello@fossify.org. In questo modo puoi facilmente provare l\'app :)</string>
+    <string name="protection_setup_successfully">Password impostata correttamente. Reinstallare l\'app in caso di dimenticanza.</string>
+    <string name="purchase_thank_you">"\n            Acquista &lt;a href=https://play.google.com/store/apps/details?id=org.fossify.thankyou&gt;Grazie Fossify&lt;/a&gt; per usare questa funzione e supportare lo sviluppo. Grazie!\n        "</string>
+    <string name="request_the_required_permissions">Richiedi le autorizzazioni necessarie</string>
+    <string name="save_as">Salva come</string>
+    <string name="saving">Salvataggio in corso</string>
+    <string name="scanning">Scansione in corso</string>
+    <string name="select_font_file">Seleziona file del font</string>
+    <string name="set_as">Imposta come</string>
+    <string name="share_via">Condividi via</string>
+    <string name="sort_by">Ordina per</string>
+    <string name="translation_welsh">gallese</string>
+    <string name="updating">Aggiornamento in corso</string>
+</resources>

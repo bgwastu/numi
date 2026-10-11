@@ -5,7 +5,7 @@
     <string name="numi_phone_could_not_access_contacts">No s\'ha pogut accedir als contactes</string>
     <string name="numi_phone_no_previous_calls">No s\'ha trobat cap trucada anterior</string>
     <string name="numi_phone_could_not_access_the_call_history">No s\'ha pogut accedir a l\'historial de trucades</string>
-    <string name="numi_phone_request_access">Sol·licita accés</string>
+    <string name="numi_phone_request_access">Sol,licita accés</string>
     <string name="numi_phone_remove_confirmation">Esteu segur que voleu eliminar els elements seleccionats de l\'historial de trucades\?</string>
     <string name="numi_phone_clear_history_confirmation">Esteu segur que voleu suprimir-ho tot de l\'historial de trucades\?</string>
     <string name="numi_phone_show_grouped_calls">Mostra les trucades agrupades</string>
@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Rebutja</string>
     <string name="numi_phone_decline_call">Rebutja la trucada</string>
     <string name="numi_phone_unknown_caller">Trucada desconeguda</string>
-    <string name="numi_phone_is_calling">Està trucant…</string>
-    <string name="numi_phone_dialing">Marcant…</string>
+    <string name="numi_phone_is_calling">Està trucant</string>
+    <string name="numi_phone_dialing">Marcant</string>
     <string name="numi_phone_call_ended">Trucada finalitzada</string>
     <string name="numi_phone_call_ending">Finalització de la trucada</string>
     <string name="numi_phone_ongoing_call">Trucada en curs</string>
@@ -71,8 +71,8 @@
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
     <string name="numi_phone_faq_2_title">Per què les trucades d\'emergència no funcionen correctament?</string>
     <string name="numi_phone_faq_3_title">Per què falten alguns dels meus contactes a l\'aplicació?</string>
-    <string name="numi_phone_call_is_being_connected">La trucada s\'està connectant…</string>
-    <string name="numi_phone_faq_2_text">A causa de les restriccions del sistema, les trucades d\'emergència només es poden fer a través de l\'aplicació de marcació o de telèfon predeterminada del sistema. Per a garantir que les trucades d\'emergència funcionin correctament, cal mantenir l\'aplicació del sistema instal·lada i habilitada.</string>
+    <string name="numi_phone_call_is_being_connected">La trucada s\'està connectant</string>
+    <string name="numi_phone_faq_2_text">A causa de les restriccions del sistema, les trucades d\'emergència només es poden fer a través de l\'aplicació de marcació o de telèfon predeterminada del sistema. Per a garantir que les trucades d\'emergència funcionin correctament, cal mantenir l\'aplicació del sistema instal,lada i habilitada.</string>
     <string name="numi_phone_faq_3_text">El Fossify Phone només mostra els contactes que tenen un número de telèfon associat a ells. Els contactes sense número de telèfon no es mostren a l\'aplicació.</string>
     <string name="numi_phone_call_notification_channel">Estat de la trucada</string>
     <string name="numi_phone_call_notification_channel_high_priority">Estat de la trucada (alta prioritat)</string>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Uwaga: Pewne launchery mogą nie obsługiwać prawidłowo zmiany ikon aplikacji. Jeśli ikona zniknie, spróbuj uruchomić aplikację przez Google Play lub przez widżet, jeśli jest dostępny. Po uruchomieniu przywróć domyślny zielony kolor ikony (#106D1F). W wyjątkowych przypadkach konieczne może okazać się przeinstalowanie aplikacji.</string>
+    <string name="app_on_sd_card">Wygląda na to, że aplikacja jest zainstalowana na karcie pamięci, przez co widżety aplikacji są niedostępne. Nie zobaczysz ich nawet na liście dostępnych widżetów. Jest to ograniczenie systemu, więc jeśli chcesz ich używać, musisz przenieść aplikację z powrotem do pamięci wewnętrznej.</string>
+    <string name="cancel">Anuluj</string>
+    <string name="contributors">Współtwórcy</string>
+    <string name="contributors_label">
+            Ta lista zawiera wszystkich, którzy zauważalnie pomogli przy którejkolwiek z prostych aplikacji od Fossify, nie tylko przy tej. Tłumaczeniami zajmują się wolontariusze;
+            daj nam znać, jeśli też chcesz pomóc. Instrukcja jak tłumaczyć znajduje się na &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;tej stronie&lt;/a&gt;, albo po prostu skontaktuj się z nami pod adresem &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt;, jeśli masz jakiekolwiek pytania.
+            Dziękuję wszystkim współtwórcom i innym wspierającym!
+        </string>
+    <string name="copy_to">Kopiuj do</string>
+    <string name="copying">Kopiowanie</string>
+    <string name="edit_with">Edytuj w</string>
+    <string name="exporting">Eksportowanie</string>
+    <string name="faq_6_text_commons">Ten problem się pojawia, gdy Twój launcher nie obsługuje w pełni zmiany ikon aplikacji. Spróbuj uruchomić aplikację przez Google Play lub przez widżet, jeśli jest dostępny. Po uruchomieniu przywróć domyślny zielony kolor ikony (#106D1F). W wyjątkowych przypadkach konieczne może okazać się przeinstalowanie aplikacji.</string>
+    <string name="faq_9_text_commons">Można to zrobić na wiele sposobów. Pierwszym z nich jest uruchomienie trybu wyboru przez długie naciśnięcie jednego elementu, a następnie krótkie naciśnięcie innych, aby je wybrać. Drugi sposób jest podobny do wybierania elementów na komputerach PC za pomocą myszy. Wystarczy uruchomić tryb zaznaczania przez długie naciśnięcie jednego elementu, a następnie z przyciśniętym palcem przeciągnąć go przez inne elementy do zaznaczenia. Trzeci sposób zaznaczania wielu elementów to długie naciśnięcie jednego elementu, a następnie długie naciśnięcie innego, żeby wszystko pomiędzy zostało zaznaczone. Jeśli chcesz zaznaczyć wszystkie elementy, naciśnij długo jeden element, a następnie naciśnij licznik wybranych elementów w lewym górnym rogu. To zaznaczy lub odznaczy wszystko.</string>
+    <string name="fingerprint_setup_successfully">Zabezpieczenie zostało ustawione. W razie problemów z jego zresetowaniem przeinstaluj aplikację.</string>
+    <string name="importing">Importowanie</string>
+    <string name="loading">Ładowanie</string>
+    <string name="move_to">Przenieś do</string>
+    <string name="moving">Przenoszenie</string>
+    <string name="open_with">Otwórz w</string>
+    <string name="pro_app_refund">Pamiętaj, że jeśli odinstalujesz którąkolwiek z płatnych aplikacji w ciągu 2 godzin, automatycznie otrzymasz zwrot pieniędzy. Jeśli chcesz zwrotu pieniędzy w dowolnym momencie później, wystarczy skontaktować się z nami na hello@fossify.org, a go otrzymasz. To sprawia, że aplikacje są łatwe do wypróbowania :)</string>
+    <string name="protection_setup_successfully">Hasło zostało ustawione. Jeśli je zapomnisz, przeinstaluj aplikację.</string>
+    <string name="purchase_thank_you">
+            Kup aplikację &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt;, aby używać tej funkcji i wesprzeć rozwój. Dziękujemy!
+        </string>
+    <string name="request_the_required_permissions">Poproś o wymagane uprawnienia</string>
+    <string name="save_as">Zapisz jako</string>
+    <string name="saving">Zapisywanie</string>
+    <string name="scanning">Skanowanie</string>
+    <string name="select_font_file">Wybierz rozmiar czcionki</string>
+    <string name="set_as">Ustaw jako</string>
+    <string name="share_via">Udostępnij w</string>
+    <string name="sort_by">Sortuj według</string>
+    <string name="translation_welsh">walijski</string>
+    <string name="updating">Aktualizowanie</string>
+</resources>

@@ -25,8 +25,8 @@
     <string name="numi_phone_decline">நிராகரி</string>
     <string name="numi_phone_decline_call">அழைப்பை நிராகரி</string>
     <string name="numi_phone_unknown_caller">அறியப்படாத எண்</string>
-    <string name="numi_phone_is_calling">அழைக்கிறார்…</string>
-    <string name="numi_phone_dialing">அழைப்பது…</string>
+    <string name="numi_phone_is_calling">அழைக்கிறார்</string>
+    <string name="numi_phone_dialing">அழைப்பது</string>
     <string name="numi_phone_call_ended">அழைப்பு முடிந்தது</string>
     <string name="numi_phone_call_ending">அழைப்பு முடிகின்றது</string>
     <string name="numi_phone_ongoing_call">செயலில் உள்ள அழைப்பு</string>

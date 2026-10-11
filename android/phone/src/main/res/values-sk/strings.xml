@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Odmietnuť</string>
     <string name="numi_phone_decline_call">Odmietnuť hovor</string>
     <string name="numi_phone_unknown_caller">Neznámy volajúci</string>
-    <string name="numi_phone_is_calling">Volá…</string>
-    <string name="numi_phone_dialing">Vytáča sa…</string>
+    <string name="numi_phone_is_calling">Volá</string>
+    <string name="numi_phone_dialing">Vytáča sa</string>
     <string name="numi_phone_call_ended">Hovor bol ukončený</string>
     <string name="numi_phone_call_ending">Hovor končí</string>
     <string name="numi_phone_ongoing_call">Prebiehajúci hovor</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_faq_1_text">Takéto problémy majú často dôvody špecifické pre dané zariadenie alebo systém, ťažko teda dať všeobecné riešenie. Mali by ste sa poobzerať v nasteniach zariadenia a uistiť sa, že apka má povolenie na zobrazovanie sa z pozadia a na zobrazovanie sa nad ostatnými apkami.</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
-    <string name="numi_phone_call_is_being_connected">Prebieha spojenie…</string>
+    <string name="numi_phone_call_is_being_connected">Prebieha spojenie</string>
     <string name="numi_phone_faq_2_title">Prečo nefungujú správne núdzové volania?</string>
     <string name="numi_phone_faq_2_text">Pre systémové obmedzenia smú núdzové hovory byť uskutočnené len cez pôvodnú systémovú aplikáciu pre telefonovanie. Aby ste zaistili funkčnosť núdzových hovorov, musíte ponechať systémovú aplikáciu nainštalovanú a nedeaktivovanú.</string>
     <string name="numi_phone_faq_3_title">Prečo v aplikácii nevidím niektoré svoje kontakty?</string>

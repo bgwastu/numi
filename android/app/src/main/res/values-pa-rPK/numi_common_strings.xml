@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_on_sd_card">You seem to have the app installed on an SD card, that makes the app widgets unavailable. You won\'t even see them on the list of available widgets. It is a system limitation, so if you want to use the widgets, you have to move the app back on the internal storage.</string>
+    <string name="cancel">رد کرو</string>
+    <string name="contributors">لیکھک</string>
+    <string name="copy_to">اِتھوں تھاں نوں کاپی کرو</string>
+    <string name="copying">کاپی کیتا جا رہا اے</string>
+    <string name="edit_with">ہور اَیپ نال کھُلھو</string>
+    <string name="exporting">اوہ ایکسپورٹ کیتے جا رہے اے۔ ۔ ۔</string>
+    <string name="faq_9_text_commons">There are multiple ways of doing that. The first one is starting the selection mode by long pressing one item, then short clicking on others to select them. The second way is similar to selecting items on PCs with a mouse, just start the selection mode by long pressing one item, then with your finger still down drag it across other items for selecting. The third way of selecting multiple items is long pressing one item, then long pressing another one and everything in between gets selected. If you want to select all items, just long press one item, then click at the selected item counter at the top left corner. That will select or unselect all everything.</string>
+    <string name="importing">ایمپورٹ کیتیاں جا رہیاں اے۔ ۔</string>
+    <string name="loading">لوڈ کر رہا اے</string>
+    <string name="move_to">اِتھوں تھاں نوں چلاؤ</string>
+    <string name="moving">تبدیل کیتا جا رہا اے</string>
+    <string name="open_with">ہور اَیپ نال کھُلھو</string>
+    <string name="request_the_required_permissions">اِجازتاں لئی بینتی کرو</string>
+    <string name="save_as">نویں ناں نال سامبھو</string>
+    <string name="saving">سامبھیا جا رہا اے</string>
+    <string name="set_as">ناں نال ٹیکو</string>
+    <string name="share_via">تھاں نوں سانجھ کرو</string>
+    <string name="sort_by">لڑیبندھ</string>
+    <string name="translation_welsh">ویلش</string>
+</resources>

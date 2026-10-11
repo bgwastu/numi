@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Google Material Symbols Rounded: perm_phone_msg, filled. Apache-2.0.
+     Source revision 49d4db35df873165d6bd6ba09b063c7dafbac2f4; see docs/android-design.md. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <!-- Soft dark tile -->
-    <path
-        android:fillColor="#121212"
-        android:pathData="M18,18h72v72h-72z" />
-    <!-- Hash # -->
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M42,28 L48,28 L49.5,40 L58.5,40 L57,28 L63,28 L64.5,40 L74,40 L74,46 L65.2,46 L66.5,56 L75,56 L75,62 L67.2,62 L68.5,80 L62.5,80 L61.2,62 L52.2,62 L53.5,80 L47.5,80 L46.2,62 L36,62 L36,56 L45.5,56 L44.2,46 L35,46 L35,40 L43.5,40 Z M51,46 L52.2,56 L61.2,56 L59.9,46 Z" />
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <group android:scaleX="0.058333333" android:scaleY="0.058333333"
+        android:translateX="26" android:translateY="26">
+        <path android:fillColor="@color/ic_launcher_foreground" android:pathData="M480,472L480,160Q480,143 491.5,131.5Q503,120 520,120L800,120Q817,120 828.5,131.5Q840,143 840,160L840,360Q840,377 828.5,388.5Q817,400 800,400L600,400L514,486Q504,496 492,491Q480,486 480,472ZM798,840Q673,840 551,785.5Q429,731 329,631Q229,531 174.5,409Q120,287 120,162Q120,144 132,132Q144,120 162,120L324,120Q338,120 349,129.5Q360,139 362,152L388,292Q390,308 387,319Q384,330 376,338L279,436Q299,473 326.5,507.5Q354,542 387,574Q418,605 452,631.5Q486,658 524,680L618,586Q627,577 641.5,572.5Q656,568 670,570L808,598Q822,602 831,612.5Q840,623 840,636L840,798Q840,816 828,828Q816,840 798,840Z" />
+    </group>
 </vector>

@@ -14,8 +14,8 @@ plugins {
 
 // Commons 7.1.3 assumes every derivative uses an org.fossify package. Numi keeps
 // its original Android identity for data-preserving upgrades. Remove only the
-// incorrect package-name warning and route calls to this APK rather than the
-// hard-coded upstream package. Retain the upstream activities and attribution.
+// incorrect package-name warning, allow appearance settings for this fork, and
+// route calls to this APK. Retain the upstream activities and attribution.
 abstract class NumiForkCompatibility : AsmClassVisitorFactory<InstrumentationParameters.None> {
     override fun isInstrumentable(classData: ClassData) =
         classData.className in setOf("org.fossify.commons.activities.BaseSimpleActivity", "org.fossify.commons.extensions.ActivityKt")
@@ -41,9 +41,37 @@ abstract class NumiForkCompatibility : AsmClassVisitorFactory<InstrumentationPar
                         }
                     }
                 }
+                if (name == "startCustomizationActivity" && descriptor == "()V") {
+                    return object : MethodVisitor(Opcodes.ASM9, next) {
+                        private var adapted = 0
+                        override fun visitLdcInsn(value: Any?) {
+                            if (value == "yfissof") {
+                                // The following upstream code reverses this string before
+                                // checking it against the package. Supply our own identity.
+                                super.visitVarInsn(Opcodes.ALOAD, 0)
+                                super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "android/content/Context", "getPackageName", "()Ljava/lang/String;", false)
+                                super.visitMethodInsn(Opcodes.INVOKESTATIC, "kotlin/text/StringsKt", "reversed", "(Ljava/lang/CharSequence;)Ljava/lang/CharSequence;", false)
+                                super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "toString", "()Ljava/lang/String;", false)
+                                adapted++
+                            } else super.visitLdcInsn(value)
+                        }
+                        override fun visitEnd() {
+                            check(adapted == 1) { "Commons appearance guard changed; review the Numi compatibility patch" }
+                            super.visitEnd()
+                        }
+                    }
+                }
                 if (name != "onCreate" || descriptor != "(Landroid/os/Bundle;)V") return next
                 return object : MethodVisitor(Opcodes.ASM9, next) {
                     private var removed = 0
+                    private var adapted = 0
+                    override fun visitLdcInsn(value: Any?) {
+                        if (value == "org.fossify.") {
+                            super.visitVarInsn(Opcodes.ALOAD, 0)
+                            super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "android/content/Context", "getPackageName", "()Ljava/lang/String;", false)
+                            adapted++
+                        } else super.visitLdcInsn(value)
+                    }
                     override fun visitMethodInsn(opcode: Int, owner: String, name: String, descriptor: String, isInterface: Boolean) {
                         if (opcode == Opcodes.INVOKESTATIC && owner == "org/fossify/commons/extensions/ActivityKt" &&
                             name == "showModdedAppWarning" && descriptor == "(Lorg/fossify/commons/activities/BaseSimpleActivity;)V") {
@@ -53,6 +81,7 @@ abstract class NumiForkCompatibility : AsmClassVisitorFactory<InstrumentationPar
                     }
                     override fun visitEnd() {
                         check(removed == 1) { "Commons package warning changed; review the Numi fork compatibility patch" }
+                        check(adapted == 1) { "Commons package guard changed; review the Numi fork compatibility patch" }
                         super.visitEnd()
                     }
                 }

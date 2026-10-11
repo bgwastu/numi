@@ -22,8 +22,8 @@
     <string name="numi_phone_decline">Menolak</string>
     <string name="numi_phone_decline_call">Tolak panggilan</string>
     <string name="numi_phone_unknown_caller">Penelpon tak dikenal</string>
-    <string name="numi_phone_is_calling">Sedang memanggil…</string>
-    <string name="numi_phone_dialing">Memanggil…</string>
+    <string name="numi_phone_is_calling">Sedang memanggil</string>
+    <string name="numi_phone_dialing">Memanggil</string>
     <string name="numi_phone_call_ended">Panggilan Berakhir</string>
     <string name="numi_phone_call_ending">Panggilan Diakhiri</string>
     <string name="numi_phone_ongoing_call">Panggilan Sedang Berlangsung</string>
@@ -70,7 +70,7 @@
     <string name="numi_phone_import_call_history">Impor riwayat panggilan</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
     <string name="numi_phone_faq_3_text">Fossify Phone hanya menampilkan kontak yang memiliki nomor telepon terkait. Kontak tanpa nomor telepon tidak akan ditampilkan di aplikasi.</string>
-    <string name="numi_phone_call_is_being_connected">Panggilan Anda sedang dihubungkan…</string>
+    <string name="numi_phone_call_is_being_connected">Panggilan Anda sedang dihubungkan</string>
     <string name="numi_phone_faq_2_title">Mengapa panggilan darurat tidak berfungsi dengan baik?</string>
     <string name="numi_phone_faq_2_text">Karena pembatasan sistem, panggilan darurat hanya dapat dilakukan melalui aplikasi dialer atau telepon bawaan sistem Anda. Untuk memastikan panggilan darurat berfungsi dengan baik, Anda perlu mempertahankan aplikasi sistem terpasang dan aktif.</string>
     <string name="numi_phone_faq_3_title">Kenapa beberapa kontak saya hilang dari aplikasi?</string>

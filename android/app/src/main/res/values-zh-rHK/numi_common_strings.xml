@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">注意：某些啟動器可能無法正確處理應用程式圖示自訂。如果圖示消失，請嘗試透過 Google Play 或小工具（如果有的話）來啟動應用程式。啟動後，請將應用程式圖示顏色還原為預設的綠色 #106D1F。在極少數情況下，可能會需要重新安裝應用程式。</string>
+    <string name="app_on_sd_card">你似乎將應用程式安裝在SD卡，那會造成應用程式小工具無法使用。你甚至不會在可用的小工具列表中見到它們。 那是個系統限制，所以如果你想要使用小工具，你必須把應用程式移動回內部儲存空間。</string>
+    <string name="cancel">取消</string>
+    <string name="contributors">貢獻者</string>
+    <string name="contributors_label">"\n            此清單包含所有對 Fossify 套件中任何應用程式提供明顯幫助的人，不僅僅是這個應用程式。翻譯是由志工處理的，如果您也想幫忙，請告訴我們。\n            翻譯指南位於 &lt;a href=https://github.com/FossifyOrg/General-Discussion#contributing-translations&gt;這個網站&lt;/a&gt;，或者如果您有任何問題，可以直接透過 &lt;a href=mailto:hello@fossify.org&gt;hello@fossify.org&lt;/a&gt; 聯絡我們。\n            感謝所有貢獻者和其他支持者！\n        "</string>
+    <string name="copy_to">複製</string>
+    <string name="copying">複製中</string>
+    <string name="edit_with">以其他應用程式編輯</string>
+    <string name="exporting">正在匯出</string>
+    <string name="faq_6_text_commons">當您的啟動器不完全支援圖示自訂時，就會發生此問題。請嘗試透過 Google Play 或小工具（如果有的話）啟動應用程式。啟動後，請將應用程式圖示顏色還原為預設的綠色 #106D1F。在極少數情況下，可能會需要重新安裝應用程式。</string>
+    <string name="faq_9_text_commons">有幾種方法可以做到。第一種是長按一個項目以啟動選取模式，然後點選其他項目來選取它們。第二種類似於在電腦上用滑鼠選擇項目，長按一個項目以啟動選取模式，然後手指不放開拖曳至其他項目上進行選取。第三種方法是先長按一個項目，然後再長按另一個項目，中間的所有內容都會被選取。如果您想選取所有項目，只需長按一個項目，然後點選左上角的已選取項目計數器，即可全選或取消全選。</string>
+    <string name="fingerprint_setup_successfully">保護設定成功。如果重設時發生問題，請重新安裝應用程式。</string>
+    <string name="importing">正在匯入</string>
+    <string name="loading">載入中</string>
+    <string name="move_to">移動</string>
+    <string name="moving">移動中</string>
+    <string name="open_with">以其他應用程式開啟</string>
+    <string name="pro_app_refund">別忘記如果您在2小時內解除安裝任何付費應用程式，將會自動被退款。若您在之後隨時想退款，只要透過 @fossify.org 聯絡我們，即可收到退款。這麼一來輕鬆就能試用了 :)</string>
+    <string name="protection_setup_successfully">密碼設置成功。若遺忘了，請重新安裝應用程式。</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020請購買 &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; 來解鎖此功能及支持開發者。謝謝!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">請求必要的權限</string>
+    <string name="save_as">另存為</string>
+    <string name="saving">儲存中</string>
+    <string name="scanning">正在掃描</string>
+    <string name="set_as">設為</string>
+    <string name="share_via">分享方式</string>
+    <string name="sort_by">排序方式</string>
+    <string name="translation_welsh">威爾斯語</string>
+    <string name="updating">正在更新</string>
+</resources>

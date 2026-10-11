@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">رفض</string>
     <string name="numi_phone_decline_call">رفض المكالمة</string>
     <string name="numi_phone_unknown_caller">متصل غير معروف</string>
-    <string name="numi_phone_is_calling">يتصل…</string>
-    <string name="numi_phone_dialing">اتصال…</string>
+    <string name="numi_phone_is_calling">يتصل</string>
+    <string name="numi_phone_dialing">اتصال</string>
     <string name="numi_phone_call_ended">انتهت المكالمة</string>
     <string name="numi_phone_call_ending">إنهاء المكالمة</string>
     <string name="numi_phone_ongoing_call">مكالمة مستمرة</string>
@@ -68,7 +68,7 @@
     <string name="numi_phone_import_call_history">استيراد سجل المكالمات</string>
     <string name="numi_phone_faq_1_title">أسمع مكالمات واردة، ولكن الشاشة لا تعمل. ماذا أفعل؟</string>
     <string name="numi_phone_faq_1_text">يمكن أن يكون لمثل هذه المشكلات العديد من الأسباب الخاصة بالجهاز والنظام ، والتي يصعب تحديدها بشكل عام. يجب أن تنظر حولك في إعدادات جهازك وتأكد من السماح للتطبيق بالظهور عندما يكون في الخلفية والسماح بالعرض فوق التطبيقات الأخرى.</string>
-    <string name="numi_phone_call_is_being_connected">جار الاتصال…</string>
+    <string name="numi_phone_call_is_being_connected">جار الاتصال</string>
     <string name="numi_phone_faq_3_title">لماذا بعض جهات الاتصال الخاصة بي غير موجودة بالتطبيق؟</string>
     <string name="numi_phone_faq_3_text">يعرض Fossify Phone جهات الاتصال التي لها رقم هاتف مرتبط بها فقط، لا تظهر جهات الاتصال التي لا تحتوي على رقم هاتف في التطبيق.</string>
     <string name="numi_phone_app_launcher_name">Numi</string>

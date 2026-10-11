@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Zavrni</string>
     <string name="numi_phone_decline_call">Zavrni klic</string>
     <string name="numi_phone_unknown_caller">Neznani klicatelj</string>
-    <string name="numi_phone_is_calling">Kliče…</string>
-    <string name="numi_phone_dialing">Klicanje …</string>
+    <string name="numi_phone_is_calling">Kliče</string>
+    <string name="numi_phone_dialing">Klicanje </string>
     <string name="numi_phone_call_ended">Klic končan</string>
     <string name="numi_phone_call_ending">Konec klica</string>
     <string name="numi_phone_ongoing_call">Klic v teku</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_hide_dialpad_numbers">Skrij števila na številčnici</string>
     <string name="numi_phone_export_call_history">Izvozi zgodovino klicev</string>
     <string name="numi_phone_import_call_history">Uvozi zgodovino klicev</string>
-    <string name="numi_phone_call_is_being_connected">Vaš klic se vzpostavlja …</string>
+    <string name="numi_phone_call_is_being_connected">Vaš klic se vzpostavlja </string>
     <string name="numi_phone_call_notification_channel">Stanje klica</string>
     <string name="numi_phone_call_notification_channel_high_priority">Stanje klica (visoka prioriteta)</string>
     <string name="numi_phone_calling_accounts">Klicni računi</string>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="cancel">Semmet</string>
+    <string name="contributors">Iwiziwen</string>
+    <string name="copy_to">Nɣel ɣer</string>
+    <string name="edit_with">Ẓreg s</string>
+    <string name="open_with">Ldi s</string>
+    <string name="save_as">Sekles am</string>
+    <string name="set_as">Sbadu-t d</string>
+    <string name="updating">Aleqqem</string>
+</resources>

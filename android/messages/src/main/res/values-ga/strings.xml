@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="sending">Á sheoladh…</string>
+    <string name="sending">Á sheoladh</string>
     <string name="app_launcher_name">Numi</string>
     <string name="compress_error">Ní féidir an íomhá a chomhbhrú go méid roghnaithe</string>
     <string name="message_sending_error">Níl do theachtaireacht chuig \'%s\' seolta</string>
@@ -69,15 +69,15 @@
     <string name="faq_3_text">Sea, is féidir leat teachtaireachtaí a sheoladh amach anseo a sceidealú ach an cnaipe Seol a bhrú le fada agus an dáta agus an t-am atá uait a phiocadh.</string>
     <string name="forward_message">Ar aghaidh</string>
     <string name="message_not_sent_short">Níor seoladh an teachtaireacht</string>
-    <string name="type_a_message">Clóscríobh teachtaireacht…</string>
+    <string name="type_a_message">Clóscríobh teachtaireacht</string>
     <string name="message_not_sent_touch_retry">Gan sheoladh. Déan teagmháil le triail eile a bhaint as.</string>
     <string name="no_conversations_found">Ní bhfuarthas aon chomhrá stóráilte</string>
     <string name="draft">Dréacht</string>
     <string name="start_conversation">Cuir tús le comhrá</string>
     <string name="reply">Freagra</string>
     <string name="duplicate_item_warning">Níor cuireadh mír dhúblach san áireamh</string>
-    <string name="loading_messages">Teachtaireachtaí á lódáil…</string>
-    <string name="add_contact_or_number">Cuir Teagmháil nó Uimhir leis…</string>
+    <string name="loading_messages">Teachtaireachtaí á lódáil</string>
+    <string name="add_contact_or_number">Cuir Teagmháil nó Uimhir leis</string>
     <string name="unpin_conversation">Díphionnáil</string>
     <string name="new_conversation">Comhrá nua</string>
     <string name="rename_conversation_warning">Ní féidir ach leatsa an t-ainm comhrá seo a fheiceáil</string>

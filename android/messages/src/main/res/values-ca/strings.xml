@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Escriviu un missatge…</string>
+    <string name="type_a_message">Escriviu un missatge</string>
     <string name="message_not_sent_short">Missatge no enviat</string>
     <string name="message_not_sent_touch_retry">No s\'ha enviat. Toqueu per a tornar-ho a provar.</string>
     <string name="message_sending_error">El vostre missatge a «%s» no s\'ha enviat</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Iniciar una conversa</string>
     <string name="reply">Respon</string>
     <string name="show_character_counter">Mostra un comptador de caràcters en escriure missatges</string>
-    <string name="loading_messages">S\'estan carregant els missatges…</string>
+    <string name="loading_messages">S\'estan carregant els missatges</string>
     <string name="no_reply_support">El remitent no admet respostes</string>
     <string name="draft">Esborrany</string>
-    <string name="sending">S\'està enviant…</string>
+    <string name="sending">S\'està enviant</string>
     <string name="pin_conversation">Fixa a la part superior</string>
     <string name="unpin_conversation">No fixis</string>
     <string name="forward_message">Reenvia</string>
@@ -25,7 +25,7 @@
         <item quantity="other">i %d altres</item>
     </plurals>
     <string name="new_conversation">Conversa nova</string>
-    <string name="add_contact_or_number">Afegeix un contacte o número…</string>
+    <string name="add_contact_or_number">Afegeix un contacte o número</string>
     <string name="suggestions">Suggeriments</string>
     <string name="members">Membres</string>
     <string name="conversation_name">Nom de la conversa</string>
@@ -35,7 +35,7 @@
     <string name="scheduled_message">Missatge programat</string>
     <string name="schedule_message">Programa un missatge</string>
     <string name="schedule_send">Programa l\'enviament</string>
-    <string name="cancel_schedule_send">Cancel·la la programació de l\'enviament</string>
+    <string name="cancel_schedule_send">Cancel,la la programació de l\'enviament</string>
     <string name="must_pick_time_in_the_future">Cal triar una hora futura</string>
     <string name="schedule_send_warning">Mantingueu el telèfon engegat i assegureu-vos que no hi hagi res que mati les aplicacions en segon pla.</string>
     <string name="send_now">Envia ara</string>
@@ -144,7 +144,7 @@
     <string name="sms_error_service_center">Missatge no enviat. Comproveu el número del centre de SMS</string>
     <string name="sms_error_not_allowed">Missatge no enviat: no es permet l\'enviament</string>
     <string name="message_send_retry_later">Missatge no enviat. Torneu a intentar-ho més tard</string>
-    <string name="sms_error_cancelled">S\'ha cancel·lat l\'enviament</string>
+    <string name="sms_error_cancelled">S\'ha cancel,lat l\'enviament</string>
     <string name="sms_error_not_supported">Missatge no enviat: mètode d\'enviament no admès</string>
     <string name="sms_error_bluetooth">Missatge no enviat: error de Bluetooth</string>
     <string name="sms_error_emergency">Missatge no enviat: és actiu el mode d\'emergència</string>

@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Elutasítás</string>
     <string name="numi_phone_decline_call">Hívás elutasítása</string>
     <string name="numi_phone_unknown_caller">Ismeretlen hívó</string>
-    <string name="numi_phone_is_calling">Hívás…</string>
-    <string name="numi_phone_dialing">Tárcsázás…</string>
+    <string name="numi_phone_is_calling">Hívás</string>
+    <string name="numi_phone_dialing">Tárcsázás</string>
     <string name="numi_phone_call_ended">Hívás vége</string>
     <string name="numi_phone_call_ending">Hívás befejezése</string>
     <string name="numi_phone_ongoing_call">Folyamatban lévő hívás</string>
@@ -71,7 +71,7 @@
     <string name="numi_phone_import_call_history">Hívásnapló importálása</string>
     <string name="numi_phone_faq_2_title">Miért nem működnek rendesen a segélyhívások?</string>
     <string name="numi_phone_faq_2_text">A rendszer korlátozása miatt segélyhívásokat csak a rendszer alapértelmezett tárcsázóján vagy telefonalkalmazásán keresztül lehet kezdeményezni. A segélyhívások megfelelő működésének biztosítása érdekében, a rendszeralkalmazást telepítve és engedélyezve kell tartania.</string>
-    <string name="numi_phone_call_is_being_connected">Híváskapcsolás folyamatban…</string>
+    <string name="numi_phone_call_is_being_connected">Híváskapcsolás folyamatban</string>
     <string name="numi_phone_faq_3_title">Miért hiányzik néhány névjegyem az alkalmazásból?</string>
     <string name="numi_phone_faq_3_text">A Fossify Telefon csak azokat a névjegyeket jeleníti meg, amelyekhez telefonszám is tartozik. A telefonszám nélküli névjegyek nem jelennek meg az alkalmazásban.</string>
     <string name="numi_phone_call_notification_channel">Hívásállapot</string>

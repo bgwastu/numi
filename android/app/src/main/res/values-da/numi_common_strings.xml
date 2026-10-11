@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Advarsel: Visse launchere håndterer muligvis ikke tilpasning af appikoner korrekt. Hvis ikonet forsvinder, kan du prøve at starte appen via Google Play eller en widget, hvis tilgængelig. Efter start skal du gendanne den grønne standardikonfarve #106D1F. I ekstreme tilfælde kan det være nødvendigt at geninstallere appen.</string>
+    <string name="app_on_sd_card">Det ser ud til at du har appen installeret på et SD-kort. Det gør at appens widget ikke er tilgængelig og ikke kan ses på listen med widgets. Dette skyldes en begrænsning i systemet, så hvis du vil bruge appens widgets må du flytte appen tilbage til det interne lager.</string>
+    <string name="cancel">Annullér</string>
+    <string name="contributors">Bidragydere</string>
+    <string name="contributors_label">
+            Denne liste indeholder alle, der har hjulpet med en app i Fossify-pakken, ikke kun denne. Oversættelser håndteres af frivillige,
+            så lad os vide, hvis du også vil hjælpe. Vejledningen til oversættelse findes på &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;denne hjemmeside&lt;/a&gt;, eller send en mail til &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt;, hvis du har spørgsmål.
+            Tak til alle bidragydere og andre støtter!
+        </string>
+    <string name="copy_to">Kopiér til</string>
+    <string name="copying">Kopierer</string>
+    <string name="edit_with">Redigér med</string>
+    <string name="exporting">Eksporterer</string>
+    <string name="faq_6_text_commons">Dette problem opstår, når din launcher ikke fuldt ud understøtter tilpasning af ikoner. Prøv at starte appen via Google Play eller en widget, hvis tilgængelig. Efter start skal du gendanne den grønne standardikonfarve #106D1F. I ekstreme tilfælde kan det være nødvendigt at geninstallere appen.</string>
+    <string name="faq_9_text_commons">Der er flere måder at gøre det på. Den første er at starte valgtilstanden ved at trykke længe på et element og derefter klikke kort på andre elementer for at vælge dem. Den anden måde svarer til at vælge elementer på en pc med en mus. Du skal bare starte valgtilstanden ved at trykke længe på et element og derefter mens fingeren stadig er nede, trække den hen over andre elementer for at vælge dem. Den tredje måde at vælge flere elementer på er ved at trykke længe på et element og derefter trykke længe på et andet element, og alt derimellem bliver valgt. Hvis du vil vælge alle elementer, skal du blot trykke længe på et element og derefter klikke på tælleren for det valgte element øverst til venstre i hjørnet. Det vil vælge eller fravælge alting.</string>
+    <string name="fingerprint_setup_successfully">Beskyttelsen er oprettet. Geninstaller appen hvis du har problemer med at gendanne den.</string>
+    <string name="importing">Importerer</string>
+    <string name="loading">Indlæser</string>
+    <string name="move_to">Flyt til</string>
+    <string name="moving">Flytter</string>
+    <string name="open_with">Åbn med</string>
+    <string name="pro_app_refund">Husk at hvis du afinstallerer en betalt app indenfor 2 timer, får du automatisk pengene tilbage. Vil du have refunderet beløbet på et senere tidspunkt, så send en mail til hello@fossify.org. På den måde kan du prøvekøre appen uden omkostninger :)</string>
+    <string name="protection_setup_successfully">Adgangskoden er oprettet. Geninstaller appen hvis du glemmer den.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Køb &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; for at bruge denne funktion og understøtte appens udvikling. Tak!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Anmod om de krævede tilladelser</string>
+    <string name="save_as">Gem som</string>
+    <string name="saving">Gemmer</string>
+    <string name="scanning">Scanner</string>
+    <string name="select_font_file">Vælg skrifttypefil</string>
+    <string name="set_as">Anvend som</string>
+    <string name="share_via">Del via</string>
+    <string name="sort_by">Sorter efter</string>
+    <string name="translation_welsh">Walisisk</string>
+    <string name="updating">Opdaterer</string>
+</resources>

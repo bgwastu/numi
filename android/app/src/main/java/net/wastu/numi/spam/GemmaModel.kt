@@ -48,7 +48,7 @@ object GemmaModel {
         if (previous > 0) manager.remove(previous)
         staging(context).delete()
         val id = manager.enqueue(DownloadManager.Request(Uri.parse(URL))
-            .setTitle("Numi Gemma spam filter").setDescription("165 MB · Wi-Fi download · runs on this phone")
+            .setTitle("Numi Gemma spam filter").setDescription("165 MB, Wi-Fi download, runs on this phone")
             .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, staging(context).name))
@@ -84,7 +84,7 @@ object GemmaModel {
             val bytes = c.getLong(c.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
             when (state) {
                 DownloadManager.STATUS_FAILED -> "Gemma download failed. Retry on Wi-Fi."
-                DownloadManager.STATUS_SUCCESSFUL -> "Verifying the Gemma download…"
+                DownloadManager.STATUS_SUCCESSFUL -> "Verifying the Gemma download"
                 else -> "Downloading Gemma: ${(bytes * 100 / SIZE).coerceIn(0, 100)}%. Waiting for Wi-Fi if needed."
             }
         }

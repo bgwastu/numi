@@ -3,8 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="AlwaysShowAction,AppCompatResource">
-    <item android:id="@+id/numi_messages" android:icon="@drawable/ic_sms_vector" android:title="Messages" app:showAsAction="ifRoom" />
-    <item android:id="@+id/numi_connector" android:title="Telegram &amp; device" app:showAsAction="never" />
 
     <item
         android:id="@+id/sort"
@@ -40,7 +38,7 @@
     <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_settings_cog_vector"
-        android:title="@string/settings"
+        android:title="@string/numi_phone_call_settings"
         app:showAsAction="never" />
     <item
         android:id="@+id/about"

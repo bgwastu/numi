@@ -41,7 +41,7 @@
     <string name="faq_2_title">طرف مقابل فراپیام مرا نمی‌گیرد، چه کار می‌توانم بکنم؟</string>
     <string name="faq_2_text">اندازه‌ی فراپیام از سوی اپراتور محدود شده است؛ می‌توانید در تنظیمات برنامه، حد کمتری را امتحان کنید.</string>
     <string name="faq_3_title">آیا این برنامه از پیام‌های زمان‌بندی‌شده پشتیبانی می‌کند؟</string>
-    <string name="type_a_message">متن پیام…‏</string>
+    <string name="type_a_message">متن پیام‏</string>
     <string name="message_not_sent_touch_retry">ارسال نشد. برای تلاش دوباره، لمس کنید.</string>
     <string name="message_sending_error">پیام شما به %s ارسال نشده</string>
     <string name="duplicate_item_warning">مورد تکراری درج نشد</string>
@@ -49,7 +49,7 @@
         <item quantity="one">و %d نفر دیگر</item>
         <item quantity="other">و %d نفر دیگر</item>
     </plurals>
-    <string name="add_contact_or_number">افزودن مخاطب یا شماره…</string>
+    <string name="add_contact_or_number">افزودن مخاطب یا شماره</string>
     <string name="members">عضوها</string>
     <string name="conversation_name">عنوان گفت‌وگو</string>
     <string name="conversation_details">جزئیات گفت‌وگو</string>
@@ -81,10 +81,10 @@
     <string name="attachment">پیوست</string>
     <string name="start_conversation">گفت‌وگویی را آغاز کنید</string>
     <string name="reply">پاسخ</string>
-    <string name="loading_messages">در حال بارگیری پیام‌ها…</string>
+    <string name="loading_messages">در حال بارگیری پیام‌ها</string>
     <string name="no_reply_support">فرستنده، امکان دریافت پاسخ ندارد</string>
     <string name="draft">پیش‌نویس</string>
-    <string name="sending">در حال ارسال…</string>
+    <string name="sending">در حال ارسال</string>
     <string name="pin_conversation">سنجاق به بالا</string>
     <string name="unpin_conversation">برداشتن سنجاق</string>
     <string name="forward_message">ارسال به دیگری</string>

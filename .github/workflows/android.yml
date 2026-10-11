@@ -25,8 +25,8 @@ jobs:
           GIT_CONFIG_KEY_0: init.defaultBranch
           GIT_CONFIG_VALUE_0: main
 
-      - name: Verify folder-scoped release versions
-        run: python3 -m unittest discover -s tools/tests -p 'test_release.py'
+      - name: Verify release planning and app copy
+        run: python3 -m unittest discover -s tools/tests
 
       - name: Set up Java 21
         uses: actions/setup-java@v6
@@ -66,8 +66,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Verify folder-scoped release versions
-        run: python3 -m unittest discover -s tools/tests -p 'test_release.py'
+      - name: Verify release planning and app copy
+        run: python3 -m unittest discover -s tools/tests
 
       - name: Read completed APK releases
         env:

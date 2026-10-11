@@ -16,8 +16,8 @@
     <string name="numi_phone_decline">നിരസിക്കുക</string>
     <string name="numi_phone_decline_call">കോൾ നിരസിക്കുക</string>
     <string name="numi_phone_unknown_caller">അറിയപ്പെടാത്ത കോളർ</string>
-    <string name="numi_phone_is_calling">വിളിക്കുന്നു…</string>
-    <string name="numi_phone_dialing">ഡയൽ ചെയ്യുന്നു…</string>
+    <string name="numi_phone_is_calling">വിളിക്കുന്നു</string>
+    <string name="numi_phone_dialing">ഡയൽ ചെയ്യുന്നു</string>
     <string name="numi_phone_call_ended">കോൾ അവസാനിച്ചു</string>
     <string name="numi_phone_call_ending">കോൾ അവസാനിക്കുന്നു</string>
     <string name="numi_phone_ongoing_call">തുടർന്നുകൊണ്ടിരിക്കുന്ന കോൾ</string>

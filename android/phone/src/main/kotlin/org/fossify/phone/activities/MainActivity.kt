@@ -5,18 +5,14 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.res.Configuration
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.Icon
 import android.graphics.drawable.LayerDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.snackbar.Snackbar
-import me.grantland.widget.AutofitHelper
 import org.fossify.commons.dialogs.ChangeViewTypeDialog
 import org.fossify.commons.dialogs.ConfirmationDialog
 import org.fossify.commons.dialogs.PermissionRequiredDialog
@@ -65,7 +61,7 @@ class MainActivity : SimpleActivity() {
         appLaunched(BuildConfig.APPLICATION_ID)
         setupOptionsMenu()
         refreshMenuItems()
-        setupEdgeToEdge(padBottomImeAndSystem = listOf(binding.mainTabsHolder))
+        setupEdgeToEdge()
 
         EventBus.getDefault().register(this)
         launchedDialer = savedInstanceState?.getBoolean(OPEN_DIAL_PAD_AT_LAUNCH) ?: false
@@ -108,6 +104,7 @@ class MainActivity : SimpleActivity() {
 
     override fun onResume() {
         super.onResume()
+        net.wastu.numi.contracts.NumiHooks.bindNavigation?.invoke(this, binding.numiPhoneNavigation, "CALLS")
         if (storedShowTabs != config.showTabs) {
             config.lastUsedViewPagerPage = 0
             System.exit(0)
@@ -224,8 +221,6 @@ class MainActivity : SimpleActivity() {
 
             requireToolbar().setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.numi_messages -> net.wastu.numi.contracts.NumiHooks.openMessages?.invoke(this@MainActivity)
-                    R.id.numi_connector -> net.wastu.numi.contracts.NumiHooks.openConnector?.invoke(this@MainActivity)
                     R.id.clear_call_history -> clearCallHistory()
                     R.id.create_new_contact -> launchCreateNewContactIntent()
                     R.id.sort -> showSortingDialog(showCustomSorting = getCurrentFragment() is FavoritesFragment)
@@ -323,56 +318,9 @@ class MainActivity : SimpleActivity() {
     }
 
     private fun setupTabColors() {
-        val activeView = binding.mainTabsHolder.getTabAt(binding.viewPager.currentItem)?.customView
-        updateBottomTabItemColors(activeView, true, getSelectedTabDrawableIds()[binding.viewPager.currentItem])
-
-        getInactiveTabIndexes(binding.viewPager.currentItem).forEach { index ->
-            val inactiveView = binding.mainTabsHolder.getTabAt(index)?.customView
-            updateBottomTabItemColors(inactiveView, false, getDeselectedTabDrawableIds()[index])
-        }
-
-        val bottomBarColor = getBottomNavigationBackgroundColor()
-        binding.mainTabsHolder.setBackgroundColor(bottomBarColor)
-    }
-
-    private fun getInactiveTabIndexes(activeIndex: Int) = (0 until binding.mainTabsHolder.tabCount).filter { it != activeIndex }
-
-    private fun getSelectedTabDrawableIds(): List<Int> {
-        val showTabs = config.showTabs
-        val icons = mutableListOf<Int>()
-
-        if (showTabs and TAB_CONTACTS != 0) {
-            icons.add(org.fossify.commons.R.drawable.ic_person_vector)
-        }
-
-        if (showTabs and TAB_FAVORITES != 0) {
-            icons.add(org.fossify.commons.R.drawable.ic_star_vector)
-        }
-
-        if (showTabs and TAB_CALL_HISTORY != 0) {
-            icons.add(org.fossify.commons.R.drawable.ic_clock_filled_vector)
-        }
-
-        return icons
-    }
-
-    private fun getDeselectedTabDrawableIds(): ArrayList<Int> {
-        val showTabs = config.showTabs
-        val icons = ArrayList<Int>()
-
-        if (showTabs and TAB_CONTACTS != 0) {
-            icons.add(org.fossify.commons.R.drawable.ic_person_outline_vector)
-        }
-
-        if (showTabs and TAB_FAVORITES != 0) {
-            icons.add(org.fossify.commons.R.drawable.ic_star_outline_vector)
-        }
-
-        if (showTabs and TAB_CALL_HISTORY != 0) {
-            icons.add(org.fossify.commons.R.drawable.ic_clock_vector)
-        }
-
-        return icons
+        binding.mainTabsHolder.setTabTextColors(getProperTextColor(), getProperPrimaryColor())
+        binding.mainTabsHolder.setSelectedTabIndicatorColor(getProperPrimaryColor())
+        binding.mainTabsHolder.setBackgroundColor(getProperBackgroundColor())
     }
 
     private fun initFragments() {
@@ -425,23 +373,17 @@ class MainActivity : SimpleActivity() {
         binding.mainTabsHolder.removeAllTabs()
         tabsList.forEachIndexed { index, value ->
             if (config.showTabs and value != 0) {
-                binding.mainTabsHolder.newTab().setCustomView(org.fossify.commons.R.layout.bottom_tablayout_item).apply {
-                    customView?.findViewById<ImageView>(org.fossify.commons.R.id.tab_item_icon)?.setImageDrawable(getTabIcon(index))
-                    customView?.findViewById<TextView>(org.fossify.commons.R.id.tab_item_label)?.text = getTabLabel(index)
-                    AutofitHelper.create(customView?.findViewById(org.fossify.commons.R.id.tab_item_label))
+                binding.mainTabsHolder.newTab().setText(getTabLabel(index)).apply {
                     binding.mainTabsHolder.addTab(this)
                 }
             }
         }
 
         binding.mainTabsHolder.onTabSelectionChanged(
-            tabUnselectedAction = {
-                updateBottomTabItemColors(it.customView, false, getDeselectedTabDrawableIds()[it.position])
-            },
+            tabUnselectedAction = {},
             tabSelectedAction = {
                 getCurrentFragment()?.onSearchQueryChanged(binding.mainMenu.getCurrentQuery())
                 binding.viewPager.currentItem = it.position
-                updateBottomTabItemColors(it.customView, true, getSelectedTabDrawableIds()[it.position])
 
                 val lastPosition = binding.mainTabsHolder.tabCount - 1
                 if (it.position == lastPosition && config.showTabs and TAB_CALL_HISTORY > 0) {
@@ -455,21 +397,11 @@ class MainActivity : SimpleActivity() {
         storedStartNameWithSurname = config.startNameWithSurname
     }
 
-    private fun getTabIcon(position: Int): Drawable {
-        val drawableId = when (position) {
-            0 -> org.fossify.commons.R.drawable.ic_person_vector
-            1 -> org.fossify.commons.R.drawable.ic_star_vector
-            else -> org.fossify.commons.R.drawable.ic_clock_vector
-        }
-
-        return resources.getColoredDrawableWithColor(drawableId, getProperTextColor())
-    }
-
     private fun getTabLabel(position: Int): String {
         val stringId = when (position) {
             0 -> org.fossify.commons.R.string.contacts_tab
             1 -> org.fossify.commons.R.string.favorites_tab
-            else -> org.fossify.commons.R.string.call_history_tab
+            else -> R.string.numi_phone_recents
         }
 
         return resources.getString(stringId)

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Kontuz: baliteke abiarazle batzuek aplikazioaren ikonoen pertsonalizazioa behar bezala ez kudeatzea. Ikonoa desagertzen bada, saiatu aplikazioa abiarazten Google Play edo widget baten bidez, eskuragarri badago. Abiarazi ondoren, lehenetsi #106D1F ikono berdearen kolore lehenetsia. Muturreko kasuetan, baliteke aplikazioa berriro instalatzea beharrezkoa izatea.</string>
+    <string name="app_on_sd_card">Badirudi aplikazioa SD txartel batean instalatu duzula, horrek aplikazioen widgetak erabilgarri egotea ekiditen du. Ezingo dituzu erabilgarri dauden widgeten zerrendan ikusi. Sistemaren muga da, beraz, widgetak erabili nahi badituzu, aplikazioa barneko biltegiratzera mugitu behar duzu.</string>
+    <string name="cancel">Utzi</string>
+    <string name="contributors">Laguntzaileak</string>
+    <string name="contributors_label">Zerrenda honek Fossify suiteko edozein aplikaziori nabarmen lagundu dioten guztiak biltzen ditu, ez hau bakarrik. Itzulpenak boluntarioek kudeatzen dituzte,\n\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Esan iezaguzu zuk ere lagundu nahi baduzu. Itzultzeko gida &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;webgune honetan&lt;/a&gt; helbidean dago, edo jar zaitez gurekin harremanetan &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org-en galderarik baduzu&lt;/a&gt;.\n\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Eskerrik asko laguntzaile guztiei eta gainerako laguntzaileei!</string>
+    <string name="copy_to">Kopiatu hona</string>
+    <string name="copying">Kopiatu</string>
+    <string name="edit_with">Editatu honekin</string>
+    <string name="exporting">Esportatzen</string>
+    <string name="faq_6_text_commons">Arazo hau zure abiarazleak ikonoen pertsonalizazioa guztiz onartzen ez duenean sortzen da. Saiatu aplikazioa abiarazten Google Play edo trepeta baten bidez, eskuragarri badago. Abiarazi ondoren, lehenetsi #106D1F ikono berdearen kolore lehenetsia. Muturreko kasuetan, baliteke aplikazioa berriro instalatzea beharrezkoa izatea.</string>
+    <string name="faq_9_text_commons">Hori egiteko modu anitz daude. Lehenengoa hautaketa modua abiaraztea da elementu bat luze sakatuz, eta ondoren besteetan klik laburra eginez, hauek hautatzeko. Bigarren modua ordenagailuetan elementuak saguarekin hautatzearen antzekoa da, abiarazi hautatze modua elementu bat luze sakatuz, eta hatza behera arrastatu beste elementu batzuk aukeratzeko. Elementu bat baino gehiago hautatzeko hirugarren modua elementu bat luze sakatzea da, gero beste bat luze sakatzea eta tartean dagoen guztia hautatzen da. Elementu guztiak hautatu nahi badituzu, sakatu luze elementu bat, eta egin klik goiko ezkerreko izkinan dagoen hautatutako elementuen kontagailuan. Horrek dena hautatu edo desautatuko du.</string>
+    <string name="fingerprint_setup_successfully">Babesa ondo ezarri da. Berrinstalatu aplikazioa berrezartzean arazorik baduzu.</string>
+    <string name="importing">Inportatzen</string>
+    <string name="loading">Kargatzen</string>
+    <string name="move_to">Mugitu hona</string>
+    <string name="moving">Mugitzen</string>
+    <string name="open_with">Ireki honekin</string>
+    <string name="pro_app_refund">Ez ahaztu 2 orduko epean ordaindutako edozein aplikazio desinstalatzen baduzu, dirua automatikoki itzuliko zaizula. Geroago itzulketa bat nahi baduzu, jarri gurekin harremanetan hello@fossify.org helbidera eta lortuko duzu. Horrek erraztu egiten du probatzea :)</string>
+    <string name="protection_setup_successfully">Pasahitza ondo ezarri da. Berrinstalatu aplikazioa ahazten baduzu.</string>
+    <string name="purchase_thank_you">Erosi &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; funtzio hau erabiltzeko eta garatzaileari laguntzeko. Eskerrik asko!</string>
+    <string name="request_the_required_permissions">Eskatu behar diren baimenak</string>
+    <string name="save_as">Gorde honela</string>
+    <string name="saving">Gordetzen</string>
+    <string name="scanning">Eskaneatzen</string>
+    <string name="select_font_file">Aukeratu letra moten fitxategia</string>
+    <string name="set_as">Ezarri honela</string>
+    <string name="share_via">Partekatu honen bidez</string>
+    <string name="sort_by">Ordenatze-irizpidea</string>
+    <string name="translation_welsh">Galesera</string>
+    <string name="updating">Eguneratzen</string>
+</resources>

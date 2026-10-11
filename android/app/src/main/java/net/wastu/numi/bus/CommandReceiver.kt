@@ -136,7 +136,7 @@ class CommandReceiver(private val context: Context, private val connector: Teleg
         try {
             when (command) {
                 "/start", "/help" -> connector.text(
-                    "<b>Numi</b>\n\nReply to an SMS here, or type directly in its topic.\n/send number message · /sim · /inbox · /spam · /history number · /calls · /status\n\nCalling takes place on the phone. Incoming calls have Decline and End controls here.",
+                    "<b>Numi</b>\n\nReply to an SMS to answer it.\n\n/send number message\n/history number\n/inbox\n/spam\n/calls\n/sim\n/status",
                     thread, markup = TelegramConnector.homeMarkup())
                 "/inbox" -> inbox(thread)
                 "/spam" -> spam(thread)
@@ -182,7 +182,7 @@ class CommandReceiver(private val context: Context, private val connector: Teleg
         MessagesRepository(context).markRead(target.address)
         OutboxService.wake(context)
         val sim = DeviceStatusProvider.activeSims(context).firstOrNull { it.subscriptionId == sub }
-        connector.text("Queued · ${TelegramHtml.code(target.address)}${sim?.let { " · SIM ${it.slotIndex + 1}" }.orEmpty()}", thread)
+        connector.text("Queued, ${TelegramHtml.code(target.address)}${sim?.let { ", SIM ${it.slotIndex + 1}" }.orEmpty()}", thread)
     }
 
     private fun selectedSim(): Int? = prefs.getInt("TELEGRAM_SIM", -1).takeIf { it >= 0 }
@@ -210,8 +210,8 @@ class CommandReceiver(private val context: Context, private val connector: Teleg
         if (conversations.isEmpty()) { connector.text("Your SMS inbox is empty.", thread); return }
         conversations.forEach { conversation ->
             val latest = conversation.latest
-            val text = "<b>${TelegramHtml.escape(conversation.name)}</b>${if (conversation.unread > 0) " · ${conversation.unread} unread" else ""}\n" +
-                "${TelegramHtml.escape(latest.body.take(180))}\n\n${TelegramHtml.code(conversation.address)} · ${TelegramHtml.escape(latest.status)}"
+            val text = "<b>${TelegramHtml.escape(conversation.name)}</b>${if (conversation.unread > 0) ", ${conversation.unread} unread" else ""}\n" +
+                "${TelegramHtml.escape(latest.body.take(180))}\n\n${TelegramHtml.code(conversation.address)}, ${TelegramHtml.escape(latest.status)}"
             val actions = JSONArray().put(TelegramConnector.button("Conversation", "history"))
             if (SendPolicy.canReply(conversation.address)) actions.put(TelegramConnector.button("Reply by SMS", "reply"))
             val markup = JSONObject().put("inline_keyboard", JSONArray().put(actions))
@@ -223,7 +223,7 @@ class CommandReceiver(private val context: Context, private val connector: Teleg
     private suspend fun spam(thread: Int?) {
         val rows = net.wastu.numi.spam.SpamStore(context).spam()
         if (rows.isEmpty()) { connector.text("Your Spam folder is empty.", thread); return }
-        connector.text("<b>Spam</b> · ${rows.size} messages kept on the phone. Showing the latest ${minOf(rows.size, 10)}.", thread)
+        connector.text("<b>Spam</b>, ${rows.size} messages kept on the phone. Showing the latest ${minOf(rows.size, 10)}.", thread)
         for (row in rows.take(10)) {
             val markup = JSONObject().put("inline_keyboard", JSONArray().put(JSONArray()
                 .put(TelegramConnector.button("Not spam", "spam:restore:${row.id}"))
@@ -237,7 +237,7 @@ class CommandReceiver(private val context: Context, private val connector: Teleg
         val conversation = MessagesRepository(context).conversations().firstOrNull { SmsAddress.normalize(it.address) == SmsAddress.normalize(target.address) }
         if (conversation == null) { connector.text("This SMS conversation is empty.", thread); return }
         val messages = conversation.messages.takeLast(10)
-        connector.text("<b>${TelegramHtml.escape(conversation.name)}</b> · latest ${messages.size} SMS", thread)
+        connector.text("<b>${TelegramHtml.escape(conversation.name)}</b>, latest ${messages.size} SMS", thread)
         messages.forEach { message ->
             val parts = IncomingSmsTelegramMessage.format(context, message.address, message.body, message.date, message.subscriptionId,
                 if (message.incoming) "Received" else message.status)
@@ -263,7 +263,7 @@ class CommandReceiver(private val context: Context, private val connector: Teleg
                     else -> "Call"
                 }
                 val address = cursor.getString(0).orEmpty().ifBlank { "Unknown caller" }
-                entries += "${TelegramHtml.code(address)} · $kind · ${cursor.getLong(2)}s\n${TelegramHtml.escape(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(cursor.getLong(1))))}"
+                entries += "${TelegramHtml.code(address)}, $kind, ${cursor.getLong(2)}s\n${TelegramHtml.escape(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(cursor.getLong(1))))}"
             }
         }
         connector.text(if (entries.isEmpty()) "Your call history is empty." else "<b>Recent calls</b>\n\n${entries.joinToString("\n\n")}", thread)
@@ -273,14 +273,14 @@ class CommandReceiver(private val context: Context, private val connector: Teleg
         val sims = DeviceStatusProvider.activeSims(context)
         if (sims.isEmpty()) { connector.text("No active SIM is available. Check phone access in Numi.", thread); return }
         val rows = JSONArray()
-        sims.forEach { rows.put(JSONArray().put(TelegramConnector.button("SIM ${it.slotIndex + 1} · ${it.label}", "sim:${it.subscriptionId}"))) }
+        sims.forEach { rows.put(JSONArray().put(TelegramConnector.button("SIM ${it.slotIndex + 1}, ${it.label}", "sim:${it.subscriptionId}"))) }
         connector.text("Choose the default SIM for new SMS. Replies keep the SIM that received the message.", thread,
             markup = JSONObject().put("inline_keyboard", rows))
     }
 
     private suspend fun status(thread: Int?) {
-        val sims = DeviceStatusProvider.activeSims(context).joinToString("\n") { "SIM ${it.slotIndex + 1} · ${TelegramHtml.escape(it.label)}" }.ifBlank { "No active SIM" }
-        connector.text("<b>${TelegramHtml.escape(android.os.Build.MODEL)}</b>\n\n$sims\nSMS app: ${if (SmsRoleManager.isDefaultSmsApp(context)) "Numi" else "Set Numi as default"}\nSpam: ${net.wastu.numi.spam.SpamStore(context).spam().size} kept · ${TelegramHtml.escape(net.wastu.numi.spam.GemmaSpamFilter.status(context))}\n${TelegramHtml.escape(TelegramPollHealth.summary(context, true))}",
+        val sims = DeviceStatusProvider.activeSims(context).joinToString("\n") { "SIM ${it.slotIndex + 1}, ${TelegramHtml.escape(it.label)}" }.ifBlank { "No active SIM" }
+        connector.text("<b>${TelegramHtml.escape(android.os.Build.MODEL)}</b>\n\n$sims\nSMS app: ${if (SmsRoleManager.isDefaultSmsApp(context)) "Numi" else "Set Numi as default"}\nSpam: ${net.wastu.numi.spam.SpamStore(context).spam().size} kept, ${TelegramHtml.escape(net.wastu.numi.spam.GemmaSpamFilter.status(context))}\n${TelegramHtml.escape(TelegramPollHealth.summary(context, true))}",
             thread, markup = TelegramConnector.homeMarkup())
     }
 

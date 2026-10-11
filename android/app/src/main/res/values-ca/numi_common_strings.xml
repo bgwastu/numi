@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Atenció: És possible que alguns llançadors no gestionin correctament la personalització de la icona de l\'aplicació. Si la icona desapareix, intenteu llançar l\'aplicació a través de Google Play o d\'un giny, si és accessible. Després del llançament, restaureu el color predeterminat de la icona verda #106D1F. En casos extrems, pot ser necessària la reinstal, lació de l\'aplicació.</string>
+    <string name="app_on_sd_card">Sembla que l\'aplicació està instal, lada en una targeta SD, això fa que els ginys de l\'aplicació no estiguin disponibles. No els veureu a la llista de ginys disponibles. És una limitació del sistema, de manera que si voleu utilitzar els ginys, cal tornar a moure l\'aplicació a l\'emmagatzematge intern.</string>
+    <string name="cancel">Cancel, la</string>
+    <string name="contributors">Col, laboradors</string>
+    <string name="contributors_label">
+            Aquesta llista conté tots els que van ajudar notablement a qualsevol aplicació de la suite Fossify, no només aquesta. Les traduccions són gestionades per voluntaris,
+            feu-nos saber si vós també voleu ajudar. La guia per a traduir es troba en &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;aquest lloc web&lt;/a&gt;, o simplement poseu-vos en contacte amb nosaltres a &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; si teniu qualsevol pregunta.
+            Gràcies a tots els col, laboradors i altres patrocinadors!
+        </string>
+    <string name="copy_to">Copia a</string>
+    <string name="copying">S\'està copiant</string>
+    <string name="edit_with">Edita amb</string>
+    <string name="exporting">S\'està exportant</string>
+    <string name="faq_6_text_commons">Aquest problema sorgeix quan el llançador no admet completament la personalització d\'icones. Intenteu llançar l\'aplicació a través de Google Play o d\'un giny, si és accessible. Després del llançament, restaureu el color predeterminat de la icona verda #106D1F. En casos extrems, pot ser necessària la reinstal, lació de l\'aplicació.</string>
+    <string name="faq_9_text_commons">Hi ha diverses maneres de fer-ho. La primera és iniciar el mode de selecció prement prolongadament un element i, a continuació, fer clic breu sobre els altres per a seleccionar-los. La segona forma és similar a la selecció d\'elements en els ordinadors amb un ratolí, només cal que inicieu el mode de selecció prement prolongadament un element i, tot seguit, arrossegueu-lo amb el dit cap a altres elements per a seleccionar-los. La tercera manera de seleccionar diversos elements consisteix a prémer prolongadament un element, després prémer prolongadament un altre i se seleccionarà tot el que hi ha entre els dos. Si voleu seleccionar tots els elements; només cal que premeu prolongadament un element i, a continuació, feu clic al comptador d\'elements seleccionats a l\'extrem superior esquerre. Això seleccionarà o anul, larà la selecció de tot.</string>
+    <string name="fingerprint_setup_successfully">Configuració correcta de la protecció. Torneu a instal, lar l\'aplicació en cas de problemes per a restablir-la.</string>
+    <string name="importing">S\'està important</string>
+    <string name="loading">S\'està carregant</string>
+    <string name="move_to">Mou a</string>
+    <string name="moving">S\'està movent</string>
+    <string name="open_with">Obre amb</string>
+    <string name="pro_app_refund">No oblideu que si desinstal, leu qualsevol aplicació de pagament en un termini de 2 hores, el càrrec es retornarà automàticament. Si voleu un reemborsament més tard, poseu-vos en contacte amb nosaltres a hello@fossify.org i el rebreu. Això fa que sigui fàcil provar-ho :)</string>
+    <string name="protection_setup_successfully">Configuració correcta de la contrasenya. Torneu a instal, lar l\'aplicació en cas que l\'oblideu.</string>
+    <string name="purchase_thank_you">
+            Compreu la &lt;a href=https://play.google.com/store/apps/details?id=org.fossify.thankyou&gt;Fossify Thank You&lt;/a&gt; per a fer servir aquesta característica i col, laborar amb el desenvolupament. Gràcies!
+        </string>
+    <string name="request_the_required_permissions">Sol, licita els permisos necessaris</string>
+    <string name="save_as">Desa com a</string>
+    <string name="saving">S\'està desant</string>
+    <string name="scanning">S\'està explorant</string>
+    <string name="select_font_file">Selecciona un fitxer de lletra</string>
+    <string name="set_as">Estableix com a</string>
+    <string name="share_via">Comparteix a través</string>
+    <string name="sort_by">Ordena per</string>
+    <string name="translation_welsh">Gal, lès</string>
+    <string name="updating">S\'està actualitzant</string>
+</resources>

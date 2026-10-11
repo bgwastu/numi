@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Nhập tin nhắn…</string>
+    <string name="type_a_message">Nhập tin nhắn</string>
     <string name="message_not_sent_short">Tin nhắn chưa được gửi</string>
     <string name="message_not_sent_touch_retry">Chưa được gửi. Nhấn để thử lại.</string>
     <string name="message_sending_error">Tin nhắn của bạn đến \'%s\' chưa được gửi</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Bắt đầu trò chuyện</string>
     <string name="reply">Trả lời</string>
     <string name="show_character_counter">Đếm số lượng ký tự khi soạn tin nhắn</string>
-    <string name="loading_messages">Đang tải tin nhắn…</string>
+    <string name="loading_messages">Đang tải tin nhắn</string>
     <string name="no_reply_support">Người gửi không hỗ trợ trả lời</string>
     <string name="draft">Nháp</string>
-    <string name="sending">Đang gửi…</string>
+    <string name="sending">Đang gửi</string>
     <string name="pin_conversation">Ghim lên đầu</string>
     <string name="unpin_conversation">Bỏ ghim</string>
     <string name="forward_message">Chuyển tiếp</string>
@@ -23,7 +23,7 @@
         <item quantity="other">và %d người khác</item>
     </plurals>
     <string name="new_conversation">Cuộc trò chuyện mới</string>
-    <string name="add_contact_or_number">Thêm Liên hệ hoặc Số điện thoại…</string>
+    <string name="add_contact_or_number">Thêm Liên hệ hoặc Số điện thoại</string>
     <string name="suggestions">Đề xuất</string>
     <string name="members">Thành viên</string>
     <string name="conversation_name">Tên cuộc trò chuyện</string>

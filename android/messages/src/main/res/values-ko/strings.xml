@@ -69,17 +69,17 @@
     <string name="manage_blocked_keywords">차단한 키워드</string>
     <string name="add_a_blocked_keyword">차단 키워드 추가</string>
     <string name="app_launcher_name">Numi</string>
-    <string name="type_a_message">메시지를 입력하세요…</string>
+    <string name="type_a_message">메시지를 입력하세요</string>
     <string name="message_not_sent_touch_retry">전송되지 않았습니다. 다시 시도하려면 선택하세요.</string>
     <string name="message_sending_error">\'%s\'에게 전송한 메시지가 전송되지 않았습니다</string>
     <string name="add_person">수신자 추가</string>
     <string name="attachment">첨부</string>
     <string name="start_conversation">대화 시작</string>
     <string name="show_character_counter">메시지 작성 시 글자 수 표시</string>
-    <string name="loading_messages">메시지 불러오는 중…</string>
+    <string name="loading_messages">메시지 불러오는 중</string>
     <string name="no_reply_support">보낸 사람이 답장 기능을 지원하지 않습니다</string>
     <string name="draft">임시 저장</string>
-    <string name="sending">전송 중…</string>
+    <string name="sending">전송 중</string>
     <string name="pin_conversation">상단에 고정</string>
     <string name="forward_message">전달</string>
     <string name="compress_error">사진을 선택한 크기로 압축할 수 없습니다</string>
@@ -88,7 +88,7 @@
         <item quantity="other">외 %d명</item>
     </plurals>
     <string name="new_conversation">새 대화</string>
-    <string name="add_contact_or_number">연락처 또는 전화번호 추가…</string>
+    <string name="add_contact_or_number">연락처 또는 전화번호 추가</string>
     <string name="suggestions">제안</string>
     <string name="conversation_details">대화 세부 사항</string>
     <string name="rename_conversation">대화명 편집</string>

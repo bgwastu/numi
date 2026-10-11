@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Cẩn thận: Một số trình launcher có thể không xử lý đúng tùy chỉnh biểu tượng ứng dụng. Nếu biểu tượng biến mất, hãy thử mở ứng dụng thông qua Google Play hoặc widget. Sau khi mở được, hãy khôi phục màu biểu tượng xanh lá cây mặc định #106D1F. Trong trường hợp hiếm, có thể cần phải cài đặt lại ứng dụng.</string>
+    <string name="app_on_sd_card">Dường như bạn đã cài đặt ứng dụng trên thẻ SD, điều đó làm cho các widget ứng dụng không khả dụng. Bạn thậm chí sẽ không nhìn thấy chúng trong danh sách các widget có sẵn. Đây là một giới hạn hệ thống, vì vậy nếu bạn muốn sử dụng các widget, bạn phải di chuyển ứng dụng vào bộ nhớ trong.</string>
+    <string name="cancel">Hủy</string>
+    <string name="contributors">Những người đóng góp</string>
+    <string name="contributors_label">
+            Danh sách này gồm những người đã đóng góp đáng kể cho bất kỳ ứng dụng nào của Fossify, không chỉ riêng ứng dụng này. Việc dịch thuật được thực hiện bởi các tình nguyện viên,
+            cho chúng tôi biết nếu bạn cũng muốn đóng góp. Xem hướng dẫn dịch thuật tại &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;trang web này&lt;/a&gt;, hoặc liên hệ qua &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; nếu bạn có câu hỏi khác.
+            Xin cảm ơn tất cả những người đóng góp và hỗ trợ!
+        </string>
+    <string name="copy_to">Sao chép</string>
+    <string name="copying">Đang sao chép</string>
+    <string name="edit_with">Chỉnh sửa bằng</string>
+    <string name="exporting">Đang xuất</string>
+    <string name="faq_6_text_commons">Sự cố này xảy ra khi trình launcher của bạn không hỗ trợ việc tùy chỉnh biểu tượng. Hãy thử mở ứng dụng thông qua Google Play hoặc widget (nếu có). Sau khi mở được, hãy khôi phục màu biểu tượng xanh lá cây mặc định #106D1F. Trong trường hợp nghiêm trọng, có thể cần phải cài đặt lại ứng dụng.</string>
+    <string name="faq_9_text_commons">Có nhiều cách thực hiện. Cách đầu tiên là nhấn giữ một mục, sau đó nhấn nhanh vào các mục khác để chọn chúng. Cách thứ hai tương tự như chọn các mục trên PC bằng chuột: nhấn giữ một mục, sau đó giữ ngón tay của bạn vuốt qua các mục khác để chọn. Cách thứ ba là nhấn giữ một mục, sau đó nhấn giữ một mục khác và mọi thứ ở giữa sẽ được chọn. Nếu bạn muốn chọn tất cả các mục, chỉ cần nhấn giữ một mục, sau đó nhấn vào bộ đếm mục đã chọn ở góc trên cùng bên trái. Thao tác đó sẽ chọn hoặc bỏ chọn tất cả mọi thứ.</string>
+    <string name="fingerprint_setup_successfully">Thiết lập bảo vệ thành công. Vui lòng cài đặt lại ứng dụng trong trường hợp có vấn đề với việc thiết lập lại.</string>
+    <string name="importing">Đang nhập</string>
+    <string name="loading">Đang tải</string>
+    <string name="move_to">Di chuyển</string>
+    <string name="moving">Đang chuyển</string>
+    <string name="open_with">Mở bằng</string>
+    <string name="pro_app_refund">Đừng quên rằng nếu bạn gỡ cài đặt bất kỳ ứng dụng trả phí nào trong vòng 2 giờ, bạn sẽ tự động được hoàn tiền. Nếu bạn muốn hoàn lại tiền bất cứ lúc nào sau đó, chỉ cần liên hệ với chúng tôi qua hello@fossify.org và bạn sẽ được hoàn ngay. Thật dễ đúng không :)</string>
+    <string name="protection_setup_successfully">Thiết lập mật khẩu thành công. Vui lòng cài đặt lại ứng dụng trong trường hợp bạn quên nó.</string>
+    <string name="purchase_thank_you">
+            Hãy mua &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; để dùng tính năng này và hỗ trợ nhà phát triển. Cảm ơn!
+        </string>
+    <string name="request_the_required_permissions">Yêu cầu các quyền cần thiết</string>
+    <string name="save_as">Lưu thành</string>
+    <string name="saving">Đang lưu</string>
+    <string name="scanning">Đang quét</string>
+    <string name="select_font_file">Chọn tệp phông chữ</string>
+    <string name="set_as">Đặt làm</string>
+    <string name="share_via">Chia sẻ qua</string>
+    <string name="sort_by">Xếp theo</string>
+    <string name="translation_welsh">Welsh</string>
+    <string name="updating">Đang cập nhật</string>
+</resources>

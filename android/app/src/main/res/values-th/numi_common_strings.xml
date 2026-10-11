@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">ข้อควรระวัง: Launcher บางตัวอาจจัดการการปรับแต่งไอคอนแอปได้ไม่ถูกต้อง หากไอคอนหายไป ให้ลองเปิดแอปผ่าน Google Play หรือวิดเจ็ตหากใช้งานได้ หลังจากเปิดแล้ว ให้คืนค่าสีไอคอนสีเขียวเริ่มต้น #106D1F ในกรณีร้ายแรง อาจต้องติดตั้งแอปใหม่</string>
+    <string name="app_on_sd_card">ดูเหมือนว่าคุณติดตั้งแอปบน SD Card ทำให้วิดเจ็ตของแอปไม่พร้อมใช้งาน คุณจะไม่เห็นวิดเจ็ตเหล่านี้ในรายการวิดเจ็ตที่มีอยู่ด้วย นี่เป็นข้อจำกัดของระบบ หากต้องการใช้วิดเจ็ต คุณต้องย้ายแอปกลับไปยังหน่วยความจำภายใน</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="contributors">ผู้มีส่วนร่วม</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020รายชื่อนี้ประกอบด้วยทุกคนที่มีส่วนช่วยเหลืออย่างเห็นได้ชัดต่อแอปใดๆ ในชุด Fossify ไม่ใช่เฉพาะแอปนี้ การแปลดำเนินการโดยอาสาสมัคร\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020แจ้งให้เราทราบหากคุณต้องการช่วยด้วย คำแนะนำการแปลอยู่ที่ &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;เว็บไซต์นี้&lt;/a&gt; หรือติดต่อเราที่ &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; ขอบคุณผู้มีส่วนร่วมและผู้สนับสนุนทุกคน!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">คัดลอกไปยัง</string>
+    <string name="copying">กำลังคัดลอก</string>
+    <string name="edit_with">แก้ไขด้วย</string>
+    <string name="exporting">กำลังส่งออก</string>
+    <string name="faq_6_text_commons">ปัญหานี้เกิดขึ้นเมื่อ Launcher ของคุณไม่รองรับการปรับแต่งไอคอนอย่างเต็มที่ ลองเปิดแอปผ่าน Google Play หรือวิดเจ็ตหากใช้งานได้ หลังจากเปิดแล้ว ให้คืนค่าสีไอคอนสีเขียวเริ่มต้น #106D1F ในกรณีร้ายแรง อาจต้องติดตั้งแอปใหม่</string>
+    <string name="faq_9_text_commons">มีหลายวิธี วิธีแรกคือเริ่มโหมดเลือกโดยกดค้างที่รายการหนึ่ง แล้วกดสั้นๆ ที่รายการอื่น วิธีที่สองคล้ายกับการเลือกรายการบน PC ด้วยเมาส์ โดยกดค้างที่รายการหนึ่งแล้วลากนิ้วผ่านรายการอื่น วิธีที่สามคือกดค้างที่รายการหนึ่ง แล้วกดค้างที่อีกรายการ ทุกรายการระหว่างนั้นจะถูกเลือก หากต้องการเลือกทั้งหมด กดค้างที่รายการหนึ่งแล้วกดตัวนับรายการที่เลือกที่มุมบนซ้าย</string>
+    <string name="fingerprint_setup_successfully">ตั้งค่าการป้องกันเรียบร้อยแล้ว กรุณาติดตั้งแอปใหม่หากมีปัญหาในการรีเซ็ต</string>
+    <string name="importing">กำลังนำเข้า</string>
+    <string name="loading">กำลังโหลด</string>
+    <string name="move_to">ย้ายไปยัง</string>
+    <string name="moving">กำลังย้าย</string>
+    <string name="open_with">เปิดด้วย</string>
+    <string name="pro_app_refund">อย่าลืมว่าหากถอนการติดตั้งแอปที่ซื้อภายใน 2 ชั่วโมง คุณจะได้รับเงินคืนอัตโนมัติ หากต้องการคืนเงินในภายหลัง ติดต่อเราได้ที่ hello@fossify.org แล้วคุณจะได้รับเงินคืน ทำให้ทดลองใช้ได้ง่ายมาก :)</string>
+    <string name="protection_setup_successfully">ตั้งรหัสผ่านเรียบร้อยแล้ว กรุณาติดตั้งแอปใหม่หากลืมรหัสผ่าน</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020กรุณาซื้อ &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; เพื่อใช้ฟีเจอร์นี้และสนับสนุนการพัฒนา ขอบคุณ!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">ขอสิทธิ์ที่จำเป็น</string>
+    <string name="save_as">บันทึกเป็น</string>
+    <string name="saving">กำลังบันทึก</string>
+    <string name="scanning">กำลังสแกน</string>
+    <string name="select_font_file">เลือกไฟล์ฟอนต์</string>
+    <string name="set_as">ตั้งเป็น</string>
+    <string name="share_via">แชร์ผ่าน</string>
+    <string name="sort_by">เรียงตาม</string>
+    <string name="translation_welsh">เวลส์</string>
+    <string name="updating">กำลังอัปเดต</string>
+</resources>

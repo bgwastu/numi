@@ -20,7 +20,7 @@
     <string name="members">সদস্যরা</string>
     <string name="conversation_name">কথোপকথনের নাম</string>
     <string name="new_conversation">নতুন কথোপকথন</string>
-    <string name="add_contact_or_number">কন্টাক্ট বা নম্বর যোগ করুন…</string>
+    <string name="add_contact_or_number">কন্টাক্ট বা নম্বর যোগ করুন</string>
     <string name="suggestions">পরামর্শ</string>
     <string name="rename_conversation_warning">শুধুমাত্র আপনি এই কথোপকথন নাম দেখতে পারবেন</string>
     <string name="rename_conversation">কথোপকথনের নাম পরিবর্তন করুন</string>
@@ -83,7 +83,7 @@
     <string name="start_conversation">একটি কথোপকথন শুরু করুন</string>
     <string name="reply">উত্তর দিন</string>
     <string name="show_character_counter">বার্তা লেখার সময় একটি অক্ষর কাউন্টার দেখান</string>
-    <string name="loading_messages">বার্তা লোড হচ্ছে…</string>
+    <string name="loading_messages">বার্তা লোড হচ্ছে</string>
     <string name="no_reply_support">প্রেরক উত্তর সমর্থন করে না</string>
     <string name="conversation_details">কথোপকথনের বিবরণ</string>
     <string name="skip_the_recycle_bin_messages">রিসাইকেল বিন এড়িয়ে যান, সরাসরি বার্তা মুছুন</string>
@@ -99,11 +99,11 @@
     <string name="enable_delivery_reports">ডেলিভারি রিপোর্ট সক্রিয় করুন</string>
     <string name="use_simple_characters">বার্তা পাঠানোর সময় উচ্চারণ এবং ডায়াক্রিটিকগুলি সরান</string>
     <string name="send_on_enter">এন্টার চাপলে বার্তা পাঠান</string>
-    <string name="type_a_message">একটি বার্তা লিখুন…</string>
+    <string name="type_a_message">একটি বার্তা লিখুন</string>
     <string name="message_not_sent_short">বার্তা পাঠানো হয়নি</string>
     <string name="message_not_sent_touch_retry">পাঠানো হয় নি। পুনরায় চেষ্টা করতে স্পর্শ করুন।</string>
     <string name="draft">খসড়া</string>
-    <string name="sending">পাঠানো হচ্ছে…</string>
+    <string name="sending">পাঠানো হচ্ছে</string>
     <string name="unpin_conversation">আনপিন করুন</string>
     <string name="compress_error">নির্বাচিত আকারে ছবি সংকুচিত করা যায় নি</string>
     <string name="duplicate_item_warning">সদৃশ আইটেম অন্তর্ভুক্ত করা হয়নি</string>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Peligro: Ciertos launchers pueden no controlar la personalización de iconos de aplicaciones correctamente. Si el icono desaparece, intenta abrir la aplicación desde Google Play o un widget, si es accesible. Después de abrirla, restaura el icono verde por defecto color #106D1F. En casos extremos, reinstalar la aplicación podría ser necesario.</string>
+    <string name="app_on_sd_card">Parece que tienes la aplicación instalada en una tarjeta SD, eso hace que los widgets de la aplicación no estén disponibles. Ni siquiera los verá en la lista de widgets disponibles. Es una limitación del sistema, así que si quieres usar los widgets, tendrás que mover la aplicación al almacenamiento interno.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="copy_to">Copiar a</string>
+    <string name="copying">Copiando</string>
+    <string name="edit_with">Editar con</string>
+    <string name="exporting">Exportando</string>
+    <string name="fingerprint_setup_successfully">Protección ajustada con éxito. Por favor reinstale la aplicación en caso de que tenga problemas restableciéndola.</string>
+    <string name="importing">Importando</string>
+    <string name="loading">Cargando</string>
+    <string name="move_to">Mover a</string>
+    <string name="moving">Moviendo</string>
+    <string name="open_with">Abrir con</string>
+    <string name="pro_app_refund">No te olvides de que si desinstalas cualquier aplicación de pago dentro de 2 horas, automáticamente recibirás un reembolso. Si quieres un reembolso luego, solo contáctenos a hello@fossify.org y lo recibirás. Eso hará que sea más fácil probarlo :)</string>
+    <string name="protection_setup_successfully">Contraseña ajustada con éxito. Por favor reinstale la aplicación en caso de que la olvide.</string>
+    <string name="purchase_thank_you">Por favor compre &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Gracias&lt;/a&gt; para usar esta función y apoyar el desarrollo. ¡Gracias!</string>
+    <string name="request_the_required_permissions">Solicitar los permisos necesarios</string>
+    <string name="save_as">Guardar como</string>
+    <string name="saving">Guardando</string>
+    <string name="scanning">Escaneando</string>
+    <string name="select_font_file">Seleccionar archivo de letra</string>
+    <string name="set_as">Establecer como</string>
+    <string name="share_via">Compartir por</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="updating">Actualizando</string>
+</resources>

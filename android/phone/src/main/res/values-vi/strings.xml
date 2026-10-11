@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Từ chối</string>
     <string name="numi_phone_decline_call">Từ chối cuộc gọi</string>
     <string name="numi_phone_unknown_caller">Người gọi chưa biết</string>
-    <string name="numi_phone_is_calling">Đang gọi đến…</string>
-    <string name="numi_phone_dialing">Đang gọi…</string>
+    <string name="numi_phone_is_calling">Đang gọi đến</string>
+    <string name="numi_phone_dialing">Đang gọi</string>
     <string name="numi_phone_call_ended">Cuộc gọi kết thúc</string>
     <string name="numi_phone_call_ending">Đang kết thúc cuộc gọi</string>
     <string name="numi_phone_ongoing_call">Cuộc gọi đang diễn ra</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_import_call_history">Nhập lịch sử cuộc gọi</string>
     <string name="numi_phone_export_call_history">Xuất lịch sử cuộc gọi</string>
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
-    <string name="numi_phone_call_is_being_connected">Đang kết nối cuộc gọi…</string>
+    <string name="numi_phone_call_is_being_connected">Đang kết nối cuộc gọi</string>
     <string name="numi_phone_call_notification_channel">Trạng thái cuộc gọi</string>
     <string name="numi_phone_call_notification_channel_high_priority">Trạng thái cuộc gọi (ưu tiên cao)</string>
     <string name="numi_phone_faq_2_title">Tại sao không thể sử dụng cuộc gọi khẩn cấp?</string>

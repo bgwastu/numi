@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Bir mesaj yazın…</string>
+    <string name="type_a_message">Bir mesaj yazın</string>
     <string name="message_not_sent_short">Mesaj gönderilemedi</string>
     <string name="message_not_sent_touch_retry">Gönderilemedi. Yeniden denemek için dokunun.</string>
     <string name="message_sending_error">\'%s\' kişisine giden mesajınız gönderilemedi</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Bir görüşme başlat</string>
     <string name="reply">Yanıtla</string>
     <string name="show_character_counter">Mesaj yazarken karakter sayacı göster</string>
-    <string name="loading_messages">Mesajlar yükleniyor…</string>
+    <string name="loading_messages">Mesajlar yükleniyor</string>
     <string name="no_reply_support">Gönderici, yanıtları desteklemiyor</string>
     <string name="draft">Taslak</string>
-    <string name="sending">Gönderiliyor…</string>
+    <string name="sending">Gönderiliyor</string>
     <string name="pin_conversation">En üste sabitle</string>
     <string name="unpin_conversation">Sabitlemeyi kaldır</string>
     <string name="forward_message">İlet</string>
@@ -24,7 +24,7 @@
         <item quantity="other">ve %d kişi daha</item>
     </plurals>
     <string name="new_conversation">Yeni görüşme</string>
-    <string name="add_contact_or_number">Kişi veya Numara Ekle…</string>
+    <string name="add_contact_or_number">Kişi veya Numara Ekle</string>
     <string name="suggestions">Öneriler</string>
     <string name="members">Üyeler</string>
     <string name="conversation_name">Görüşme adı</string>

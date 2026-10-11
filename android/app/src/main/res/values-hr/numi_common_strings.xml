@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Oprez: Određeni pokretači možda neće ispravno rukovati prilagodbom ikone aplikacije. Ako ikona nestane, pokušaj pokrenuti aplikaciju putem Google Playa ili widgeta. Nakon pokretanja obnovi standardnu zelenu boju ikone #106D1F. U ekstremnim slučajevima može biti potrebno ponovo instalirati aplikaciju.</string>
+    <string name="app_on_sd_card">Čini se da je aplikacija instalirana na SD karticu, što čini widgete aplikacije nedostupnim. Nećete ih čak ni vidjeti na popisu dostupnih widgeta. To je ograničenje sustava, pa ako želite upotrebljavati widgete, morate vratiti aplikaciju na unutarnju pohranu..</string>
+    <string name="cancel">Poništi</string>
+    <string name="contributors">Doprinositelji</string>
+    <string name="contributors_label">"\n            Ovaj popis sadrži sve osobe koje su značajno pomogli bilo kojoj aplikaciji unutar paketa Fossify, ne samo ovoj. Prijevode obavljaju volonteri,\n            javi nam ako želiš pomoći. Vodič za prevođenje nalazi se na &lt;a href=https://github.com/FossifyOrg/General-Discussion#contributing-translations&gt;ovoj web stranici&lt;/a&gt; ili nas kontaktiraj na &lt;a href=mailto:hello@fossify.org&gt;hello@fossify.org&lt;/a&gt; ako imaš pitanja.\n            Hvala svim suradnicima i ostalim podržavateljima!\n        "</string>
+    <string name="copy_to">Kopiraj u</string>
+    <string name="copying">Kopiranje</string>
+    <string name="edit_with">Uredi pomoću</string>
+    <string name="exporting">Izvoz</string>
+    <string name="faq_6_text_commons">Ovaj problem nastaje kada tvoj pokretač ne podržava u potpunosti prilagođavanje ikona. Pokušaj pokrenuti aplikaciju putem Google Playa ili widgeta, ako je dostupan. Nakon pokretanja vrati standardnu zelenu boju ikone #106D1F. U ekstremnim slučajevima može biti potrebno ponovo instalirati aplikaciju.</string>
+    <string name="fingerprint_setup_successfully">Uspješno postavljanje zaštite. Instaliraj aplikaciju ponovo u slučaju problema s resetiranjem.</string>
+    <string name="importing">Uvoz</string>
+    <string name="loading">Učitavanje </string>
+    <string name="move_to">Premjesti u</string>
+    <string name="moving">Premještanje</string>
+    <string name="open_with">Otvori s</string>
+    <string name="pro_app_refund">Ako deinstaliraš bilo koju plaćenu aplikaciju u roku od 2 sata automatski ćeš dobiti povrat novca. Ako kasnije želiš povrat novca, jednostavno nas kontaktiraj na hello@fossify.org. To olakšava isprobavanje :)</string>
+    <string name="protection_setup_successfully">Uspješno postavljanje lozinke. Molimo reinstalirajte aplikaciju u slučaju da je zaboravite.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Kupi &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Hvala&lt;/a&gt; za korištenje ove funkcije te za podržavanje razvoja. Hvala!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Zatraži potrebna dopuštenja</string>
+    <string name="save_as">Spremi kao</string>
+    <string name="saving">Spremanje</string>
+    <string name="scanning">Pretraživanje </string>
+    <string name="select_font_file">Odaberi datoteku fonta </string>
+    <string name="set_as">Postavi kao</string>
+    <string name="share_via">Dijeli putem</string>
+    <string name="sort_by">Sortiraj po</string>
+    <string name="translation_welsh">Velški</string>
+    <string name="updating">Aktualiziranje </string>
+</resources>

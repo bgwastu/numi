@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">اكتب رسالة…</string>
+    <string name="type_a_message">اكتب رسالة</string>
     <string name="message_not_sent_short">لم يتم إرسال الرسالة</string>
     <string name="message_not_sent_touch_retry">لم ترسل. المس لإعادة المحاولة.</string>
     <string name="message_sending_error">لم يتم إرسال رسالتك إلى \'%s\'</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">بدء محادثة</string>
     <string name="reply">رد</string>
     <string name="show_character_counter">إظهار عداد الأحرف عند كتابة الرسائل</string>
-    <string name="loading_messages">جاري تحميل الرسائل…</string>
+    <string name="loading_messages">جاري تحميل الرسائل</string>
     <string name="no_reply_support">المرسل لا يدعم الردود</string>
     <string name="draft">مسودة</string>
-    <string name="sending">ارسال…</string>
+    <string name="sending">ارسال</string>
     <string name="pin_conversation">تثبيت في الأعلى</string>
     <string name="unpin_conversation">ازالة التثبيت</string>
     <string name="forward_message">اعادة ارسال</string>
@@ -28,7 +28,7 @@
         <item quantity="other">و %d أخرى</item>
     </plurals>
     <string name="new_conversation">محادثة جديدة</string>
-    <string name="add_contact_or_number">إضافة جهة اتصال أو رقم …</string>
+    <string name="add_contact_or_number">إضافة جهة اتصال أو رقم </string>
     <string name="suggestions">اقتراحات</string>
     <string name="members">الأعضاء</string>
     <string name="conversation_name">اسم المحادثة</string>

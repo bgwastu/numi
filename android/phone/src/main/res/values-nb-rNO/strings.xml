@@ -19,8 +19,8 @@
     <string name="numi_phone_decline">Avslå</string>
     <string name="numi_phone_decline_call">Avslå samtalen</string>
     <string name="numi_phone_unknown_caller">Ukjent innringer</string>
-    <string name="numi_phone_is_calling">Ringer…</string>
-    <string name="numi_phone_dialing">Ringer opp…</string>
+    <string name="numi_phone_is_calling">Ringer</string>
+    <string name="numi_phone_dialing">Ringer opp</string>
     <string name="numi_phone_call_ended">Anrop avsluttet</string>
     <string name="numi_phone_call_ending">Samtaleslutt</string>
     <string name="numi_phone_ongoing_call">Pågående samtale</string>

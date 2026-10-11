@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_on_sd_card">Čini se da je aplikacija instalirana na SD karticu, što čini widgete aplikacije nedostupnim. Nećete ih čak ni vidjeti na popisu dostupnih widgeta. To je ograničenje sustava, pa ako želite upotrebljavati widgete, morate vratiti aplikaciju na unutarnju pohranu..</string>
+    <string name="cancel">Poništi</string>
+    <string name="contributors">Doprinositelji</string>
+    <string name="copy_to">Kopiraj u</string>
+    <string name="copying">Kopiranje</string>
+    <string name="edit_with">Uredi pomoću</string>
+    <string name="exporting">Izvoz</string>
+    <string name="faq_9_text_commons">Ima više načina za to. Možete započeti izbor dugim pritiskom na jednu stavku, a zatim kratkim pritiskom na ostale stavke. Drugi način je sličan korištenju miša na računaru, započnite na isti način dugim priskom, a zatim nastavite prstom vući preko drugih stavki. Treći način je da se dugim pritiskom izabere jedna stavka, a zatim dugim pritiskom na drugu stavku izabirete sve stavke između njih. Ukoliko želite izabrati sve stavke, izaberite jednu stavku dugim pritiskom, a zatim u gornjem desnom uglu pritinite na broj izabranih stavki. To će izabrati sve stavke ili ih ukloniti sve iz izbora.</string>
+    <string name="fingerprint_setup_successfully">Uspješno postavljanje zaštite. Molimo reinstalirajte aplikaciju u slučaju problema s resetiranjem.</string>
+    <string name="importing">Uvoz</string>
+    <string name="loading">Učitavanje </string>
+    <string name="move_to">Premjesti u</string>
+    <string name="moving">Premještanje</string>
+    <string name="open_with">Otvori sa</string>
+    <string name="pro_app_refund">Ako deinstaliraš bilo koju plaćenu aplikaciju u roku od 2 sata automatski ćeš dobiti povrat novca. Ako kasnije želiš povrat novca, jednostavno nas kontaktiraj na hello@fossify.org. To olakšava isprobavanje :)</string>
+    <string name="protection_setup_successfully">Uspješno postavljanje lozinke. Molimo reinstalirajte aplikaciju u slučaju da je zaboravite.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Molimo kupite &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; za otključavanje ove funkcije i podršku razvoju. Hvala!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Zatraži potrebna dopuštenja</string>
+    <string name="save_as">Sačuvaj kao</string>
+    <string name="saving">Spremanje</string>
+    <string name="scanning">Skeniranje u toku</string>
+    <string name="set_as">Postavi kao</string>
+    <string name="share_via">Dijeli putem</string>
+    <string name="sort_by">Sortiraj po</string>
+    <string name="translation_welsh">Velški</string>
+    <string name="updating">Ažuriranje </string>
+</resources>

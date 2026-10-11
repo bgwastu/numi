@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">メッセージを入力…</string>
+    <string name="type_a_message">メッセージを入力</string>
     <string name="message_not_sent_short">メッセージは送信されませんでした</string>
     <string name="message_not_sent_touch_retry">送信失敗。タップして再送してください。</string>
     <string name="message_sending_error">「%s」さんへのメッセージは送信されませんでした</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">会話を始める</string>
     <string name="reply">返信</string>
     <string name="show_character_counter">メッセージ入力中に文字カウントを表示</string>
-    <string name="loading_messages">メッセージを読み込み中…</string>
+    <string name="loading_messages">メッセージを読み込み中</string>
     <string name="no_reply_support">差出人は返信に対応していません</string>
     <string name="draft">下書き</string>
-    <string name="sending">送信中…</string>
+    <string name="sending">送信中</string>
     <string name="pin_conversation">最上部に固定</string>
     <string name="unpin_conversation">固定を外す</string>
     <string name="forward_message">転送</string>
@@ -23,7 +23,7 @@
         <item quantity="other">とあと%d件</item>
     </plurals>
     <string name="new_conversation">新しい会話</string>
-    <string name="add_contact_or_number">連絡先や電話番号を追加…</string>
+    <string name="add_contact_or_number">連絡先や電話番号を追加</string>
     <string name="suggestions">提案</string>
     <string name="members">メンバー</string>
     <string name="conversation_name">会話名</string>

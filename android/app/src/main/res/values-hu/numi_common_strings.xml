@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Figyelem: egyes indítók lehet, hogy nem helyesen kezelik az ikonok testreszábását. Ha az ikon eltűnik, próbálja a Google Playen vagy egy modulon keresztül elindítani, ha elérhető. Indítás után állítsa vissza az alapértelmezett zöld (#106D1F) ikonszínt. Extrém esetekben az alkalmazás újratelepítése is szükséges lehet.</string>
+    <string name="app_on_sd_card">Úgy tűnik, hogy az alkalmazás az SD-kártyára van telepítve és emiatt az alkalmazás moduljai nem érhetők el. Nem fogja látni a rendelkezésre álló modulok között. Ez egy rendszerkorlátozás, így ha használni szeretné a modulokat, akkor át kell helyeznie az alkalmazást a belső tárterületre.</string>
+    <string name="cancel">Mégse</string>
+    <string name="contributors">Közreműködők</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020A lista mindenkit tartalmaz, aki észrevehető mértékben segített a Fossify csomag bármelyik alkalmazásában, nem csak ebben. A fordításokat önkéntesek kezelik,\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020tudassa velünk, ha Ön is segítene. A fordítási útmutató &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;ezen a webhelyen&lt;/a&gt; található, de ha kérdése van, akkor a &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; címen is felteheti.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Köszönjük az összes közreműködőnknek és támogatónknak!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">Másolás ide</string>
+    <string name="copying">Másolás</string>
+    <string name="edit_with">Szerkesztés ezzel</string>
+    <string name="exporting">Exportálás</string>
+    <string name="faq_6_text_commons">Ez a probléma akkor merül fel, ha az indító nem teljesen támogatja az ikonok testreszabását. Próbálja a Google Playen vagy egy modulon keresztül elindítani, ha az elérhető. Indítás után állítsa vissza az alapértelmezett zöld (#106D1F) ikonszínt. Extrém esetekben az alkalmazás újratelepítése lehet szükséges.</string>
+    <string name="faq_9_text_commons">Több mód is van rá. Megnyomhatja hosszan az első elemet, majd röviden megérintheti a továbbiakat. Lehet az egérrel ellátott számítógépekhez hasonlóan egy elemet hosszan megnyomva megkezdeni a kijelölést, majd – az ujjat közben nem felengedve – húzással kijelölni a többit. Egy harmadik lehetőség hosszan megnyomni az első elemet, majd szintén hosszan megnyomni az utolsót: ez a kettő közötti összes elemet kijelöli. Ha minden elemet egyszerre ki akar jelölni, nyomja meg hosszan bármelyik elemet, majd érintse meg a bal felső sarokban lévő számlálót, ez minden elemet kijelöl, vagy minden elem kijelölését törli.</string>
+    <string name="fingerprint_setup_successfully">A védelem beállítása sikeres. A visszaállítással kapcsolatos problémák esetén telepítse újra az alkalmazást.</string>
+    <string name="importing">Importálás</string>
+    <string name="loading">Betöltés</string>
+    <string name="move_to">Áthelyezés ide</string>
+    <string name="moving">Áthelyezés</string>
+    <string name="open_with">Megnyitás ezzel</string>
+    <string name="pro_app_refund">Ne felejtse el, hogy ha 2 órán belül eltávolítja a fizetős alkalmazásunkat, akkor automatikusan visszatérítjük az árát. Ha később bármikor mégis visszatérítést szeretne, lépjen kapcsolatba velünk a hello@fossify.org címen, és visszakapja. Ez is megkönnyíti a kipróbálást :)</string>
+    <string name="protection_setup_successfully">A jelszó beállítása sikeres. Ha elfelejti, akkor újra kell telepítenie az alkalmazást.</string>
+    <string name="purchase_thank_you">"\n            Vásárolja meg a &lt;a href=https://play.google.com/store/apps/details?id=org.fossify.thankyou&gt;Fossify Köszönet&lt;/a&gt; alkalmazást a funkció feloldásához, és a fejlesztés támogatásához. Köszönjük!\n        "</string>
+    <string name="request_the_required_permissions">A kívánt jogosultságok igénylése</string>
+    <string name="save_as">Mentés másként</string>
+    <string name="saving">Mentés</string>
+    <string name="scanning">Szkennelés</string>
+    <string name="select_font_file">Betűtípus fajljának kiválasztása</string>
+    <string name="set_as">Beállítás ennek</string>
+    <string name="share_via">Megosztva ezzel</string>
+    <string name="sort_by">Rendezés</string>
+    <string name="translation_welsh">Walesi</string>
+    <string name="updating">Aktualizálás</string>
+</resources>

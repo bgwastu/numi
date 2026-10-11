@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Rechazar</string>
     <string name="numi_phone_decline_call">Rechazar llamada</string>
     <string name="numi_phone_unknown_caller">Número desconocido</string>
-    <string name="numi_phone_is_calling">Está llamando…</string>
-    <string name="numi_phone_dialing">Llamando…</string>
+    <string name="numi_phone_is_calling">Está llamando</string>
+    <string name="numi_phone_dialing">Llamando</string>
     <string name="numi_phone_call_ended">Llamada finalizada</string>
     <string name="numi_phone_call_ending">Finalizando llamada</string>
     <string name="numi_phone_ongoing_call">Llamada en curso</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_faq_1_text">Estos problemas pueden deberse a muchas razones específicas del dispositivo y del sistema, es difícil decirlo en general. Deberías echar un vistazo a la configuración de tu dispositivo y asegurarte de que la aplicación tiene permiso para aparecer cuando está en segundo plano y mostrarse sobre otras aplicaciones.</string>
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
-    <string name="numi_phone_call_is_being_connected">Tu llamada está conectándose…</string>
+    <string name="numi_phone_call_is_being_connected">Tu llamada está conectándose</string>
     <string name="numi_phone_faq_2_title">¿Por qué las llamadas de emergencia no funcionan correctamente?</string>
     <string name="numi_phone_faq_2_text">Debido a las restricciones del sistema, las llamadas de emergencia sólo se pueden realizar a través del marcador predeterminado del sistema o de la aplicación de teléfono. Para que las llamadas de emergencia funcionen correctamente, debes mantener la aplicación del sistema instalada y activada.</string>
     <string name="numi_phone_faq_3_title">¿Por qué faltan algunos de mis contactos en la aplicación?</string>

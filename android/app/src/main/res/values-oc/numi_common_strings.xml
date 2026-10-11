@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="cancel">Anullar</string>
+    <string name="edit_with">Modificar amb</string>
+    <string name="open_with">Dobrir amb</string>
+    <string name="save_as">Salvar coma</string>
+    <string name="set_as">Definir coma</string>
+</resources>

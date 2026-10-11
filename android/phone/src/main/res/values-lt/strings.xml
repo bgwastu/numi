@@ -21,8 +21,8 @@
     <string name="numi_phone_decline">Atmesti</string>
     <string name="numi_phone_decline_call">Atmesti skambutį</string>
     <string name="numi_phone_unknown_caller">Nežinomas skambintojas</string>
-    <string name="numi_phone_is_calling">Skambina…</string>
-    <string name="numi_phone_dialing">Numerio rinkimas…</string>
+    <string name="numi_phone_is_calling">Skambina</string>
+    <string name="numi_phone_dialing">Numerio rinkimas</string>
     <string name="numi_phone_call_ended">Skambutis baigtas</string>
     <string name="numi_phone_call_ending">Skambučio pabaiga</string>
     <string name="numi_phone_ongoing_call">Vykdomas skambutis</string>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">注意：一部のランチャーでは、アプリのアイコンのカスタマイズを正しく認識しない場合があります。アイコンが消えた場合は、Google Play、または、利用可能な場合はウィジェットからアプリを起動してみてください。開始したら、既定の緑のアイコンの色 #106D1F を復元してください。ごくまれに、アプリの再インストールが必要になる場合があります。</string>
+    <string name="app_on_sd_card">アプリがSDカード上にインストールされているため、アプリのウィジェットは使用できません。また、利用可能なウィジェットのリストにも表示されません。 これはシステムによる制限であるため、ウィジェットを使用する場合には、アプリを内部ストレージに戻す必要があります。</string>
+    <string name="cancel">キャンセル</string>
+    <string name="contributors">貢献者</string>
+    <string name="copy_to">コピー</string>
+    <string name="copying">コピー中</string>
+    <string name="edit_with">他のアプリで編集</string>
+    <string name="exporting">エクスポート中</string>
+    <string name="faq_6_text_commons">この問題は、使用しているランチャーがアイコンのカスタマイズを完全にサポートしていない場合に生じます。Google Play、または、利用可能な場合はウィジェットからアプリを起動してみてください。開始したら、既定の緑のアイコンの色 #106D1F を復元してください。ごくまれに、アプリの再インストールが必要になる場合があります。</string>
+    <string name="faq_9_text_commons">いくつかの方法があります。1つ目は、アイテムを長押しして選択モードを開始し、他のアイテムを短くタップして選択する方法です。2つ目は、パソコンのマウスでアイテムを選択するのと同じように、アイテムを長押しして選択モードを開始し、そのまま指を他のアイテムにドラッグして選択する方法です。3つ目は、1つ目のアイテムを長押ししてから別のアイテムを長押しする方法で、間にある全てのアイテムが選択されます。全てのアイテムを選択したい場合は、アイテムを長押ししてから、左上にあるアイテムカウンターをタップしてください。アイテムカウンターで全て選択をしたり、解除したりできます。</string>
+    <string name="fingerprint_setup_successfully">指紋認証の設定が完了しました。何らかの問題によりアプリを再インストールした場合には、再度設定し直してください。</string>
+    <string name="importing">インポート中</string>
+    <string name="loading">読み込み中</string>
+    <string name="move_to">移動</string>
+    <string name="moving">移動中</string>
+    <string name="open_with">別のアプリで開く</string>
+    <string name="pro_app_refund">どのアプリでも、購入後２時間以内にアンインストールすると自動的に払い戻しされることを覚えていてください。それ以降に払い戻しが必要な場合は、こちらにお問い合わせください。hello@fossify.org お試ししやすいかと思います :)</string>
+    <string name="protection_setup_successfully">パスワードの設定が完了しました。パスワードを紛失した場合は、アプリを再インストールしてください。</string>
+    <string name="purchase_thank_you">"\n            この機能のロックを解除して開発者をサポートするには、&lt;a href=https://play.google.com/store/apps/details?id=org.fossify.thankyou&gt;Fossify Thank You&lt;/a&gt;アプリを購入してください。\n        "</string>
+    <string name="request_the_required_permissions">要求された許可をリクエスト</string>
+    <string name="save_as">名前を付けて保存</string>
+    <string name="saving">保存中</string>
+    <string name="scanning">スキャンしています</string>
+    <string name="select_font_file">フォントファイルを選択</string>
+    <string name="set_as">他で使う</string>
+    <string name="share_via">共有</string>
+    <string name="sort_by">並べ替え</string>
+    <string name="translation_welsh">ウェールズ語</string>
+    <string name="updating">更新中</string>
+</resources>

@@ -28,16 +28,16 @@ object IncomingSmsTelegramMessage {
         val timeLabel = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(receivedAt))
         val safeSender = sender.takeCodePoints(SENDER_METADATA_LIMIT)
         val visibleFooter = buildString {
-            append("— $safeSender")
-            if (simTag != null) append(" · $simTag")
-            append(" · $timeLabel")
-            if (state != null) append(" · $state")
+            append(safeSender)
+            if (simTag != null) append(", $simTag")
+            append(", $timeLabel")
+            if (state != null) append(", $state")
         }
         val footer = buildString {
-            append("— ${TelegramHtml.code(safeSender)}")
-            if (simTag != null) append(" · ${TelegramHtml.escape(simTag)}")
-            append(" · ${TelegramHtml.code(timeLabel)}")
-            if (state != null) append(" · ${TelegramHtml.escape(state)}")
+            append(TelegramHtml.code(safeSender))
+            if (simTag != null) append(", ${TelegramHtml.escape(simTag)}")
+            append(", ${TelegramHtml.code(timeLabel)}")
+            if (state != null) append(", ${TelegramHtml.escape(state)}")
         }
         val footerLength = visibleFooter.length + 2
         if (body.length <= 3000 && body.length + footerLength <= TELEGRAM_TEXT_LIMIT) {

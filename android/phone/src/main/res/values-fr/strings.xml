@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Décliner</string>
     <string name="numi_phone_decline_call">Décliner l\'appel</string>
     <string name="numi_phone_unknown_caller">Appelant inconnu</string>
-    <string name="numi_phone_is_calling">Appelle…</string>
-    <string name="numi_phone_dialing">Numérotation…</string>
+    <string name="numi_phone_is_calling">Appelle</string>
+    <string name="numi_phone_dialing">Numérotation</string>
     <string name="numi_phone_call_ended">Appel terminé</string>
     <string name="numi_phone_call_ending">Fin de l\'appel</string>
     <string name="numi_phone_ongoing_call">Appel en cours</string>
@@ -72,7 +72,7 @@
     <string name="numi_phone_faq_3_text">Fossify Phone n\'affiche que les contacts auxquels un numéro de téléphone est associé. Les contacts sans numéro de téléphone ne sont pas affichés dans l\'application.</string>
     <string name="numi_phone_faq_2_title">Pourquoi les appels d\'urgence ne fonctionnent-ils pas correctement ?</string>
     <string name="numi_phone_faq_2_text">En raison des restrictions imposées par le système, les appels d\'urgence ne peuvent être effectués que par l\'intermédiaire du composeur par défaut ou de l\'application téléphonique de votre système. Pour que les appels d\'urgence fonctionnent correctement, l\'application système doit être installée et activée.</string>
-    <string name="numi_phone_call_is_being_connected">Votre appel est en cours de connexion…</string>
+    <string name="numi_phone_call_is_being_connected">Votre appel est en cours de connexion</string>
     <string name="numi_phone_faq_3_title">Pourquoi certains de mes contacts sont-ils absents de l\'application ?</string>
     <string name="numi_phone_call_notification_channel_high_priority">Statut d\'appel (haute priorité)</string>
     <string name="numi_phone_call_notification_channel">Statut d\'appel</string>

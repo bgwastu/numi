@@ -94,7 +94,7 @@ class MainActivity : SimpleActivity() {
         setupOptionsMenu()
         refreshMenuItems()
 
-        setupEdgeToEdge(padBottomImeAndSystem = listOf(binding.conversationsList))
+        setupEdgeToEdge()
 
         checkAndDeleteOldRecycleBinMessages()
         clearAllMessagesIfNeeded {
@@ -105,6 +105,7 @@ class MainActivity : SimpleActivity() {
 
     override fun onResume() {
         super.onResume()
+        net.wastu.numi.contracts.NumiHooks.bindNavigation?.invoke(this, binding.numiNavigation, "MESSAGES")
         net.wastu.numi.contracts.NumiHooks.messagesOpened?.invoke(this)
         updateMenuColors()
         refreshMenuItems()
@@ -175,8 +176,6 @@ class MainActivity : SimpleActivity() {
 
         binding.mainMenu.requireToolbar().setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.numi_calls -> net.wastu.numi.contracts.NumiHooks.openCalls?.invoke(this@MainActivity)
-                R.id.numi_connector -> net.wastu.numi.contracts.NumiHooks.openConnector?.invoke(this@MainActivity)
                 R.id.numi_spam -> net.wastu.numi.contracts.NumiHooks.openSpam?.invoke(this@MainActivity)
                 R.id.show_recycle_bin -> launchRecycleBin()
                 R.id.show_archived -> launchArchivedConversations()

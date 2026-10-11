@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">拒否</string>
     <string name="numi_phone_decline_call">通話を断る</string>
     <string name="numi_phone_unknown_caller">不明な発信者</string>
-    <string name="numi_phone_is_calling">から着信中…</string>
-    <string name="numi_phone_dialing">発信中…</string>
+    <string name="numi_phone_is_calling">から着信中</string>
+    <string name="numi_phone_dialing">発信中</string>
     <string name="numi_phone_call_ended">通話終了</string>
     <string name="numi_phone_call_ending">通話終了</string>
     <string name="numi_phone_ongoing_call">通話中</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
     <string name="numi_phone_export_call_history">通話履歴をエクスポート</string>
     <string name="numi_phone_import_call_history">通話履歴をインポート</string>
-    <string name="numi_phone_call_is_being_connected">接続中です…</string>
+    <string name="numi_phone_call_is_being_connected">接続中です</string>
     <string name="numi_phone_call_notification_channel">通話ステータス</string>
     <string name="numi_phone_call_notification_channel_high_priority">通話ステータス (高優先度)</string>
     <string name="numi_phone_calling_accounts">通話用アカウント</string>

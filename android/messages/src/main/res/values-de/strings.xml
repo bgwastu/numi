@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Schreibe eine Nachricht …</string>
+    <string name="type_a_message">Schreibe eine Nachricht </string>
     <string name="message_not_sent_short">Nachricht nicht gesendet</string>
     <string name="message_not_sent_touch_retry">Nachricht nicht gesendet. Berühren, um es erneut zu versuchen.</string>
     <string name="message_sending_error">Deine Nachricht an %s wurde nicht gesendet</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Neue Unterhaltung beginnen</string>
     <string name="reply">Antworten</string>
     <string name="show_character_counter">Zeichenzähler beim Schreiben von Nachrichten anzeigen</string>
-    <string name="loading_messages">Nachrichten werden geladen …</string>
+    <string name="loading_messages">Nachrichten werden geladen </string>
     <string name="no_reply_support">Der Absender unterstützt keine Antworten</string>
     <string name="draft">Entwurf</string>
-    <string name="sending">Wird gesendet …</string>
+    <string name="sending">Wird gesendet </string>
     <string name="pin_conversation">Oben anheften</string>
     <string name="unpin_conversation">Lösen</string>
     <string name="forward_message">Weiterleiten</string>
@@ -24,7 +24,7 @@
         <item quantity="other">und %d anderen</item>
     </plurals>
     <string name="new_conversation">Neue Unterhaltung</string>
-    <string name="add_contact_or_number">Kontakt oder Nummer hinzufügen …</string>
+    <string name="add_contact_or_number">Kontakt oder Nummer hinzufügen </string>
     <string name="suggestions">Vorschläge</string>
     <string name="members">Mitglieder</string>
     <string name="conversation_name">Unterhaltungsname</string>

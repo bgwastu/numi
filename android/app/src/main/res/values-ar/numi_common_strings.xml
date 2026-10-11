@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">تحذير: بعض المشغلات قد لا تدير تخصيص أيقونة التطبيق بشكل صحيح. إذا اختفت الأيقونة، حاول تشغيل التطبيق عبر Google Play أو أداة، إن أمكن. بعد التشغيل، استعادة لون الأيقونة الافتراضي الأخضر #106D1F. في الحالات القصوى، قد يكون إعادة تثبيت التطبيق ضروريًا.</string>
+    <string name="app_on_sd_card">يبدو أن التطبيق مثبت على بطاقة الذاكرة (SD) ، مما يجعل تطبيقات (الويدجت) غير متاحة. ولن تراها حتى على قائمة (الويدجت) المتاحة. إنها أحد قيود النظام ، لذلك إذا كنت تريد استخدام (تطبيقات الويدجت) ، فيجب عليك نقل التطبيق مرة أخرى إلى وحدة التخزين الداخلية.</string>
+    <string name="cancel">ألغِ</string>
+    <string name="contributors">المساهمون</string>
+    <string name="contributors_label">"\n            تحتوي هذه القائمة على كل من ساعد بشكل ملحوظ في أي تطبيق ضمن مجموعة Fossify، وليس هذا التطبيق فقط. تتم الترجمات بواسطة متطوعين،\n            أخبرنا إذا كنت تريد المساعدة أيضًا. دليل الترجمة موجود على &lt;a href=\"https://github.com/FossifyOrg/General-Discussion#contributing-translations\"&gt;هذا الموقع&lt;/a&gt;، أو تواصل معنا على &lt;a href=\"mailto:hello@fossify.org\"&gt;hello@fossify.org&lt;/a&gt; إذا كانت لديك أي أسئلة.\n            شكرًا لجميع المساهمين والداعمين الآخرين!\n        "</string>
+    <string name="copy_to">نسخ إلى</string>
+    <string name="copying">جارٍ النسخ </string>
+    <string name="edit_with">حرّر باستخدام</string>
+    <string name="exporting">جارٍ التصدير</string>
+    <string name="faq_6_text_commons">تحدث هذه المشكلة عندما لا يدعم المطلق الخاص بك تخصيص الأيقونات بشكل كامل. حاول تشغيل التطبيق عبر Google Play أو أداة، إذا كانت متاحة. بعد التشغيل، استعِد لون الأيقونة الخضراء الافتراضي #106D1F. في الحالات القصوى، قد يكون إعادة تثبيت التطبيق ضروريًا.</string>
+    <string name="faq_9_text_commons">هناك طرق متعددة للقيام بذلك. الأول هو بدء وضع التحديد عن طريق الضغط لفترة طويلة على عنصر واحد ، ثم النقر باختصار على العناصر الأخرى لتحديدها. الطريقة الثانية مشابهة لاختيار العناصر على أجهزة الكمبيوتر باستخدام الماوس ، فقط ابدأ وضع التحديد بالضغط مطولاً على عنصر واحد ، ثم مع استمرار إصبعك في السحب لأسفل عبر العناصر الأخرى للاختيار. الطريقة الثالثة لاختيار عدة عناصر هي الضغط لفترة طويلة على عنصر واحد ، ثم الضغط لفترة طويلة على عنصر آخر ويتم تحديد كل شيء بينهما. إذا كنت ترغب في تحديد جميع العناصر ، فما عليك سوى الضغط لفترة طويلة على عنصر واحد ، ثم النقر فوق عداد العناصر المحدد في الزاوية اليسرى العليا. سيؤدي ذلك إلى تحديد أو إلغاء تحديد كل شيء.</string>
+    <string name="fingerprint_setup_successfully">تم إعداد الحماية بنجاح. يرجى إعادة تثبيت التطبيق في حالة وجود مشاكل في إعادة تعيينه.</string>
+    <string name="importing">جارٍ الإستيراد</string>
+    <string name="loading">تحميل</string>
+    <string name="move_to">نقل إلى</string>
+    <string name="moving">جارٍ النقل </string>
+    <string name="open_with">افتح باستخدام</string>
+    <string name="pro_app_refund">لا تنسى أنه إذا قمت بإلغاء تثبيت أي تطبيق مدفوع في غضون ساعتين ، فسيتم إسترداد أموالك تلقائياً. إذا كنت تريد إسترداد الأموال في أي وقت لاحق ، فأتصل بنا على hello@fossify.org وستحصل عليه. هذا يجعل من السهل تجربته :)</string>
+    <string name="protection_setup_successfully">تم إعداد كلمة المرور بنجاح. يرجى إعادة تثبيت التطبيق في حاله نسيانه.</string>
+    <string name="purchase_thank_you">
+            يُرجى شراء &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; لاستخدام هذه الميزة ودعم التطوير. شكراً لك!
+        </string>
+    <string name="request_the_required_permissions">طلب الأذونات المطلوبة</string>
+    <string name="save_as">احفظ كـ</string>
+    <string name="saving">جارٍ الحفظ</string>
+    <string name="scanning">يفحص</string>
+    <string name="select_font_file">حدّد ملف الخط</string>
+    <string name="set_as">عيّن كـ</string>
+    <string name="share_via">مشاركة عبر</string>
+    <string name="sort_by">فرز حسب</string>
+    <string name="translation_welsh">الويلزية</string>
+    <string name="updating">تحديث</string>
+</resources>

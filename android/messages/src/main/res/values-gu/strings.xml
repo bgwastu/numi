@@ -4,14 +4,14 @@
     <string name="message_sending_error">\'%s\' ને તમારું સંદેશ નથી મોકલાયું</string>
     <string name="add_person">માણસ જોળો</string>
     <string name="reply">જવાબ આપો</string>
-    <string name="loading_messages">સંદેશો લોડ થઈ રહ્યા છે…</string>
+    <string name="loading_messages">સંદેશો લોડ થઈ રહ્યા છે</string>
     <string name="unpin_conversation">પિન માંથી કાઢો</string>
     <string name="forward_message">આ બિજાને મોકલો</string>
-    <string name="type_a_message">સંદેશ લખો…</string>
+    <string name="type_a_message">સંદેશ લખો</string>
     <string name="message_not_sent_touch_retry">ના મોકલાયું. પાછું પ્રયાસ કરવા માટે અહીં દબાવો.</string>
     <string name="start_conversation">નવી વાત ચાલુ કરો</string>
     <string name="pin_conversation">એકદમ ઉપર પિન કરો</string>
-    <string name="sending">મોકલાય છે…</string>
+    <string name="sending">મોકલાય છે</string>
     <string name="send_now">હમણાં મોકલો</string>
     <string name="new_message">નવો સંદેશ</string>
     <string name="new_conversation">નવી વાત</string>
@@ -36,7 +36,7 @@
         <item quantity="one">અને હજુ %d</item>
         <item quantity="other">અને હજુ %d</item>
     </plurals>
-    <string name="add_contact_or_number">સંપર્ક અથવા નંબર ઉમેરો…</string>
+    <string name="add_contact_or_number">સંપર્ક અથવા નંબર ઉમેરો</string>
     <string name="suggestions">સુઝાવ</string>
     <string name="members">સદસ્યો</string>
     <string name="conversation_details">વાતચીતનું વિવરણ</string>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Upozornění: Některé launchery nemusejí správně zvládnout přizpůsobení ikon aplikací. Pokud ikona zmizí, zkuste aplikaci spustit přes Google Play nebo widget, pokud je dostupný. Po spuštění obnovte výchozí zelenou barvu ikony #106D1F. V extrémních případech může být nutné aplikaci znovu nainstalovat.</string>
+    <string name="app_on_sd_card">Zdá se, že máte aplikaci nainstalovanou na SD kartě, widgety proto nebudou dostupné. Neuvidíte je ani v seznamu dostupných widgetů. Jedná se o systémové omezení. Proto, pokud chcete widgety používat, musíte aplikaci přesunout zpět do interního úložiště.</string>
+    <string name="cancel">Zrušit</string>
+    <string name="contributors">Přispěvatelé</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Tento seznam obsahuje všechny, kteří významněji pomohli u jakékoli aplikace ze sady Fossify, nejen u této. Překlady jsou spravovány dobrovolníky,\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020dejte nám vědět, pokud chcete také přispět. Návod k překladu se nachází na &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;tomto webu&lt;/a&gt;. Pokud máte nějaké dotazy, můžete nás také kontaktovat na adrese &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt;.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Děkujeme všem přispěvatelům a dalším podporovatelům!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">Kopírovat do</string>
+    <string name="copying">Kopírování</string>
+    <string name="edit_with">Upravit v</string>
+    <string name="exporting">Exportování</string>
+    <string name="faq_6_text_commons">Tento problém nastane, když váš launcher plně nepodporuje přizpůsobení ikony. Zkuste spustit aplikaci skrze Google Play nebo widget, pokud je dostupný. Po spuštění obnovte výchozí zelenou barvu ikony #106D1F. V extrémních případech může být potřeba aplikaci přeinstalovat.</string>
+    <string name="faq_9_text_commons">Existuje několik způsobů, jak toho dosáhnout. První spouští režim výběru dlouhým stisknutím jedné položky a následným krátkým kliknutím na ostatní, abyste je vybrali. Druhý způsob je podobný výběru položek na PC pomocí myši, stačí spustit režim výběru dlouhým stisknutím jedné položky a potom ji prstem stále dolů přetahovat přes další položky pro výběr. Třetím způsobem výběru více položek je dlouhé stisknutí jedné položky, pak dlouhé stisknutí další a vybere se vše mezi nimi. Pokud chcete vybrat všechny položky, stačí dlouze stisknout jednu položku a poté kliknout na počítadlo vybraných položek v levém horním rohu. Tím se vybere nebo zruší výběr všeho.</string>
+    <string name="fingerprint_setup_successfully">Ochrana byla úspěšně nastavena. V případě problémů s jejím resetováním, prosím, přeinstalujte aplikaci.</string>
+    <string name="importing">Importování</string>
+    <string name="loading">Načítání</string>
+    <string name="move_to">Přesunout do</string>
+    <string name="moving">Přesouvání</string>
+    <string name="open_with">Otevřít pomocí</string>
+    <string name="pro_app_refund">Nezapomeňte, že pokud odinstalujete kteroukoliv placenou aplikaci do 2 hodin, budou vám automaticky vráceny peníze. Pokud budete chtít vrátit platbu kdykoliv později, kontaktujte nás prosím na hello@fossify.org . Tímto vám nic nebrání aplikace plně ozkoušet :)</string>
+    <string name="protection_setup_successfully">Heslo bylo úspěšně nastaveno. Pokud jej zapomenete, přeinstalujte prosím aplikaci.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Pro použití této funkce si prosíme zakupte &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Poděkování Fossify&lt;/a&gt; a podpořte vývoj. Děkujeme!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Vyžádat potřebná oprávnění</string>
+    <string name="save_as">Uložit jako</string>
+    <string name="saving">Ukládání</string>
+    <string name="scanning">Skenování</string>
+    <string name="select_font_file">Vybrat soubor písma</string>
+    <string name="set_as">Nastavit jako</string>
+    <string name="share_via">Sdílet pomocí</string>
+    <string name="sort_by">Seřadit podle</string>
+    <string name="translation_welsh">Velština</string>
+    <string name="updating">Upravuje se</string>
+</resources>

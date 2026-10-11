@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Caution: Certain launchers may not handle app icon customisation correctly. If the icon disappears, attempt launching the app through Google Play or a widget, if accessible. After launching, restore the default green icon colour #106D1F. In extreme cases, reinstalling the app may be necessary.</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit_with">Edit with</string>
+    <string name="open_with">Open with</string>
+    <string name="pro_app_refund">Don\'t forget that if you uninstall any paid app within 2 hours, you will automatically be refunded. If you want a refund any time later, just contact us at hello@fossify.org and you will get it. That makes it easy to try it out :)</string>
+    <string name="request_the_required_permissions">Request the required permissions</string>
+    <string name="save_as">Save as</string>
+    <string name="scanning">Scanning</string>
+    <string name="set_as">Set as</string>
+    <string name="updating">Updating</string>
+</resources>

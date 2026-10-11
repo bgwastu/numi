@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Tajpu mesaĝon…</string>
+    <string name="type_a_message">Tajpu mesaĝon</string>
     <string name="draft">Malneto</string>
-    <string name="sending">Sendante…</string>
+    <string name="sending">Sendante</string>
     <string name="pin_conversation">Alpingli supren</string>
     <string name="unpin_conversation">Depingli</string>
     <string name="suggestions">Sugestoj</string>
@@ -32,7 +32,7 @@
     <string name="attachment">Kunsendaĵo</string>
     <string name="no_conversations_found">Neniu konservita konversacio estis trovita</string>
     <string name="start_conversation">Komenci konversacion</string>
-    <string name="loading_messages">Ŝargado de mesaĝoj…</string>
+    <string name="loading_messages">Ŝargado de mesaĝoj</string>
     <string name="forward_message">Plusendi</string>
     <string name="compress_error">Ne eblas densigi la bildon al la elektita grandeco</string>
     <string name="new_conversation">Nova konversacio</string>
@@ -110,7 +110,7 @@
     <string name="keywords">Ŝlosilvortoj</string>
     <string name="duplicate_item_warning">Duobligita elemento ne estis inkluzivita</string>
     <string name="show_character_counter">Montri nombron de karakteroj dum skribado de mesaĝoj</string>
-    <string name="add_contact_or_number">Aldoni kontakton aŭ telefonnumeron…</string>
+    <string name="add_contact_or_number">Aldoni kontakton aŭ telefonnumeron</string>
     <string name="archive_emptied_successfully">Sukcese malplenigis la arkivon</string>
     <string name="enable_custom_notifications">Ŝalti laŭmendajn sciigojn</string>
     <string name="empty_archive_confirmation">Ĉu vi certas, ke vi volas malplenigi la arkivon? Ĉiuj enarkivitaj konversacioj estos perditaj.</string>

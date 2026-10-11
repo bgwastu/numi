@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Rabhadh: Ní fhéadfaidh lainseálaithe áirithe saincheaptha deilbhín feidhmchláir a láimhseáil i gceart. Má imíonn an deilbhín, déan iarracht an aip a sheoladh trí Google Play nó giuirléid, más inrochtana. Tar éis seoladh, athchóirigh an #106D1F réamhshocraithe dath deilbhín glas. I gcásanna tromchúiseacha, d\'fhéadfadh sé go mbeadh gá leis an aip a athshuiteáil.</string>
+    <string name="app_on_sd_card">Is cosúil go bhfuil an aip suiteáilte ar chárta SD, rud a fhágann nach bhfuil giuirléidí an fheidhmchláir ar fáil. Ní fheicfidh tú fiú iad ar liosta na ngiuirléidí atá ar fáil. Is teorannú córais é, mar sin más mian leat na giuirléidí a úsáid, caithfidh tú an aip a bhogadh ar ais ar an stóráil inmheánach.</string>
+    <string name="cancel">Cuir ar ceal</string>
+    <string name="contributors">Rannpháirtithe</string>
+    <string name="contributors_label">
+            Tá gach duine ar an liosta seo a chabhraigh go suntasach le haon aip i sraith Fossify, ní hamháin leis an gceann seo. Is oibrithe deonacha a dhéanann an obair aistriúcháin;
+            cuir in iúl dúinn má tá fonn ort cabhrú freisin. Tá an treoir aistriúcháin le fáil ar &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;an suíomh gréasáin seo&lt;/a&gt;, nó is féidir leat teagmháil a dhéanamh linn ag &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; má tá ceisteanna ar bith agat.
+            Buíochas leis na rannpháirtithe agus leis na daoine eile ar fad a thug tacaíocht dúinn!
+        </string>
+    <string name="copy_to">Cóipeáil go</string>
+    <string name="copying">Á chóipeáil</string>
+    <string name="edit_with">Cuir in eagar le</string>
+    <string name="exporting">Á easpórtáil</string>
+    <string name="faq_6_text_commons">Tagann an cheist seo chun cinn nuair nach dtacaíonn do thosaitheoir go hiomlán le saincheaptha deilbhíní. Déan iarracht an aip a sheoladh trí Google Play nó giuirléid, más inrochtana. Tar éis seoladh, athchóirigh an #106D1F réamhshocraithe dath deilbhín glas. I gcásanna tromchúiseacha, d\'fhéadfadh sé go mbeadh gá leis an aip a athshuiteáil.</string>
+    <string name="faq_9_text_commons">Tá bealaí éagsúla ann chun é sin a dhéanamh. Tá an chéad cheann ag tosú ar an modh roghnúcháin trí mhír amháin a bhrú le fada, ansin cliceáil gearr ar dhaoine eile chun iad a roghnú. Tá an dara bealach cosúil le míreanna a roghnú ar ríomhairí pearsanta le luch, ach tús a chur leis an modh roghnúcháin trí mhír amháin a bhrú le fada, ansin le do mhéar fós síos tarraing é thar mhíreanna eile le roghnú. Is é an tríú bealach chun míreanna iolracha a roghnú ná mír amháin a bhrú le fada, ansin brú fada ar cheann eile agus roghnaítear gach rud idir eatarthu. Más mian leat gach mír a roghnú, brúigh mír amháin le fada, ansin cliceáil ar an gcuntar míre roghnaithe ag an gcúinne ag barr na láimhe clé. Roghnóidh sé sin gach rud nó díroghnaigh é.</string>
+    <string name="fingerprint_setup_successfully">D\'éirigh leis an socrú cosanta. Athshuiteáil an aip i gcás fadhbanna lena athshocrú.</string>
+    <string name="importing">Á iompórtáil</string>
+    <string name="loading">Á lódáil</string>
+    <string name="move_to">Bog go</string>
+    <string name="moving">Ag bogadh</string>
+    <string name="open_with">Oscail le</string>
+    <string name="pro_app_refund">Ná déan dearmad go n-aisíocfar thú go huathoibríoch má dhíshuiteálann tú aon fheidhmchlár íoctha laistigh de 2 uair an chloig. Más mian leat aisíocaíocht ag am ar bith ina dhiaidh sin, déan teagmháil linn ag hello@fossify.org agus gheobhaidh tú é. Fágann sin go bhfuil sé éasca triail a bhaint as :)</string>
+    <string name="protection_setup_successfully">D\'éirigh le socrú pasfhocail. Athshuiteáil an aip le do thoil ar fhaitíos go ndéanfá dearmad air.</string>
+    <string name="purchase_thank_you">
+            Ceannaigh &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; chun an ghné seo a úsáid agus tacú leis an bhforbairt. Go raibh maith agat!
+            </string>
+    <string name="request_the_required_permissions">Iarr na ceadanna riachtanacha</string>
+    <string name="save_as">Sábháil mar</string>
+    <string name="saving">Ag sábháil</string>
+    <string name="scanning">Á scanadh</string>
+    <string name="select_font_file">Roghnaigh comhad cló</string>
+    <string name="set_as">Socraigh mar</string>
+    <string name="share_via">Comhroinn trí</string>
+    <string name="sort_by">Sórtáil de réir</string>
+    <string name="translation_welsh">Breatnais</string>
+    <string name="updating">Á nuashonrú</string>
+</resources>

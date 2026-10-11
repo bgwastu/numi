@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_on_sd_card">Atrodo, kad esate įdiegę programėlę SD kortelėje. Tai padaro programėlės valdiklius neprieinamus. Jūs net jų nematysite prieinamų valdiklių sąraše. Tai yra sisteminis apribojimas, todėl, jei norite naudotis valdikliais, turite perkelti programėlę atgal į vidinę atmintį.</string>
+    <string name="cancel">Atšaukti</string>
+    <string name="contributors">Talkininkai</string>
+    <string name="copy_to">Kopijuoti į</string>
+    <string name="copying">Kopijuojama</string>
+    <string name="edit_with">Taisyti naudojant</string>
+    <string name="exporting">Eksportuojama</string>
+    <string name="faq_9_text_commons">Yra keli būdai, kaip galima tą padaryti. Pirmas būdas, tai įjungti žymėjimo veikseną, paspaudus ir ilgai palaikius ant vieno elemento, o tuomet trumpai paspaudžiant ant kitų, norimų pažymėti, elementų. Antras būdas yra panašus į tą, kuris naudojamas kompiuteriuose žymint elementus pele. Tiesiog, įjunkite žymėjimo veikseną paspaudę ir ilgai palaikę ant vieno elemento, o tuomet neatleisdami piršto, tempkite jį žemyn per kitus elementus, kad juos pažymėtumėte. Trečias būdas, kaip pažymėti kelis elementus, yra paspausti ir ilgai palaikyti ant vieno elemento, tuomet paspausti ir ilgai palaikyti ant kito elemento, ir viskas, kas yra tarp šių dviejų elementų, bus pažymėta. Jei norite pažymėti visus elementus, paspauskite ir ilgai palaikykite ant vieno elemento, o tuomet viršutiniame kairiajame kampe spustelėkite ant pažymėtų elementų skaitiklio. Tai viską pažymės arba nuims žymėjimą nuo visų elementų.</string>
+    <string name="fingerprint_setup_successfully">Apsauga sėkmingai nustatyta. Jei kils problemų su apsaugos atstatymu, įdiekite programėlę iš naujo.</string>
+    <string name="importing">Importuojama</string>
+    <string name="move_to">Perkelti į</string>
+    <string name="moving">Perkeliama</string>
+    <string name="open_with">Atverti naudojant</string>
+    <string name="pro_app_refund">Nepamirškite, jog jeigu per 2 valandas pašalinsite bet kurią mokamą programėlę, jums automatiškai bus grąžinti pinigai. Jei norėsite susigrąžinti pinigus vėliau, susisiekite su mumis el. paštu hello@fossify.org ir juos atgausite. Tokiu būdu galite lengvai išbandyti programėlę :)</string>
+    <string name="protection_setup_successfully">Slaptažodis sėkmingai nustatytas. Jeigu jį pamiršite, įdiekite programėlę iš naujo.</string>
+    <string name="request_the_required_permissions">Prašyti reikalingų leidimų</string>
+    <string name="save_as">Įrašyti kaip</string>
+    <string name="saving">Įrašoma</string>
+    <string name="set_as">Nustatyti kaip</string>
+    <string name="share_via">Bendrinti per</string>
+    <string name="sort_by">Rikiuoti pagal</string>
+    <string name="translation_welsh">Valų</string>
+    <string name="updating">Atnaujinama</string>
+</resources>

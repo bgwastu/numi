@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_launcher_name">Numi</string>
-    <string name="type_a_message">Aru izen…</string>
+    <string name="type_a_message">Aru izen</string>
     <string name="add_person">Rnu walbɛaḍ</string>
     <string name="attachment">Amedday</string>
     <string name="reply">Tiririt</string>
@@ -19,9 +19,9 @@
     <string name="no_conversations_found">Ur d-ufin ara idiwenniten yettwaḥerzen</string>
     <string name="start_conversation">Bdu adiwenni</string>
     <string name="show_character_counter">Sken-d amṣiden n yisekkilen deg tira n yiznan</string>
-    <string name="loading_messages">Asali n yiznan…</string>
+    <string name="loading_messages">Asali n yiznan</string>
     <string name="no_reply_support">Amazan ur isefrak ara tiririyin</string>
-    <string name="sending">Tuzna…</string>
+    <string name="sending">Tuzna</string>
     <string name="pin_conversation">Senṭeḍ ɣer tqacuct</string>
     <string name="unpin_conversation">Senser</string>
     <string name="forward_message">Ɣer zdat</string>
@@ -31,7 +31,7 @@
         <item quantity="one">akk d %d nnayeḍ</item>
         <item quantity="other">akk d %d nniḍen</item>
     </plurals>
-    <string name="add_contact_or_number">Rnu anermis neɣ uṭṭun…</string>
+    <string name="add_contact_or_number">Rnu anermis neɣ uṭṭun</string>
     <string name="schedule_send">Asɣiwes n iceyyeɛ</string>
     <string name="cancel_schedule_send">Sefsex asɣiwes n uceyyeɛ</string>
     <string name="must_pick_time_in_the_future">Yessefk ad tferneḍ akud deg yimal</string>

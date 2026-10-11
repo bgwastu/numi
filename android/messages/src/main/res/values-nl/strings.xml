@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Typ een bericht…</string>
+    <string name="type_a_message">Typ een bericht</string>
     <string name="message_not_sent_short">Bericht niet verzonden</string>
     <string name="message_not_sent_touch_retry">Niet verzonden. Probeer het nogmaals.</string>
     <string name="message_sending_error">Bericht naar \'%s\' is niet verzonden</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Een gesprek starten</string>
     <string name="reply">Beantwoorden</string>
     <string name="show_character_counter">Teller voor het aantal tekens weergeven</string>
-    <string name="loading_messages">Berichten laden…</string>
+    <string name="loading_messages">Berichten laden</string>
     <string name="no_reply_support">Afzender ondersteunt geen antwoorden</string>
     <string name="draft">Concept</string>
-    <string name="sending">Versturen…</string>
+    <string name="sending">Versturen</string>
     <string name="pin_conversation">Bovenaan vastzetten</string>
     <string name="unpin_conversation">Losmaken</string>
     <string name="forward_message">Doorsturen</string>
@@ -24,7 +24,7 @@
         <item quantity="other">en %d anderen</item>
     </plurals>
     <string name="new_conversation">Nieuw gesprek</string>
-    <string name="add_contact_or_number">Contact of nummer toevoegen…</string>
+    <string name="add_contact_or_number">Contact of nummer toevoegen</string>
     <string name="suggestions">Suggesties</string>
     <string name="members">Gespreksleden</string>
     <string name="conversation_name">Gespreksnaam</string>

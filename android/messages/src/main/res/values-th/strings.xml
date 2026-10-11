@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_launcher_name">Numi</string>
-    <string name="type_a_message">พิมพ์ข้อความ…</string>
+    <string name="type_a_message">พิมพ์ข้อความ</string>
     <string name="message_not_sent_short">ส่งข้อความไม่สำเร็จ</string>
     <string name="message_not_sent_touch_retry">ยังไม่ได้ส่ง แตะเพื่อลองใหม่</string>
     <string name="message_sending_error">ข้อความของคุณถึง \'%s\' ยังไม่ได้ถูกส่ง</string>
@@ -11,10 +11,10 @@
     <string name="start_conversation">เริ่มการสนทนา</string>
     <string name="reply">ตอบกลับ</string>
     <string name="show_character_counter">แสดงตัวนับจำนวนตัวอักษรขณะพิมพ์ข้อความ</string>
-    <string name="loading_messages">กำลังโหลดข้อความ…</string>
+    <string name="loading_messages">กำลังโหลดข้อความ</string>
     <string name="no_reply_support">ผู้ส่งไม่รองรับการตอบกลับ</string>
     <string name="draft">ฉบับร่าง</string>
-    <string name="sending">กำลังส่ง…</string>
+    <string name="sending">กำลังส่ง</string>
     <string name="pin_conversation">ปักหมุดไว้ด้านบน</string>
     <string name="unpin_conversation">เลิกปักหมุด</string>
     <string name="forward_message">ส่งต่อ</string>
@@ -24,7 +24,7 @@
         <item quantity="other">และอีก %d คน</item>
     </plurals>
     <string name="new_conversation">การสนทนาใหม่</string>
-    <string name="add_contact_or_number">เพิ่มผู้ติดต่อหรือหมายเลข…</string>
+    <string name="add_contact_or_number">เพิ่มผู้ติดต่อหรือหมายเลข</string>
     <string name="suggestions">คำแนะนำ</string>
     <string name="members">สมาชิก</string>
     <string name="conversation_name">ชื่อการสนทนา</string>

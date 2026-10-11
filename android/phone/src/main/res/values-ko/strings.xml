@@ -17,8 +17,8 @@
     <string name="numi_phone_decline">거부</string>
     <string name="numi_phone_decline_call">전화 거부</string>
     <string name="numi_phone_unknown_caller">발신자 정보 없음</string>
-    <string name="numi_phone_dialing">전화 걸기…</string>
-    <string name="numi_phone_is_calling">전화 중…</string>
+    <string name="numi_phone_dialing">전화 걸기</string>
+    <string name="numi_phone_is_calling">전화 중</string>
     <string name="numi_phone_select_sim">이 통화에 사용할 SIM 선택</string>
     <string name="numi_phone_always_use_this_sim">이 번호에는 항상 이 SIM 사용</string>
     <string name="numi_phone_unset_default_sim">기본 SIM 설정 해제</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_import_call_history">통화 기록 가져오기</string>
     <string name="numi_phone_faq_1_text">이러한 문제는 다양한 기기 및 시스템 별 이유가 있을 수 있어 일반적으로 말하기 어렵습니다. 기기 설정을 살펴보고 백그라운드에서 앱이 팝업되도록 허용되어 있는지, 다른 앱 위에 표시되도록 허용되어 있는지 확인해야 합니다.</string>
     <string name="numi_phone_asterisk">별표</string>
-    <string name="numi_phone_call_is_being_connected">통화 연결 중…</string>
+    <string name="numi_phone_call_is_being_connected">통화 연결 중</string>
     <string name="numi_phone_call_notification_channel">통화 상태</string>
     <string name="numi_phone_call_notification_channel_high_priority">통화 상태(높은 우선순위)</string>
     <string name="numi_phone_calling_accounts">통화 계정</string>

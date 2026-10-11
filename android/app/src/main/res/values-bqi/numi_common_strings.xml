@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="cancel">رڌ</string>
+    <string name="edit_with">آلشت وا</string>
+    <string name="open_with">گۊشیڌن وا</string>
+    <string name="request_the_required_permissions">درخاست سی موجوزا خاستنی</string>
+    <string name="save_as">زفت کردن و عونوان</string>
+    <string name="scanning">هونی اسکن ابۊ</string>
+    <string name="set_as">سامووݩ و عونوان</string>
+    <string name="updating">هونی ورۊ رسۊوی ابۊ</string>
+</resources>

@@ -28,8 +28,8 @@
     <string name="numi_phone_decline">Afvis</string>
     <string name="numi_phone_decline_call">Afvis opkald</string>
     <string name="numi_phone_unknown_caller">Ukendt nummer</string>
-    <string name="numi_phone_is_calling">Ringer…</string>
-    <string name="numi_phone_dialing">Ringer op…</string>
+    <string name="numi_phone_is_calling">Ringer</string>
+    <string name="numi_phone_dialing">Ringer op</string>
     <string name="numi_phone_call_ended">Opkald afsluttet</string>
     <string name="numi_phone_call_ending">Opkald afsluttes</string>
     <string name="numi_phone_ongoing_call">Igangværende opkald</string>
@@ -76,7 +76,7 @@
     <!-- FAQ -->
 <string name="numi_phone_faq_1_title">Jeg hører indgående opkald, men skærmen tænder ikke. Hvad kan jeg gøre?</string>
     <string name="numi_phone_faq_1_text">Sådanne problemer kan have mange enheds- og systemspecifikke årsager, så det er svært at sige præcist. Du bør tjekke din enheds indstillinger og sørge for, at appen har tilladelse til at vises i baggrunden og over andre apps.</string>
-    <string name="numi_phone_call_is_being_connected">Dit opkald bliver tilsluttet…</string>
+    <string name="numi_phone_call_is_being_connected">Dit opkald bliver tilsluttet</string>
     <string name="numi_phone_faq_3_title">Hvorfor mangler nogle af mine kontakter i appen?</string>
     <string name="numi_phone_faq_2_title">Hvorfor fungerer nødopkald ikke korrekt?</string>
     <string name="numi_phone_faq_3_text">Fossify Telefon viser kun kontakter med et telefonnummer. Kontakter uden telefonnummer vises ikke.</string>

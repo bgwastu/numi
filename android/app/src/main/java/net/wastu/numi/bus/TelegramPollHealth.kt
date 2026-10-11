@@ -30,16 +30,16 @@ object TelegramPollHealth {
         return when {
             lastSuccess == 0L -> "Telegram: connecting"
             lastError.isNullOrBlank() && now - lastSuccess < HEALTHY_WINDOW_MS ->
-                "Telegram: polling · checked ${RecentActivity.relativeTime(lastSuccess)}"
+                "Telegram: polling, checked ${RecentActivity.relativeTime(lastSuccess)}"
             !lastError.isNullOrBlank() -> buildString {
-                append("Telegram: issue · ")
+                append("Telegram: issue, ")
                 append(lastError)
                 if (lastSuccess > 0L) {
-                    append(" · last connected ")
+                    append(", last connected ")
                     append(RecentActivity.relativeTime(lastSuccess))
                 }
             }
-            else -> "Telegram: reconnecting · last connected ${RecentActivity.relativeTime(lastSuccess)}"
+            else -> "Telegram: reconnecting, last connected ${RecentActivity.relativeTime(lastSuccess)}"
         }
     }
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">주의: 특정 런처는 사용자 지정 앱 아이콘을 올바르게 처리하지 못할 수 있습니다. 만약 아이콘이 사라지면 Google Play 또는 위젯을 통해 앱을 실행해 보세요(액세스할 수 있는 경우). 앱 실행 후 기본 녹색 아이콘 색상인 #106D1F로 복원하세요. 극단적인 경우 앱을 다시 설치해야 할 수도 있습니다.</string>
+    <string name="app_on_sd_card">시스템 제한으로 SD카드에 설치한 앱은 위젯을 사용할 수 없습니다. 위젯을 사용하시려면 내장 메모리에 앱을 옮겨 주시기 바랍니다.</string>
+    <string name="cancel">취소</string>
+    <string name="contributors">기여자</string>
+    <string name="contributors_label">이 목록에는 이 앱뿐 아니라 Fossify 제품군의 어느 앱이든 눈에 띄게 도움을 준 모든 사람이 포함됩니다. 번역은 자원봉사자들이 맡고 있습니다.\n함께 돕고 싶다면 알려 주세요. 번역 방법은 &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;이 웹사이트&lt;/a&gt;에서 확인할 수 있으며, 궁금한 점이 있으면 &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt;로 문의해 주세요.\n모든 기여자와 후원자 여러분께 감사드립니다!</string>
+    <string name="copy_to">복사하기</string>
+    <string name="copying">복사 중</string>
+    <string name="edit_with">편집 앱으로 열기</string>
+    <string name="exporting">내보내는 중</string>
+    <string name="faq_6_text_commons">런처가 앱 아이콘 사용자 지정을 완전히 지원하지 않을 때 발생하는 문제입니다. 가능하다면 Google Play 또는 위젯을 통해 앱을 실행해 보세요.\n앱을 실행한 뒤 기본 녹색 아이콘 색상인 #106D1F로 복원하세요. 그래도 해결되지 않으면 앱을 다시 설치해야 할 수도 있습니다.</string>
+    <string name="faq_9_text_commons">여러 방법이 있습니다. 첫 번째는 항목 하나를 길게 눌러 선택 모드를 시작한 뒤 다른 항목을 짧게 눌러 추가로 선택하는 방법입니다. 두 번째는 PC에서 마우스로 항목을 선택하는 것과 비슷하게, 항목 하나를 길게 누른 상태에서 손가락을 떼지 않고 다른 항목 위로 드래그해 선택하는 방법입니다. 세 번째는 항목 하나를 길게 누른 뒤 다른 항목을 다시 길게 누르면 그 사이의 모든 항목이 선택됩니다.\n모든 항목을 선택하려면 항목 하나를 길게 누른 뒤 화면 왼쪽 위의 선택된 항목 수를 누르세요. 그러면 전체 항목을 선택하거나 선택 해제할 수 있습니다.</string>
+    <string name="fingerprint_setup_successfully">보안 설정이 완료되었습니다. 재설정에 문제가 있으면 앱을 다시 설치하세요.</string>
+    <string name="importing">가져오는 중</string>
+    <string name="loading">불러오는 중</string>
+    <string name="move_to">이동하기</string>
+    <string name="moving">이동 중</string>
+    <string name="open_with">다른 앱으로 열기</string>
+    <string name="pro_app_refund">플레이스토어에서 구매한 앱은 2시간 내에 삭제하면 자동으로 환불받을 수 있다는 사실을 항상 잊지 마시기 바랍니다. 만약 이후에 환불이 필요하시다면, hello@fossify.org 으로 연락 주시면 해결해 드리겠습니다. 이제 한번 써보는 것도 나쁘지 않겠죠 :)</string>
+    <string name="protection_setup_successfully">암호 설정이 완료되었습니다. 암호를 기억하지 못하는 경우 앱을 다시 설치하시기 바랍니다.</string>
+    <string name="purchase_thank_you">이 기능을 이용하시려면 개발지원을 위해 &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; 앱을 구매해주세요. 감사합니다!</string>
+    <string name="request_the_required_permissions">필요한 권한 요청</string>
+    <string name="save_as">다른 이름으로 저장</string>
+    <string name="saving">저장 중</string>
+    <string name="scanning">스캔 중</string>
+    <string name="select_font_file">글꼴 파일 선택</string>
+    <string name="set_as">다음으로 설정</string>
+    <string name="share_via">공유 방법</string>
+    <string name="sort_by">정렬 방식</string>
+    <string name="translation_welsh">웨일스어</string>
+    <string name="updating">업데이트 중</string>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Upozornenie: V niektorých spúšťačoch môže prispôsobenie ikony spôsobiť problémy. Ak by ikona zmizla, skúste spustiť aplikáciu cez Google Play alebo widget, ak je to možné. Po spustení znovu obnovte pôvodnú zelenú farbu ikony #106D1F. V extrémnych prípadoch môže byť potrebné aplikáciu odinštalovať a znovu nainštalovať.</string>
+    <string name="app_on_sd_card">Vyzerá to tak, že máte aplikáciu nainštalovanú na SD karte, čo spôsobí nedostupnosť widgetov. Ani ich neuvidíte na zozname dostupných widgetov. Ide o systémové obmedzenie, čiže ak chcete widgety používať, musíte presunúť aplikáciu späť na internú pamäť.</string>
+    <string name="cancel">Zrušiť</string>
+    <string name="contributors">Prispievatelia</string>
+    <string name="contributors_label">
+            Tento zoznam obsahuje každého, kto citeľne pomohol ktorejkoľvek apke z celej sady Fossify, nie iba tejto apke. Preklady sú spracovávané dobrovoľníkmi,
+            dajte nám vedieť, ak chcete pomôcť tiež. Návod na prekladanie je na &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;tejto webstránke&lt;/a&gt;, alebo ak máte nejaké otázky, tak nám jednoducho napíšte na &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt;.
+            Ďakujeme všetkým prispievateľom a iným podporovateľom!
+        </string>
+    <string name="copy_to">Kopírovať do</string>
+    <string name="copying">Kopírovanie</string>
+    <string name="edit_with">Upraviť pomocou</string>
+    <string name="exporting">Exportovanie</string>
+    <string name="faq_6_text_commons">Tento problém nastane, ak váš launcher (spúšťač) nie celkom podporuje prispôsobenie ikon. Skúste otvoriť aplikáciu cez Google Play alebo miniaplikáciu (widget), ak je to možné. Po spustení obnovte predvolenú zelenú farbu ikony #106D1F. V extrémnych prípadoch môže byť potrebné aplikáciu preinštalovať.</string>
+    <string name="faq_9_text_commons">Existuje viacero spôsobov. Prvým je aktivovanie označovacieho módu dlhým podržaním jednej položky, následne viete označiť ďalšie krátkymi ťuknutiami. Druhý spôsob je podobný označovaniu položiek myšou na PC. Dlhým podržaním označte jednu položku a bez dvihnutia prsta ho potiahnite cez ďalšie položky, to ich označí. Tretím spôsobom je dlhé podržanie jednej položky, následne dlhé podržanie inej položky. Označí to všetko medzi týmito 2 položkami. Ak chcete označiť všetko, aktivujte označovací mód dlhým podržaním jednej položky, potom kliknite na počítadlo označených položiek v ľavom hornom rohu. To označí, resp. odznačí všetko.</string>
+    <string name="fingerprint_setup_successfully">Ochrana bola úspešne nastavená. Prosím preinštalujte aplikáciu v prípade problémov s jej zmenou.</string>
+    <string name="importing">Importovanie</string>
+    <string name="loading">Načítavanie</string>
+    <string name="move_to">Presunúť do</string>
+    <string name="moving">Presúvanie</string>
+    <string name="open_with">Otvoriť pomocou</string>
+    <string name="pro_app_refund">Nezabudnite, že ak odinštalujete platenú verziu do 2 hodín, peniaze vám budú automaticky vrátené. Ak ich budete chcieť späť hocikedy neskôr, len nám dajte vedieť na hello@fossify.org. To vám zabezpečí jednoduchý spôsob na ich vyskúšanie :)</string>
+    <string name="protection_setup_successfully">Heslo bolo úspešne nastavené. Ak ho zabudnete, prosím preinštalujte aplikáciu.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Prosím zakúpte si &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Jednoduché ďakujem&lt;/a&gt; na odomknutie tejto funkcie a podporu vývoja. Vďaka!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Vyžiadať potrebné oprávnenia</string>
+    <string name="save_as">Uložiť ako</string>
+    <string name="saving">Ukladanie</string>
+    <string name="scanning">Skenuje sa</string>
+    <string name="set_as">Nastaviť ako</string>
+    <string name="share_via">Zdieľať cez</string>
+    <string name="sort_by">Na zoradenie použiť</string>
+    <string name="translation_welsh">Waleština</string>
+    <string name="updating">Upravuje sa</string>
+</resources>

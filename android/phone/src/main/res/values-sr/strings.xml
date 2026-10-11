@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Одбити</string>
     <string name="numi_phone_decline_call">Одбиј позив</string>
     <string name="numi_phone_unknown_caller">Непознати позивалац</string>
-    <string name="numi_phone_is_calling">Неко зове…</string>
-    <string name="numi_phone_dialing">Бирање…</string>
+    <string name="numi_phone_is_calling">Неко зове</string>
+    <string name="numi_phone_dialing">Бирање</string>
     <string name="numi_phone_call_ended">Позив је завршен</string>
     <string name="numi_phone_call_ending">Завршетак позива</string>
     <string name="numi_phone_ongoing_call">Позив у току</string>
@@ -66,7 +66,7 @@
     <string name="numi_phone_faq_1_text">Такви проблеми могу имати много специфичних разлога за уређај и систем, што је уопштено тешко рећи. Требало би да погледате около у подешавањима уређаја и уверите се да је апликацији дозвољено да искаче када је у позадини и да дозволи приказивање преко других апликација.</string>
     <string name="numi_phone_export_call_history">Извези историју позива</string>
     <string name="numi_phone_calling_blocked_number">Број који позивате је блокиран</string>
-    <string name="numi_phone_call_is_being_connected">Ваш позив се повезије…</string>
+    <string name="numi_phone_call_is_being_connected">Ваш позив се повезије</string>
     <string name="numi_phone_call_notification_channel">Статус позива</string>
     <string name="numi_phone_call_notification_channel_high_priority">Статус позива (висок приоритет)</string>
     <string name="numi_phone_import_call_history">Увези историју позива</string>

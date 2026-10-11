@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">輸入訊息……</string>
+    <string name="type_a_message">輸入訊息</string>
     <string name="message_not_sent_short">訊息未送出</string>
     <string name="message_not_sent_touch_retry">未送出。點選以重試。</string>
     <string name="message_sending_error">給「%s」的訊息未送出</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">開始對話</string>
     <string name="reply">回覆</string>
     <string name="show_character_counter">撰寫訊息時顯示字元數統計</string>
-    <string name="loading_messages">正在載入訊息……</string>
+    <string name="loading_messages">正在載入訊息</string>
     <string name="no_reply_support">寄件者不支援回覆</string>
     <string name="draft">草稿</string>
-    <string name="sending">傳送中……</string>
+    <string name="sending">傳送中</string>
     <string name="pin_conversation">釘選至頂端</string>
     <string name="unpin_conversation">取消釘選</string>
     <string name="forward_message">轉寄</string>
@@ -23,7 +23,7 @@
         <item quantity="other">和其他 %d 位</item>
     </plurals>
     <string name="new_conversation">新對話</string>
-    <string name="add_contact_or_number">新增聯絡人或號碼……</string>
+    <string name="add_contact_or_number">新增聯絡人或號碼</string>
     <string name="suggestions">建議</string>
     <string name="members">成員</string>
     <string name="conversation_name">對話名稱</string>

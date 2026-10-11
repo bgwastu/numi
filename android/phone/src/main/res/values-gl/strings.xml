@@ -23,8 +23,8 @@
     <string name="numi_phone_decline">Rexeitar</string>
     <string name="numi_phone_decline_call">Rexeitar chamada</string>
     <string name="numi_phone_unknown_caller">Descoñecido</string>
-    <string name="numi_phone_is_calling">Está chamando…</string>
-    <string name="numi_phone_dialing">Marcando…</string>
+    <string name="numi_phone_is_calling">Está chamando</string>
+    <string name="numi_phone_dialing">Marcando</string>
     <string name="numi_phone_call_ended">Rematou a chamada</string>
     <string name="numi_phone_call_ending">Rematando chamada</string>
     <string name="numi_phone_ongoing_call">Chamada en curso</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_faq_1_text">Estes problemas poden ter moitas razóns específicas do dispositivo e do sistema, difícil dar unha resposta concreta. Debes mirar na configuración do teu dispositivo e asegurarte de que a aplicación pode aparecer cando está en segundo plano e permitir que se vexa sobre outras aplicacións.</string>
     <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
     <string name="numi_phone_app_launcher_name">Numi</string>
-    <string name="numi_phone_call_is_being_connected">Estase iniciando a chamada…</string>
+    <string name="numi_phone_call_is_being_connected">Estase iniciando a chamada</string>
     <string name="numi_phone_call_notification_channel">Estado da chamada</string>
     <string name="numi_phone_call_notification_channel_high_priority">Estado da chamada (alta prioridade)</string>
     <string name="numi_phone_calling_accounts">Contas para chamar</string>

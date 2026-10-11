@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Увядзіце паведамленне…</string>
+    <string name="type_a_message">Увядзіце паведамленне</string>
     <string name="message_not_sent_short">Паведамленне не адпраўлена</string>
     <string name="message_not_sent_touch_retry">Не адпраўлена. Краніце, каб паўтарыць спробу.</string>
     <string name="message_sending_error">Ваша паведамленне для \'%s\' не было адпраўлена</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Пачаць размову</string>
     <string name="reply">Адказаць</string>
     <string name="show_character_counter">Паказваць колькасць сімвалаў пры напісанні паведамленняў</string>
-    <string name="loading_messages">Загрузка паведамленняў…</string>
+    <string name="loading_messages">Загрузка паведамленняў</string>
     <string name="no_reply_support">Адпраўнік не падтрымлівае адказы</string>
     <string name="draft">Чарнавік</string>
-    <string name="sending">Адпраўка…</string>
+    <string name="sending">Адпраўка</string>
     <string name="pin_conversation">Замацаваць зверху</string>
     <string name="unpin_conversation">Адмацаваць</string>
     <string name="forward_message">Пераслаць</string>
@@ -25,7 +25,7 @@
         <item quantity="other">і %d іншых</item>
     </plurals>
     <string name="new_conversation">Новая размова</string>
-    <string name="add_contact_or_number">Дадаць кантакт альбо нумар…</string>
+    <string name="add_contact_or_number">Дадаць кантакт альбо нумар</string>
     <string name="suggestions">Прапановы</string>
     <string name="channel_received_sms">Атрымана паведамленне</string>
     <string name="new_message">Новае паведамленне</string>

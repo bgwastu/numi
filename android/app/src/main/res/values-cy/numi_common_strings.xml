@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_on_sd_card">Mae\'n ymddangos dy fod wedi gosod yr ap ar gerdyn SD, gan olygu nad yw teclynnau\'r ap ar gael. Ni fyddan nhw hyd yn oed ymddangos ar y rhestr o declynnau ar gael. Mae hyn yn gyfyngiad gan y system, felly os wyt eisiau defnyddio\'r teclynnau, rhaid symud yr ap i storfa fewnol dy ddyfais.</string>
+    <string name="cancel">Diddymu</string>
+    <string name="copy_to">Copïo i</string>
+    <string name="copying">Yn copïo</string>
+    <string name="edit_with">Golygu gyda</string>
+    <string name="exporting">Yn allforio</string>
+    <string name="fingerprint_setup_successfully">Gosodwyd diogelwch yn llwyddiannus. Ailosoda\'r ap os wyt yn cael problemau yn ei ailosod.</string>
+    <string name="importing">Yn mewnforio</string>
+    <string name="move_to">Symud i</string>
+    <string name="moving">Yn symud</string>
+    <string name="open_with">Agor gyda</string>
+    <string name="protection_setup_successfully">Gosodwyd cyfrinair yn llwyddiannus. Ailosoda\'r ap os wyt yn ei anghofio.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Pryna &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; i ddatgloi’r nodwedd hon a chefnogi datblygiad, os gweli’n dda. Diolch!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Gofyn am y caniatâd sydd ei angen</string>
+    <string name="save_as">Cadw fel</string>
+    <string name="saving">Yn cadw</string>
+    <string name="set_as">Gosod fel</string>
+    <string name="share_via">Rhannu gyda</string>
+    <string name="sort_by">Trefnu yn ôl</string>
+    <string name="updating">Yn diweddaru</string>
+</resources>

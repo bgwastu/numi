@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">Kirjoita viesti…</string>
+    <string name="type_a_message">Kirjoita viesti</string>
     <string name="message_not_sent_short">Viestiä ei lähetetty</string>
     <string name="message_not_sent_touch_retry">Ei lähetetty. Yritä uudelleen koskemalla.</string>
     <string name="message_sending_error">Viestiäsi henkilölle \'%s\' ei lähetetty</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">Aloita keskustelu</string>
     <string name="reply">Vastaa</string>
     <string name="show_character_counter">Näytä merkkimäärä kirjoittaessasi viestejä</string>
-    <string name="loading_messages">Ladataan viestejä…</string>
+    <string name="loading_messages">Ladataan viestejä</string>
     <string name="no_reply_support">Lähettäjä ei tue vastauksia</string>
     <string name="draft">Luonnos</string>
-    <string name="sending">Lähetetään…</string>
+    <string name="sending">Lähetetään</string>
     <string name="pin_conversation">Kiinnitä yläosaan</string>
     <string name="unpin_conversation">Poista</string>
     <string name="forward_message">Välitä</string>
@@ -24,7 +24,7 @@
         <item quantity="other">ja %d muuta</item>
     </plurals>
     <string name="new_conversation">Uusi keskustelu</string>
-    <string name="add_contact_or_number">Lisää yhteystieto tai numero…</string>
+    <string name="add_contact_or_number">Lisää yhteystieto tai numero</string>
     <string name="suggestions">Ehdotuksia</string>
     <string name="members">Jäsenet</string>
     <string name="conversation_name">Keskustelun nimi</string>

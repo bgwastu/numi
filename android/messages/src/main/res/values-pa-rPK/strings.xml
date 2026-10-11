@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="type_a_message">سنہا لکھو…</string>
+    <string name="type_a_message">سنہا لکھو</string>
     <string name="message_not_sent_short">سنہا نہیں بھیجیا</string>
     <string name="message_not_sent_touch_retry">نہیں بھیجیا۔ فیر کرن لئی چھوہوو۔</string>
     <string name="message_sending_error">«%s» نوں تہاڈے سنہا نہیں بھیجیا گیا اے</string>
@@ -10,10 +10,10 @@
     <string name="start_conversation">گل بات شروع کرو</string>
     <string name="reply">جواب دیو</string>
     <string name="show_character_counter">اکھراں دی گݨتی ویکھو</string>
-    <string name="loading_messages">سنہے لوڈ کیتے جا رہے اے…</string>
+    <string name="loading_messages">سنہے لوڈ کیتے جا رہے اے</string>
     <string name="no_reply_support">بھیجݨ والا جواب نہیں لیندے اے</string>
     <string name="draft">کھرڑا</string>
-    <string name="sending">بھیجیا جا رہا اے…</string>
+    <string name="sending">بھیجیا جا رہا اے</string>
     <string name="pin_conversation">سکھر تے لگو</string>
     <string name="unpin_conversation">لگݨ اُلٹاؤ</string>
     <string name="forward_message">اگے</string>
@@ -23,7 +23,7 @@
         <item quantity="other">تے %d ہور</item>
     </plurals>
     <string name="new_conversation">گل بات کرو</string>
-    <string name="add_contact_or_number">ویاکتی یا فون نمبر جوڑو…</string>
+    <string name="add_contact_or_number">ویاکتی یا فون نمبر جوڑو</string>
     <string name="suggestions">سُجھے</string>
     <string name="scheduled_message">نیت سنہے</string>
     <string name="schedule_message">تالکا وچ سنیہا پایو</string>

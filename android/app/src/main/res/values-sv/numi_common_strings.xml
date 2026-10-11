@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Varning! Vissa startprogram hanterar kanske inte anpassning av appikoner korrekt. Om ikonen försvinner kan du, om det är möjligt, prova att starta appen via Google Play eller en widget. När du har startat appen återställer du ikonens gröna standardfärg #106D1F. I extrema fall kan det vara nödvändigt att installera om appen.</string>
+    <string name="app_on_sd_card">Du verkar ha appen installerad på ett SD-kort, vilket gör appwidgetarna otillgängliga. Du kommer inte ens se dem på listan över tillgängliga widgets. Det är en systembegränsning, så om du vill använda widgetarna måste du flytta tillbaka appen till internminnet.</string>
+    <string name="cancel">Avbryt</string>
+    <string name="contributors">Bidragsgivare</string>
+    <string name="contributors_label">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Den här listan innehåller alla som på ett märkbart sätt har bidragit till någon Fossify-app, inte bara den här. Översättningarna hanteras av volontärer,\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020kontakta oss om du också vill hjälpa till. Översättningsguiden finns på &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;den här webbplatsen&lt;/a&gt;, kontakta oss på &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; om du har några frågor.\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Tack till alla bidragsgivare och andra supportrar!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="copy_to">Kopiera till</string>
+    <string name="copying">Kopierar</string>
+    <string name="edit_with">Redigera med</string>
+    <string name="exporting">Exporterar</string>
+    <string name="faq_6_text_commons">Det här problemet uppstår när startprogrammet inte har fullt stöd för ikonanpassning. Prova att starta appen via Google Play eller en widget, om det är möjligt. När du har startat appen återställer du ikonens gröna standardfärg #106D1F. I extrema fall kan det vara nödvändigt att installera om appen.</string>
+    <string name="faq_9_text_commons">Det finns flera sätt att göra det på. Den första är att starta valläget genom att trycka länge på ett objekt, sedan kortklicka på andra för att välja dem. Det andra sättet liknar att välja objekt på datorer med en mus, starta bara valläget genom att trycka länge på ett objekt, och sedan med fingret nedåt och dra det över andra objekt för att välja. Det tredje sättet att välja flera objekt är att länge trycka på ett objekt, sedan länge på ett annat och allt däremellan väljs. Om du vill markera alla objekt, tryck bara länge på ett objekt och klicka sedan på den valda objekträknaren i det övre vänstra hörnet. Det kommer att välja eller avmarkera allt.</string>
+    <string name="fingerprint_setup_successfully">Skyddet har ställts in. Installera om appen om du inte kan ta bort skyddet.</string>
+    <string name="importing">Importerar</string>
+    <string name="loading">Läser in</string>
+    <string name="move_to">Flytta till</string>
+    <string name="moving">Flyttar</string>
+    <string name="open_with">Öppna med</string>
+    <string name="pro_app_refund">Glöm inte att om du avinstallerar någon betalapp inom 2 timmar kommer du automatiskt att få en återbetalning. Om du vill ha en återbetalning när som helst senare, kontakta oss bara på hello@fossify.org så får du det. Det gör det enkelt att testa :)</string>
+    <string name="protection_setup_successfully">Lösenordet har ställts in. Installera om appen om du glömmer bort det.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Köp &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Thank You&lt;/a&gt; om du vill använda den här funktionen och stödja utvecklingen. Tack!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Begär de behörigheter som krävs</string>
+    <string name="save_as">Spara som</string>
+    <string name="saving">Sparar</string>
+    <string name="scanning">Skannar</string>
+    <string name="select_font_file">Välj teckensnittsfil</string>
+    <string name="set_as">Använd som</string>
+    <string name="share_via">Dela via</string>
+    <string name="sort_by">Sortera efter</string>
+    <string name="translation_welsh">Walesiska</string>
+    <string name="updating">Uppdaterar</string>
+</resources>

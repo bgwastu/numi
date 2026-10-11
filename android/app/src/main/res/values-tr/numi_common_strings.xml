@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Dikkat: Bazı başlatıcılar uygulama simgesi özelleştirmesini doğru şekilde yapamayabilir. Simge kaybolursa, uygulamayı Google Play veya erişilebiliyorsa bir widget aracılığıyla başlatmayı deneyin. Başlattıktan sonra, öntanımlı #106D1F yeşil simge rengini geri yükleyin. Aşırı durumlarda, uygulamanın yeniden kurulması gerekebilir.</string>
+    <string name="app_on_sd_card">Uygulama, uygulama widget\'larını kullanılamaz hale getiren bir SD karta kurulmuş görünüyor. Onları mevcut widget\'lar listesinde bile görmeyeceksiniz. Bu bir sistem sınırlamasıdır, bu yüzden widget\'ları kullanmak istiyorsanız, uygulamayı dahili depolama birimine geri taşımalısınız.</string>
+    <string name="cancel">İptal</string>
+    <string name="contributors">Katkıda bulunanlar</string>
+    <string name="contributors_label">
+            Bu liste, yalnızca buna değil, Fossify paketindeki herhangi bir uygulamaya belirgin şekilde yardımcı olan herkesi içerir. Çeviriler gönüllüler tarafından yapılır,
+            siz de yardım etmek isterseniz bize bildirin. Çeviri rehberi &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;bu sayfadadır&lt;/a&gt; veya herhangi bir sorunuz varsa &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; adresinden bize ulaşın.
+            Tüm katkıda bulunanlara ve diğer destekçilere teşekkürler!
+        </string>
+    <string name="copy_to">Kopyala:</string>
+    <string name="copying">Kopyalanıyor</string>
+    <string name="edit_with">Şununla düzenle</string>
+    <string name="exporting">Dışa aktarılıyor</string>
+    <string name="faq_6_text_commons">Bu sorun, başlatıcınız simge özelleştirmeyi tam olarak desteklemediğinde ortaya çıkar. Uygulamayı Google Play veya erişilebiliyorsa bir widget aracılığıyla başlatmayı deneyin. Başlattıktan sonra, öntanımlı #106D1F yeşil simge rengini geri yükleyin. Aşırı durumlarda, uygulamanın yeniden kurulması gerekebilir.</string>
+    <string name="faq_9_text_commons">Bunu yapmanın birçok yolu var. İlki, bir ögeye uzun süre basarak seçim modunu başlatmak, ardından diğerlerini seçmek için kısa tıklamaktır. İkinci yol, PC\'lerdeki ögeleri fareyle seçmeye benzer, yalnızca bir ögeye uzun basarak seçim modunu başlatın ve ardından parmağınızı aşağı doğru kaydırarak diğer ögelere sürükleyin. Birden fazla öge seçmenin üçüncü yolu, bir ögeye uzun süre basmak, ardından diğerine uzun basmaktır. Tüm ögeleri seçmek istiyorsanız, yalnızca bir ögeye uzun basın, ardından sol üst köşedeki seçili öge sayacına tıklayın. Bu, her şeyi seçecek veya seçimini kaldıracaktır.</string>
+    <string name="fingerprint_setup_successfully">Koruma kurulumu başarıyla yapıldı. Sıfırlamayla ilgili sorun olursa lütfen uygulamayı yeniden yükleyin.</string>
+    <string name="importing">İçe aktarılıyor</string>
+    <string name="loading">Yükleniyor</string>
+    <string name="move_to">Taşı:</string>
+    <string name="moving">Taşınıyor</string>
+    <string name="open_with">Birlikte aç</string>
+    <string name="pro_app_refund">Ücretli herhangi bir uygulamayı 2 saat içinde kaldırırsanız, otomatik olarak iade edileceğini unutmayın. İstediğiniz zaman geri ödeme almak isterseniz, hello@fossify.org adresinden bizimle iletişime geçmeniz yeterli olacaktır. Bu denemeyi kolaylaştırır :)</string>
+    <string name="protection_setup_successfully">Parola kurulumu başarıyla yapıldı. Unutursanız lütfen uygulamayı yeniden yükleyin.</string>
+    <string name="purchase_thank_you">\n \u0020 \u0020 \u0020 \u0020 \u0020 \u0020Lütfen bu özelliği kullanmak ve geliştirme sürecine destek olmak için &lt;a href="https://play.google.com/store/apps/details?id=org.fossify.thankyou"&gt;Fossify Teşekkürler&lt;/a&gt; uygulamasını satın alın. Teşekkür ederiz!\n \u0020 \u0020 \u0020 \u0020</string>
+    <string name="request_the_required_permissions">Gerekli izinleri iste</string>
+    <string name="save_as">Farklı kaydet</string>
+    <string name="saving">Kaydediliyor</string>
+    <string name="scanning">Taranıyor</string>
+    <string name="select_font_file">Yazı tipi dosyası seç</string>
+    <string name="set_as">Ayarla</string>
+    <string name="share_via">Şununla paylaş</string>
+    <string name="sort_by">Sıralama ölçütü</string>
+    <string name="translation_welsh">Galce</string>
+    <string name="updating">Güncelleniyor</string>
+</resources>

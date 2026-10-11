@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fossify Commons copy overrides. Locales retain upstream translation fallback. -->
+<resources>
+    <string name="app_icon_color_warning">Cuidado: Certos lançadores podem não lidar corretamente com a personalização do ícone da app. Se o ícone desaparecer, tente iniciar a app pelo Google Play ou por um widget, se acessível. Após iniciar, restaure a cor verde padrão do ícone #106D1F. Em casos extremos, pode ser necessário reinstalar a app.</string>
+    <string name="app_on_sd_card">Parece que você instalou a aplicação num cartão SD, o que torna os widgets indisponíveis. Não os verá na lista de widgets. Isto é uma limitação do sistema operativo, caso você queira ter acesso aos widgets será preciso mover a aplicação para o armazenamento interno.</string>
+    <string name="cancel">Cancelar</string>
+    <string name="contributors">Contribuidores</string>
+    <string name="contributors_label">\nEsta lista contém todos que ajudaram visivelmente qualquer app dentro do pacote Fossify, não apenas este. As traduções são feitas por voluntários,\nnos avise se também quiser ajudar também. O guia para tradução está &lt;a href="https://github.com/FossifyOrg/General-Discussion#contributing-translations"&gt;neste site&lt;/a&gt;, ou entre em contato conosco em &lt;a href="mailto:hello@fossify.org"&gt;hello@fossify.org&lt;/a&gt; se tiver alguma dúvida.\nObrigado a todos os contribuidores e outros apoiadores!\n</string>
+    <string name="copy_to">Copiar para</string>
+    <string name="copying">Copiando</string>
+    <string name="edit_with">Editar com</string>
+    <string name="exporting">Exportando</string>
+    <string name="faq_6_text_commons">Este problema surge quando o seu lançador não suporta totalmente a personalização de ícones. Tente iniciar a app pelo Google Play ou um widget, se acessível. Após iniciar, restaure a cor verde padrão do ícone #106D1F. Em casos extremos, pode ser necessário reinstalar a app.</string>
+    <string name="faq_9_text_commons">Existem muitas formas de fazer isso. A primeira delas é acessar o modo de seleção, mantendo um elemento pressionado e clicando nos demais para selecioná-los. A segunda maneira é similar à seleção de elementos com um rato num computador: basta acessar o modo de seleção, mantendo um elemento pressionado e arrastar seu dedo para selecionar os demais elementos. A terceira forma de seleção múltipla é manter um elemento pressionado e, em seguida, pressionar outro para que todos os elementos entre eles sejam selecionados. Caso deseje selecionar todos os elementos, basta manter um deles pressionado e clicar na contagem de elementos selecionados no canto superior esquerdo da tela. Essa ação selecionará ou removerá a seleção de todos os elementos.</string>
+    <string name="fingerprint_setup_successfully">Proteção criada com sucesso. Por favor, reinstale o app caso tenha problemas ao redefini-la.</string>
+    <string name="importing">Importando</string>
+    <string name="loading">Carregando</string>
+    <string name="move_to">Mover para</string>
+    <string name="moving">Movendo</string>
+    <string name="open_with">Abrir com</string>
+    <string name="pro_app_refund">Não se esqueça de que se você desinstalar um aplicativo pago em menos que duas horas você receberá reembolsado(a) automaticamente. Se você precisar de um reembolso após isso, entre em contato conosco através hello@fossify.org. Isso torna tudo mais fácil se você quiser testar :)</string>
+    <string name="protection_setup_successfully">Palavra-passe criada com sucesso. Reinstale o app caso você a esqueça.</string>
+    <string name="purchase_thank_you">"\n            Compre &lt;a href=https://play.google.com/store/apps/details?id=org.fossify.thankyou&gt;Agradecimento Fossify&lt;/a&gt; para usar esta função e apoiar o desenvolvimento. Obrigado!\n        "</string>
+    <string name="request_the_required_permissions">Pedir as permissões necessárias</string>
+    <string name="save_as">Salvar como</string>
+    <string name="saving">Salvando</string>
+    <string name="scanning">Escaneando</string>
+    <string name="select_font_file">Selecione o ficheiro da fonte</string>
+    <string name="set_as">Definir como</string>
+    <string name="share_via">Partilhar via</string>
+    <string name="sort_by">Ordenar por</string>
+    <string name="translation_welsh">Galês</string>
+    <string name="updating">A atualizar</string>
+</resources>

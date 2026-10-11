@@ -14,7 +14,7 @@
     <string name="numi_phone_decline">Laghdaigh</string>
     <string name="numi_phone_decline_call">Diúltú glaoch</string>
     <string name="numi_phone_unknown_caller">Glaoiteoir Anaithnid</string>
-    <string name="numi_phone_dialing">Ag diailiú…</string>
+    <string name="numi_phone_dialing">Ag diailiú</string>
     <string name="numi_phone_call_ended">Cuireadh deireadh leis an nglao</string>
     <string name="numi_phone_call_ending">Deireadh an Ghlaoigh</string>
     <string name="numi_phone_ongoing_call">Glao Leanúnach</string>
@@ -43,7 +43,7 @@
     <string name="numi_phone_accept">Glac</string>
     <string name="numi_phone_accept_call">Glac leis an nglao</string>
     <string name="numi_phone_unset_default_sim">Díshuiteáil an SIM réamhshocraithe</string>
-    <string name="numi_phone_is_calling">Ag glaoch…</string>
+    <string name="numi_phone_is_calling">Ag glaoch</string>
     <string name="numi_phone_turn_microphone_off">Múch an micreafón</string>
     <string name="numi_phone_hold_call">Coinnigh glaoch</string>
     <string name="numi_phone_conference">Comhdháil</string>
@@ -69,7 +69,7 @@
     <string name="numi_phone_faq_1_title">Cloisim glaonna isteach, ach ní chuireann an scáileán ar siúl. Cad is féidir liom a dhéanamh?</string>
     <string name="numi_phone_faq_1_text">Is féidir go leor cúiseanna a bhaineann go sonrach le feiste agus córais a bheith i gceist le saincheisteanna den sórt sin, ar deacair a rá go ginearálta. Ba chóir duit breathnú thart i socruithe do ghléis agus a chinntiú go bhfuil cead ag an aip pop suas agus tú sa chúlra agus cead a thabhairt é a thaispeáint thar aipeanna eile.</string>
     <string name="numi_phone_speed_dial_label">Cliceáil ar uimhir chun teagmhálaí a shannadh dó. Is féidir leat glaoch go tapa ar an teagmhálaí a thugtar ansin ach an uimhir a thugtar a bhrú go fada ag an dialer.</string>
-    <string name="numi_phone_call_is_being_connected">Tá do ghlao á nascadh…</string>
+    <string name="numi_phone_call_is_being_connected">Tá do ghlao á nascadh</string>
     <string name="numi_phone_faq_2_title">Cén fáth nach n-oibríonn glaonna éigeandála i gceart?</string>
     <string name="numi_phone_faq_3_title">Cén fáth a bhfuil cuid de mo theagmhálaithe in easnamh ón aip?</string>
     <string name="numi_phone_faq_3_text">Ní thaispeánann Fossify Phone ach teagmhálaithe a bhfuil uimhir theileafóin bainteach leo. Ní thaispeántar teagmhálacha gan uimhir theileafóin san aip.</string>
