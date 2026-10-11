@@ -8,6 +8,6 @@ object SmsAddress {
         val trimmed = raw.trim()
         if (trimmed.isEmpty() || trimmed.equals("Unknown", ignoreCase = true)) return null
         val digits = trimmed.filter { it.isDigit() }
-        return if (digits.length >= 3) digits else trimmed.uppercase(Locale.US)
+        return if (digits.length >= 3 && trimmed.matches(Regex("\\+?[0-9 ()-]+"))) digits else trimmed.uppercase(Locale.US)
     }
 }

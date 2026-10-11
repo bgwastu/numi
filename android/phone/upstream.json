@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/FossifyOrg/Phone",
+  "commit": "55de3f3bbb18b33310f91e2e5c046fc181318e26",
+  "license": "GPL-3.0",
+  "changes": "Numi branding, navigation, connector hooks, callback reliability, application integration, resource isolation, and Commons compatibility patches for the fork package warning and local call routing"
+}

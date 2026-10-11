@@ -17,7 +17,8 @@ object IncomingSmsTelegramMessage {
         sender: String,
         body: String,
         receivedAt: Long,
-        subscriptionId: Int?
+        subscriptionId: Int?,
+        state: String? = null
     ): List<String> {
         val simTag = subscriptionId?.let { id ->
             runCatching { DeviceStatusProvider.activeSims(context).firstOrNull { it.subscriptionId == id } }
@@ -30,18 +31,21 @@ object IncomingSmsTelegramMessage {
             append("— $safeSender")
             if (simTag != null) append(" · $simTag")
             append(" · $timeLabel")
+            if (state != null) append(" · $state")
         }
         val footer = buildString {
             append("— ${TelegramHtml.code(safeSender)}")
             if (simTag != null) append(" · ${TelegramHtml.escape(simTag)}")
             append(" · ${TelegramHtml.code(timeLabel)}")
+            if (state != null) append(" · ${TelegramHtml.escape(state)}")
         }
         val footerLength = visibleFooter.length + 2
-        if (body.length + footerLength <= TELEGRAM_TEXT_LIMIT) {
+        if (body.length <= 3000 && body.length + footerLength <= TELEGRAM_TEXT_LIMIT) {
             return listOf(renderPart(body, footer, partLabel = null))
         }
 
-        val bodyBudget = (TELEGRAM_TEXT_LIMIT - footerLength - PART_LABEL_RESERVE).coerceAtLeast(1)
+        // A fixed budget keeps status edits from shifting text between multipart messages.
+        val bodyBudget = minOf(3000, TELEGRAM_TEXT_LIMIT - footerLength - PART_LABEL_RESERVE).coerceAtLeast(1)
         val chunks = splitPreservingText(body, bodyBudget)
         return chunks.mapIndexed { index, chunk ->
             renderPart(chunk, footer.takeIf { index == chunks.lastIndex }, "(${index + 1}/${chunks.size})")

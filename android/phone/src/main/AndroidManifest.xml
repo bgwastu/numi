@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='utf-8'?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:installLocation="auto">
+
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.CALL_PRIVILEGED" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.telecom.action.CONFIGURE_PHONE_ACCOUNT" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" tools:node="remove" />
+
+    <queries>
+        <package android:name="org.fossify.contacts.debug" />
+        <package android:name="org.fossify.contacts" />
+
+
+        <intent>
+            <action android:name="android.accounts.AccountAuthenticator" />
+        </intent>
+    </queries>
+
+    <application>
+
+        <activity android:name="org.fossify.phone.activities.SplashActivity" android:exported="false" android:theme="@style/SplashTheme" />
+
+        <activity android:name="org.fossify.phone.activities.MainActivity" android:configChanges="orientation|screenSize" android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <data android:mimeType="vnd.android.cursor.dir/calls" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="org.fossify.commons.activities.AboutActivity" android:configChanges="orientation" android:exported="false" android:label="@string/about" android:parentActivityName="org.fossify.phone.activities.MainActivity" />
+
+        <activity android:name="org.fossify.commons.activities.CustomizationActivity" android:configChanges="orientation" android:exported="false" android:label="@string/customize_colors" android:parentActivityName="org.fossify.phone.activities.SettingsActivity" />
+
+        <activity android:name="org.fossify.commons.activities.ManageBlockedNumbersActivity" android:configChanges="orientation" android:exported="false" android:label="@string/blocked_numbers" android:parentActivityName="org.fossify.phone.activities.SettingsActivity" tools:replace="android:label" />
+
+        <activity android:name="org.fossify.phone.activities.ManageSpeedDialActivity" android:configChanges="orientation" android:exported="false" android:label="@string/numi_phone_speed_dial" android:parentActivityName="org.fossify.phone.activities.SettingsActivity" />
+
+        <activity android:name="org.fossify.phone.activities.ConferenceActivity" android:configChanges="orientation" android:exported="false" android:label="@string/numi_phone_conference" android:parentActivityName="org.fossify.phone.activities.CallActivity" />
+
+        <activity android:name="org.fossify.phone.activities.SettingsActivity" android:configChanges="orientation" android:exported="true" android:label="@string/settings" android:parentActivityName="org.fossify.phone.activities.MainActivity">
+
+
+        </activity>
+
+        <activity android:name="org.fossify.phone.activities.CallActivity" android:excludeFromRecents="true" android:exported="false" android:label="@string/numi_phone_ongoing_call" android:launchMode="singleTask" android:screenOrientation="portrait" android:showOnLockScreen="true" />
+
+        <activity android:name="org.fossify.phone.activities.DialpadActivity" android:exported="true" android:label="@string/numi_phone_dialpad" android:parentActivityName="org.fossify.phone.activities.MainActivity" android:screenOrientation="portrait" android:windowSoftInputMode="stateHidden">
+
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="tel" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.DIAL" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tel" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="org.fossify.phone.activities.DialerActivity" android:configChanges="orientation" android:exported="true" android:label="@string/numi_phone_dialer" android:theme="@style/Theme.Transparent">
+
+            <intent-filter>
+                <action android:name="android.intent.action.CALL" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="tel" />
+            </intent-filter>
+        </activity>
+
+        <service android:name="org.fossify.phone.services.CallService" android:enabled="true" android:exported="true" android:permission="android.permission.BIND_INCALL_SERVICE">
+            <meta-data android:name="android.telecom.IN_CALL_SERVICE_UI" android:value="true" />
+
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
+
+        <service android:name="org.fossify.phone.services.SimpleCallScreeningService" android:exported="true" android:permission="android.permission.BIND_SCREENING_SERVICE">
+            <intent-filter>
+                <action android:name="android.telecom.CallScreeningService" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name="org.fossify.phone.receivers.CallActionReceiver" android:enabled="true" android:exported="false" />
+
+        </application>
+</manifest>

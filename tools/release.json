@@ -1,0 +1,7 @@
+{
+  "series": "3.0",
+  "base_commit": "0b01df8f85441e4205ce2eb7d8fdb29cbc1cf54a",
+  "base_version_code": 19,
+  "paths": ["android/", "tools/"],
+  "apk_asset": "app-release.apk"
+}

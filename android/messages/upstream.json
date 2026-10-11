@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/FossifyOrg/Messages",
+  "commit": "f4dd9d9d5283a72b32075161cdbea4857a0bbb77",
+  "license": "GPL-3.0",
+  "changes": "Numi branding, navigation, connector hooks, callback reliability, recoverable SMS screening and inbox filtering, application integration, fork package check removal"
+}

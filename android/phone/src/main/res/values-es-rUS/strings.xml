@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="numi_phone_app_launcher_name">Numi</string>
+    <string name="numi_phone_default_phone_app_prompt">Haga de esta aplicación la aplicación de teléfono predeterminada</string>
+    <string name="numi_phone_allow_displaying_over_other_apps">Permita que se muestre en otras aplicaciones para un comportamiento confiable</string>
+</resources>

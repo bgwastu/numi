@@ -1,413 +1,239 @@
 package net.wastu.numi.queue
 
+import android.Manifest
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import android.telephony.SubscriptionManager
 import android.util.Log
-import android.content.pm.ServiceInfo
 import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import net.wastu.numi.ConnectorSettingsActivity
 import net.wastu.numi.R
-import net.wastu.numi.bus.TelegramOwnerConfig
-import net.wastu.numi.bus.ReplyTarget
-import net.wastu.numi.bus.TelegramActionStore
-import net.wastu.numi.database.DbHelper
-import net.wastu.numi.network.IncomingSmsTelegramMessage
-import net.wastu.numi.network.TelegramSender
-import net.wastu.numi.spam.LocalGemmaSpamFilter
-import net.wastu.numi.spam.GemmaSpamModel
-import net.wastu.numi.utils.RecentActivity
-import kotlinx.coroutines.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicBoolean
+import net.wastu.numi.bus.CommandReceiver
+import net.wastu.numi.bus.TelegramPollHealth
+import net.wastu.numi.device.DeviceStatusProvider
+import net.wastu.numi.messaging.AppStore
+import net.wastu.numi.messaging.MessagesRepository
+import net.wastu.numi.messaging.QueuedMessage
+import net.wastu.numi.messaging.SendPolicy
+import net.wastu.numi.messaging.SimRouting
+import net.wastu.numi.network.TelegramApiException
+import net.wastu.numi.network.TelegramConnector
+import net.wastu.numi.network.TelegramEvents
+import net.wastu.numi.utils.SmsRoleManager
+import net.wastu.numi.spam.SpamStore
+import net.wastu.numi.spam.SpamCoordinator
+import org.fossify.messages.extensions.messagingUtils
+import org.fossify.messages.helpers.refreshConversations
+import org.fossify.messages.helpers.refreshMessages
 
+/** Only Telegram retries automatically. A cellular send with an uncertain result needs review. */
 class OutboxService : Service() {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private lateinit var store: AppStore
+    private var connector: TelegramConnector? = null
+    private var commands: CommandReceiver? = null
+    private var smsJob: Job? = null
+    private var telegramJob: Job? = null
+    private var filterJob: Job? = null
+    private var filterEffectsJob: Job? = null
+    private var configuredToken = ""
+    private var configuredOwner = ""
+    private val configurationLock = Mutex()
 
-    private data class PendingOutboxMessage(
-        val id: Long,
-        val type: String,
-        val recipient: String,
-        val body: String,
-        val createdAt: Long,
-        val attempts: Int,
-        val subscriptionId: Int?,
-        val telegramPartIndex: Int,
-        val telegramLastMessageId: Int?
-    )
+    override fun onCreate() {
+        super.onCreate()
+        store = AppStore(this)
+        getSystemService(NotificationManager::class.java).createNotificationChannel(
+            NotificationChannel(CHANNEL_ID, "Telegram connection", NotificationManager.IMPORTANCE_LOW))
+        val openSettings = PendingIntent.getActivity(this, 2002, Intent(this, ConnectorSettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        val notification = Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_stat_numi)
+            .setContentTitle("Numi").setContentText("SMS delivery and Telegram connection")
+            .setContentIntent(openSettings).setOngoing(true).build()
+        try {
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, notification,
+                if (Build.VERSION.SDK_INT >= 34) ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING else 0)
+            serviceActive = true
+        } catch (exception: Exception) {
+            Log.e("Numi", "Background connection could not start: ${exception.javaClass.simpleName}")
+            stopSelf()
+        }
+    }
 
-    private val serviceJob = SupervisorJob()
-    private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
-    
-    private lateinit var dbHelper: DbHelper
-    private lateinit var telegramSender: TelegramSender
-    private lateinit var actionStore: TelegramActionStore
-    private lateinit var localGemmaSpamFilter: LocalGemmaSpamFilter
-    private var commandReceiver: net.wastu.numi.bus.CommandReceiver? = null
-    private val isRunning = AtomicBoolean(false)
-    private var pollJob: Job? = null
-    private val inFlightMessageIds = ConcurrentHashMap.newKeySet<Long>()
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == "STOP") { stopSelf(); return START_NOT_STICKY }
+        scope.launch {
+            configurationLock.withLock {
+                val prefs = getSharedPreferences("numi_settings", MODE_PRIVATE)
+                val enabled = TelegramEvents.enabled(this@OutboxService)
+                val token = if (enabled) prefs.getString("BOT_TOKEN", "").orEmpty() else ""
+                val owner = if (enabled) prefs.getString("TELEGRAM_OWNER_ID", "").orEmpty() else ""
+                if (token != configuredToken || owner != configuredOwner || (enabled && connector == null)) {
+                    telegramJob?.cancelAndJoin()
+                    commands?.stop()
+                    connector?.close()
+                    commands = null; connector = null
+                    configuredToken = token; configuredOwner = owner
+                    if (enabled) {
+                        val active = TelegramConnector(this@OutboxService, token)
+                        connector = active
+                        commands = CommandReceiver(this@OutboxService, active).also { it.start(scope) }
+                        // Telegram has no idempotency token. Resume persisted multipart progress after a restart.
+                        store.sending().filter { it.type == "TELEGRAM" }.forEach {
+                            store.update(it.id, ContentValues().apply { put("status", "PENDING") })
+                        }
+                        telegramJob = scope.launch {
+                            while (isActive) {
+                                store.due(System.currentTimeMillis(), "TELEGRAM").forEach { sendTelegram(it, active) }
+                                delay(1500)
+                            }
+                        }
+                    }
+                }
+                if (smsJob?.isActive != true) smsJob = scope.launch {
+                    while (isActive) {
+                        checkUncertainSends()
+                        store.due(System.currentTimeMillis(), "SMS").forEach(::sendSms)
+                        if (!TelegramEvents.enabled(this@OutboxService) && !store.hasSmsWork() && !SpamStore(this@OutboxService).hasWork()) { stopSelf(); break }
+                        delay(1500)
+                    }
+                }
+                if (filterJob?.isActive != true) filterJob = scope.launch {
+                    while (isActive) {
+                        try {
+                            SpamCoordinator.process(this@OutboxService)
+                            getSharedPreferences("numi_settings", MODE_PRIVATE).edit().remove("spam_screening_error").apply()
+                        } catch (exception: CancellationException) { throw exception }
+                        catch (exception: Exception) {
+                            getSharedPreferences("numi_settings", MODE_PRIVATE).edit()
+                                .putString("spam_screening_error", "SMS screening needs attention (${exception.javaClass.simpleName}). Open the Spam folder.").apply()
+                        }
+                        delay(1500)
+                    }
+                }
+                if (filterEffectsJob?.isActive != true) filterEffectsJob = scope.launch {
+                    while (isActive) {
+                        try {
+                            SpamCoordinator.deliverReady(this@OutboxService)
+                            getSharedPreferences("numi_settings", MODE_PRIVATE).edit().remove("spam_notification_error").apply()
+                        }
+                        catch (exception: Exception) {
+                            getSharedPreferences("numi_settings", MODE_PRIVATE).edit()
+                                .putString("spam_notification_error", "SMS notifications need attention (${exception.javaClass.simpleName}).").apply()
+                        }
+                        delay(500)
+                    }
+                }
+            }
+        }
+        return if (TelegramEvents.enabled(this)) START_STICKY else START_NOT_STICKY
+    }
+
+    private fun sendSms(row: QueuedMessage) {
+        try {
+            require(SendPolicy.isFresh(row.createdAt, System.currentTimeMillis())) { "This queued SMS expired before it was sent. Send it again from Numi." }
+            require(SmsRoleManager.isDefaultSmsApp(this)) { "Numi is no longer the default SMS app." }
+            require(checkSelfPermission(Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) { "SMS permission is missing." }
+            val sub = SimRouting.resolve(row.subscriptionId, DeviceStatusProvider.activeSims(this).map { it.subscriptionId }, SubscriptionManager.getDefaultSmsSubscriptionId())
+            val id = MessagesRepository(this).ensureOutgoing(row) ?: error("Could not save the SMS to the phone inbox.")
+            if (!store.start(row.id, 0)) return
+            messagingUtils.sendSmsMessage(row.body, setOf(row.address), sub, requireDeliveryReport = true, messageId = id)
+            refreshMessages(); refreshConversations()
+        } catch (exception: Exception) {
+            val reason = if (exception is IllegalArgumentException || exception is IllegalStateException) exception.message.orEmpty()
+                else "Android rejected the SMS request. Open Numi to review it."
+            store.fail(row.id, reason)
+            store.message(row.id)?.let { failed ->
+                MessagesRepository(this).synchronize(failed)
+                TelegramEvents.result(this, failed)
+            }
+            refreshMessages(); refreshConversations()
+        }
+    }
+
+    private fun checkUncertainSends() {
+        val now = System.currentTimeMillis()
+        store.sending().filter { it.type == "SMS" && now - it.updatedAt > SendPolicy.SEND_TIMEOUT_MS }.forEach { row ->
+            store.fail(row.id, "Send result unknown. Check with the recipient before retrying; the SMS may have been sent.")
+            store.message(row.id)?.let { failed ->
+                MessagesRepository(this).synchronize(failed)
+                TelegramEvents.result(this, failed)
+            }
+            refreshMessages(); refreshConversations()
+        }
+    }
+
+    private suspend fun sendTelegram(row: QueuedMessage, active: TelegramConnector) {
+        val event = row.event?.let { org.json.JSONObject(it) }
+        if (event?.optString("kind") == "sms" && event.optString("direction") == "incoming") {
+            val filtered = SpamStore(this).message(event.optLong("source_id"))
+            if (filtered?.state == "PENDING") return
+            if (filtered?.state == "SPAM") {
+                store.update(row.id, ContentValues().apply { put("status", "SENT"); put("last_error", "Suppressed: stored in Spam") })
+                return
+            }
+        }
+        store.update(row.id, ContentValues().apply { put("status", "SENDING"); put("updated_at", System.currentTimeMillis()) })
+        try {
+            active.deliver(row)
+            store.update(row.id, ContentValues().apply { put("status", "SENT"); putNull("last_error") })
+        } catch (exception: CancellationException) {
+            store.update(row.id, ContentValues().apply { put("status", "PENDING") })
+            throw exception
+        } catch (exception: Exception) {
+            val backoff = (5000L shl row.attempts.coerceIn(0, 6)).coerceAtMost(300000)
+            val serverDelay = (exception as? TelegramApiException)?.retryAfter?.toLong()?.times(1000) ?: 0
+            store.update(row.id, ContentValues().apply {
+                put("status", "FAILED"); put("attempt_count", row.attempts + 1)
+                put("next_attempt_at", System.currentTimeMillis() + maxOf(backoff, serverDelay))
+                put("last_error", if (exception is TelegramApiException) "Telegram API error ${exception.code}" else "Connection unavailable")
+            })
+        }
+    }
+
+    override fun onDestroy() {
+        serviceActive = false
+        commands?.stop(); scope.cancel(); connector?.close()
+        super.onDestroy()
+    }
+    override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
         private const val CHANNEL_ID = "NumiOutboxChannel"
         private const val NOTIFICATION_ID = 2002
         @Volatile private var serviceActive = false
-        private var BOT_TOKEN = ""
-        private var OWNER_ID = ""
-        private val primaryChatId: String get() = OWNER_ID
-
-        fun updateConfig(token: String, ownerId: String) {
-            BOT_TOKEN = token
-            OWNER_ID = TelegramOwnerConfig.normalize(ownerId)
-        }
-
         fun isServiceRunning(): Boolean = serviceActive
-    }
 
-    override fun onCreate() {
-        super.onCreate()
-        net.wastu.numi.device.DevicePermissionFixer.ensureStartupReceiverEnabled(this)
-        serviceActive = true
-        dbHelper = DbHelper(this)
-        actionStore = TelegramActionStore(this)
-        localGemmaSpamFilter = LocalGemmaSpamFilter(this)
-
-        // Read persistent config FIRST, then create the sender
-        val prefs = getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
-        val token = prefs.getString("BOT_TOKEN", "") ?: ""
-        val ownerId = prefs.getString("TELEGRAM_OWNER_ID", "") ?: ""
-        updateConfig(token, ownerId)
-        telegramSender = TelegramSender(BOT_TOKEN)
-
-        createNotificationChannel()
-        try {
-            val serviceType = when {
-                Build.VERSION.SDK_INT >= 35 -> ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE ->
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-                else -> 0
-            }
-            ServiceCompat.startForeground(this, NOTIFICATION_ID, createNotification(), serviceType)
-        } catch (e: Exception) {
-            Log.e("OutboxService", "Could not promote SMS gateway to foreground service", e)
-            stopSelf()
-            return
-        }
-        startPolling()
-
-        // Create CommandReceiver if we have a token
-        if (BOT_TOKEN.isNotBlank() && OWNER_ID.isNotBlank()) {
-            commandReceiver = net.wastu.numi.bus.CommandReceiver(this, BOT_TOKEN)
-            commandReceiver?.start()
-        }
-
-    }
-
-    private fun startPolling() {
-        if (isRunning.compareAndSet(false, true)) {
-            pollJob = serviceScope.launch {
-                while (isActive) {
-                    try {
-                        processOutbox()
-                    } catch (e: Exception) {
-                        Log.e("OutboxService", "Error processing outbox", e)
-                    }
-                    delay(3000) // Poll every 3 seconds
-                }
+        fun wake(context: Context) {
+            if (!TelegramEvents.enabled(context) && !AppStore(context).hasSmsWork() && !SpamStore(context).hasWork() && !serviceActive) return
+            try {
+                ContextCompat.startForegroundService(context, Intent(context, OutboxService::class.java))
+            } catch (exception: Exception) {
+                TelegramPollHealth.recordError(context, "Open Numi to resume its background connection.")
+                Log.e("Numi", "Could not wake connection: ${exception.javaClass.simpleName}")
             }
         }
-    }
-
-    private fun processOutbox() {
-        val db = dbHelper.writableDatabase
-        val cursor = db.rawQuery(
-            "SELECT * FROM ${DbHelper.TABLE_OUTBOX} WHERE ${DbHelper.COL_STATUS} IN ('PENDING', 'FAILED') AND ${DbHelper.COL_NEXT_ATTEMPT} <= ? LIMIT 5",
-            arrayOf(System.currentTimeMillis().toString())
-        )
-
-        val messages = buildList {
-            cursor.use { result ->
-                while (result.moveToNext()) {
-                    val subscriptionColumn = result.getColumnIndex(DbHelper.COL_SUBSCRIPTION_ID)
-                    add(
-                        PendingOutboxMessage(
-                            id = result.getLong(result.getColumnIndexOrThrow(DbHelper.COL_ID)),
-                            type = result.getString(result.getColumnIndexOrThrow(DbHelper.COL_TYPE)),
-                            recipient = result.getString(result.getColumnIndexOrThrow(DbHelper.COL_RECIPIENT)),
-                            body = result.getString(result.getColumnIndexOrThrow(DbHelper.COL_BODY)),
-                            createdAt = result.getLong(result.getColumnIndexOrThrow(DbHelper.COL_CREATED_AT)),
-                            attempts = result.getInt(result.getColumnIndexOrThrow(DbHelper.COL_ATTEMPTS)),
-                            subscriptionId = if (subscriptionColumn >= 0 && !result.isNull(subscriptionColumn)) {
-                                result.getInt(subscriptionColumn)
-                            } else null,
-                            telegramPartIndex = result.getInt(result.getColumnIndexOrThrow(DbHelper.COL_TELEGRAM_PART_INDEX)),
-                            telegramLastMessageId = result.getInt(
-                                result.getColumnIndexOrThrow(DbHelper.COL_TELEGRAM_LAST_MESSAGE_ID)
-                            ).takeIf { it > 0 }
-                        )
-                    )
-                }
-            }
-        }
-
-        messages.forEach { message ->
-            val id = message.id
-            val type = message.type
-            val recipient = message.recipient
-            val body = message.body
-            val createdAt = message.createdAt
-            val attempts = message.attempts
-            val subscriptionId = message.subscriptionId
-            val telegramPartIndex = message.telegramPartIndex
-            val telegramLastMessageId = message.telegramLastMessageId
-            if (!inFlightMessageIds.add(id)) return@forEach
-            serviceScope.launch {
-                try {
-                    val spamFilterEnabled = getSharedPreferences(GemmaSpamModel.PREFS_NAME, Context.MODE_PRIVATE)
-                        .getBoolean(GemmaSpamModel.KEY_FILTER_ENABLED, false)
-                    val filteredAsSpam = type == "TELEGRAM" && spamFilterEnabled &&
-                        localGemmaSpamFilter.isLikelySpam(body)
-                    if (filteredAsSpam) {
-                        if (dbHelper.deleteFilteredIncomingSms(id) > 0) {
-                            RecentActivity.record(this@OutboxService, "Potential spam skipped")
-                            Log.i("OutboxService", "Potential spam SMS notification skipped locally")
-                        }
-                        return@launch
-                    }
-
-                    db.execSQL(
-                        "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'SENDING' WHERE ${DbHelper.COL_ID} = ?",
-                        arrayOf(id)
-                    )
-                    val success = when (type) {
-                        "TELEGRAM" -> sendTelegram(
-                            id,
-                            recipient,
-                            body,
-                            subscriptionId,
-                            createdAt,
-                            telegramPartIndex,
-                            telegramLastMessageId
-                        )
-                        "SMS" -> {
-                            val result = sendSmsDirect(recipient, body, subscriptionId)
-                            if (result !is net.wastu.numi.device.SmsSendResult.Sent) {
-                                val reason = when (result) {
-                                    net.wastu.numi.device.SmsSendResult.PermissionDenied -> "SMS permission is missing"
-                                    net.wastu.numi.device.SmsSendResult.NoSim -> "Selected SIM is unavailable"
-                                    is net.wastu.numi.device.SmsSendResult.Error -> result.reason
-                                }
-                                db.execSQL(
-                                    "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_LAST_ERROR} = ? WHERE ${DbHelper.COL_ID} = ?",
-                                    arrayOf<Any>(reason, id)
-                                )
-                            }
-                            result is net.wastu.numi.device.SmsSendResult.Sent
-                        }
-                        else -> false
-                    }
-
-                    if (success) {
-                        db.execSQL(
-                            "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'SENT', ${DbHelper.COL_LAST_ERROR} = NULL WHERE ${DbHelper.COL_ID} = ?",
-                            arrayOf(id)
-                        )
-                        RecentActivity.record(
-                            this@OutboxService,
-                            if (type == "SMS") "SMS sent" else "SMS forwarded to Telegram"
-                        )
-                    } else {
-                        val nextAttempts = attempts + 1
-                        // Exponential backoff: 5s, 10s, 20s, 40s...
-                        val delayMs = (5000 * Math.pow(2.0, attempts.toDouble())).toLong().coerceAtMost(300000)
-                        val nextAttemptAt = System.currentTimeMillis() + delayMs
-                        db.execSQL(
-                            "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'FAILED', ${DbHelper.COL_ATTEMPTS} = ?, ${DbHelper.COL_NEXT_ATTEMPT} = ? WHERE ${DbHelper.COL_ID} = ?",
-                            arrayOf<Any>(nextAttempts, nextAttemptAt, id)
-                        )
-                        Log.e("OutboxService", "Message $id failed. Retrying in ${delayMs / 1000}s")
-                    }
-                } catch (exception: Exception) {
-                    Log.e("OutboxService", "Message $id processing failed: ${exception.javaClass.simpleName}")
-                    val nextAttempts = attempts + 1
-                    val delayMs = (5000 * Math.pow(2.0, attempts.toDouble())).toLong().coerceAtMost(300000)
-                    db.execSQL(
-                        "UPDATE ${DbHelper.TABLE_OUTBOX} SET ${DbHelper.COL_STATUS} = 'FAILED', ${DbHelper.COL_ATTEMPTS} = ?, ${DbHelper.COL_NEXT_ATTEMPT} = ? WHERE ${DbHelper.COL_ID} = ?",
-                        arrayOf<Any>(nextAttempts, System.currentTimeMillis() + delayMs, id)
-                    )
-                } finally {
-                    inFlightMessageIds.remove(id)
-                }
-            }
-        }
-    }
-
-    private suspend fun sendTelegram(
-        outboxId: Long,
-        recipientOrChat: String,
-        body: String,
-        subscriptionId: Int?,
-        receivedAt: Long,
-        startPartIndex: Int,
-        savedLastMessageId: Int?
-    ): Boolean {
-        val activeChat = primaryChatId.ifBlank { return false }
-        val messages = IncomingSmsTelegramMessage.format(
-            this,
-            recipientOrChat,
-            body,
-            receivedAt,
-            subscriptionId
-        )
-        val canReplyBySms = looksLikeSmsAddress(recipientOrChat)
-        var previousMessageId = savedLastMessageId ?: actionStore.getThreadTip(recipientOrChat)
-
-        for (partIndex in startPartIndex.coerceIn(0, messages.size) until messages.size) {
-            val isFinalPart = partIndex == messages.lastIndex
-            val repliedMessageId = telegramSender.sendMessageForId(
-                activeChat,
-                messages[partIndex],
-                previousMessageId,
-                includeSmsReplyButton = canReplyBySms && isFinalPart
-            )
-            val messageId = repliedMessageId ?: if (previousMessageId != null) {
-                // If the parent was removed, keep delivery moving as a top-level message.
-                telegramSender.sendMessageForId(
-                    activeChat,
-                    messages[partIndex],
-                    null,
-                    includeSmsReplyButton = canReplyBySms && isFinalPart
-                )
-            } else {
-                null
-            }
-            if (messageId == null) return false
-
-            if (!dbHelper.updateTelegramProgress(outboxId, partIndex + 1, messageId)) {
-                Log.e("OutboxService", "Could not persist Telegram batch progress for $outboxId")
-                return false
-            }
-            previousMessageId = messageId
-            actionStore.saveThreadTip(recipientOrChat, messageId)
-
-            if (isFinalPart && canReplyBySms) {
-                actionStore.saveReplyTarget(
-                    messageId,
-                    ReplyTarget(
-                        phoneNumber = recipientOrChat,
-                        subscriptionId = subscriptionId,
-                        source = "inbound_sms"
-                    )
-                )
-            }
-        }
-
-        // A crash after the final progress write may leave local Telegram actions unsaved.
-        val finalMessageId = previousMessageId
-        if (finalMessageId != null) {
-            actionStore.saveThreadTip(recipientOrChat, finalMessageId)
-            if (canReplyBySms) {
-                actionStore.saveReplyTarget(
-                    finalMessageId,
-                    ReplyTarget(recipientOrChat, subscriptionId, "inbound_sms")
-                )
-            }
-        }
-        return true
-    }
-
-    private fun looksLikeSmsAddress(value: String): Boolean {
-        val cleaned = value.trim()
-        if (cleaned.isEmpty() || cleaned.equals("Unknown", ignoreCase = true)) return false
-        val digits = cleaned.filter { it.isDigit() }
-        // Include short codes (e.g. 3636) as well as E.164 numbers.
-        if (digits.length in 3..15) return true
-        // Named senders like TELKOMSEL
-        return cleaned.any { it.isLetter() }
-    }
-
-    private fun sendSmsDirect(
-        recipient: String,
-        body: String,
-        subscriptionId: Int?
-    ): net.wastu.numi.device.SmsSendResult {
-        val result = net.wastu.numi.device.SmsSender(this).sendSms(recipient, body, subscriptionId)
-        if (result !is net.wastu.numi.device.SmsSendResult.Sent) {
-            Log.e("OutboxService", "Failed to send SMS via subscription $subscriptionId: $result")
-        }
-        return result
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val action = intent?.action
-        if (action == "STOP") {
-            stopSelf()
-            return START_NOT_STICKY
-        }
-        val token = intent?.getStringExtra("BOT_TOKEN")
-        val ownerId = intent?.getStringExtra("TELEGRAM_OWNER_ID")
-        if (token != null && ownerId != null) {
-            commandReceiver?.stop()
-            commandReceiver = null
-            telegramSender.close()
-            updateConfig(token, ownerId)
-            telegramSender = TelegramSender(BOT_TOKEN)
-
-            // Persist config
-            getSharedPreferences("numi_settings", Context.MODE_PRIVATE)
-                .edit()
-                .putString("BOT_TOKEN", token)
-                .putString("TELEGRAM_OWNER_ID", OWNER_ID)
-                .apply()
-
-            if (BOT_TOKEN.isNotBlank() && OWNER_ID.isNotBlank()) {
-                commandReceiver = net.wastu.numi.bus.CommandReceiver(this, BOT_TOKEN)
-                commandReceiver?.start()
-            }
-        }
-        return START_STICKY
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
-
-    override fun onDestroy() {
-        super.onDestroy()
-        serviceActive = false
-        isRunning.set(false)
-        commandReceiver?.stop()
-        pollJob?.cancel()
-        serviceJob.cancel()
-        localGemmaSpamFilter.close()
-        telegramSender.close()
-    }
-
-    private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val serviceChannel = NotificationChannel(
-                CHANNEL_ID,
-                "Numi Service Channel",
-                NotificationManager.IMPORTANCE_LOW
-            )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(serviceChannel)
-        }
-    }
-
-    private fun createNotification(): Notification {
-        val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(this, CHANNEL_ID)
-        } else {
-            @Suppress("DEPRECATION")
-            Notification.Builder(this)
-        }
-        return builder
-            .setSmallIcon(R.drawable.ic_stat_numi)
-            .setContentTitle("Numi SMS Gateway")
-            .setContentText("SMS outbox is running")
-            .setOngoing(true)
-            .build()
     }
 }

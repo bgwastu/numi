@@ -1,0 +1,24 @@
+<resources>
+
+    <style name="numi_phone_AppTheme" parent="AppTheme.Base" />
+
+    <style name="numi_phone_DialpadButtonStyle">
+        <item name="android:background">@drawable/pill_background</item>
+        <item name="android:layout_marginStart">@dimen/small_margin</item>
+        <item name="android:layout_marginEnd">@dimen/small_margin</item>
+        <item name="android:paddingTop">@dimen/one_dp</item>
+    </style>
+
+    <style name="numi_phone_DialpadNumberStyle">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">@dimen/numi_phone_dialpad_text_size</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="numi_phone_DialpadLetterStyle">
+        <item name="android:textSize">@dimen/numi_phone_dialpad_letters_text_size</item>
+        <item name="android:alpha">0.8</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+</resources>

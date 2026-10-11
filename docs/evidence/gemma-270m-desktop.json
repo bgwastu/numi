@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-11",
+  "candidate_status": "rejected_for_stock_sms_classification",
+  "model": {
+    "upstream": "litert-community/gemma-3-270m-it",
+    "upstream_revision": "9d2093270fb5aa49a986b49b5779d763dde7b630",
+    "file": "gemma3-270m-it-q8.litertlm",
+    "size_bytes": 304005120,
+    "sha256": "757e9119fa5bd667a2774fb470ac4afcd3190a21c677f8e69a5d6bc908abdd63",
+    "downloaded_hash_verified_by_implementation_agent": true
+  },
+  "environment": {
+    "platform": "macOS ARM64 JVM",
+    "runtime": "LiteRT-LM 0.17.1",
+    "backend": "CPU",
+    "cpu_threads": 2,
+    "max_context_tokens": 1024,
+    "max_output_tokens": 8,
+    "sampling": "topK=1, topP=1.0, temperature=0.0, seed=0",
+    "thinking": false,
+    "phone_model_inference_attempted": false
+  },
+  "observations": [
+    {
+      "run": "zero_shot",
+      "source_log": "/private/tmp/numi-gemma-270m/desktop-evaluation.log",
+      "total_cases": 18,
+      "expected_spam": 8,
+      "expected_safe": 10,
+      "actual_spam": 0,
+      "actual_safe": 18,
+      "true_positive": 0,
+      "false_negative": 8,
+      "true_negative": 10,
+      "false_positive": 0,
+      "initialization_ms": 2448,
+      "per_case_ms": [918, 825, 819, 825, 843, 831, 829, 870, 856, 819, 874, 903, 833, 806, 806, 847, 807, 824],
+      "cache_state": "directory_missing; log explicitly reports cache open failure",
+      "reported_process_max_rss_bytes": 1445494784
+    },
+    {
+      "run": "few_shot",
+      "source_log": "/private/tmp/numi-gemma-270m/desktop-fewshot.log",
+      "total_cases": 18,
+      "expected_spam": 8,
+      "expected_safe": 10,
+      "actual_spam": 0,
+      "actual_safe": 18,
+      "true_positive": 0,
+      "false_negative": 8,
+      "true_negative": 10,
+      "false_positive": 0,
+      "initialization_ms": 1427,
+      "per_case_ms": [901, 800, 795, 900, 816, 828, 797, 802, 809, 803, 805, 807, 802, 798, 805, 813, 832, 801],
+      "cache_state": "directory_created; no cache open error in log",
+      "reported_command_max_rss_bytes": 1630289920,
+      "rss_caveat": "Timing covered a javac child as well as the model process, so this is not a clean model-only maximum."
+    },
+    {
+      "run": "reversed_regex_SPAM_SAFE",
+      "source_log": "/private/tmp/numi-gemma-270m/grammar-SPAM-SAFE.log",
+      "total_cases": 3,
+      "expected_spam": 2,
+      "expected_safe": 1,
+      "actual_spam": 0,
+      "actual_safe": 3,
+      "initialization_ms": 1166
+    },
+    {
+      "run": "unconstrained_output",
+      "source_log": "/private/tmp/numi-gemma-270m/grammar-none.log",
+      "total_cases": 3,
+      "expected_spam": 2,
+      "expected_safe": 1,
+      "actual_spam": 0,
+      "actual_safe": 3,
+      "initialization_ms": 883
+    }
+  ],
+  "limitations": [
+    "Public/synthetic regression examples only; no private SMS used in these probes.",
+    "Repeated probes are not independent holdout samples and should not be pooled into a statistical accuracy claim.",
+    "These observations concern this artifact, runtime and prompt setup; they do not prove that task-tuned Gemma270M cannot work.",
+    "Desktop JVM process RSS includes runtime and application overhead and is not an Android memory measurement.",
+    "No causal attribution for the all-SAFE output has been established."
+  ]
+}

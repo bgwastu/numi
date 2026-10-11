@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="numi_phone_dialpad_button_size">68dp</dimen>
+    <dimen name="numi_phone_dialpad_button_size_small">50dp</dimen>
+    <dimen name="numi_phone_incoming_call_arrow_size">50dp</dimen>
+    <dimen name="numi_phone_incoming_call_button_size">72dp</dimen>
+    <dimen name="numi_phone_call_notification_button_size">40dp</dimen>
+    <dimen name="numi_phone_caller_avatar_max_size">172dp</dimen>
+    <dimen name="numi_phone_end_call_button_margin">34dp</dimen>
+    <dimen name="numi_phone_dialpad_bottom_padding">114dp</dimen>
+    <dimen name="numi_phone_call_control_max_height">240dp</dimen>
+    <dimen name="numi_phone_call_control_button_size">72dp</dimen>
+    <dimen name="numi_phone_recyclerview_fab_padding">100dp</dimen>
+
+    <dimen name="numi_phone_caller_name_text_size">34sp</dimen>
+    <dimen name="numi_phone_call_status_text_size">20sp</dimen>
+
+    <!-- keep these 2 values in dp to avoid scaling -->
+    <dimen name="numi_phone_dialpad_text_size">28dp</dimen>
+    <dimen name="numi_phone_dialpad_letters_text_size">12dp</dimen>
+</resources>

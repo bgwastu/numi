@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="numi_phone_ripple_foreground">#33FFFFFF</color>
+    <color name="numi_phone_color_missed_call">@color/md_red_500_dark</color>
+    <color name="numi_phone_color_outgoing_call">@color/md_green_600</color>
+    <color name="numi_phone_color_incoming_call">@color/md_blue_600</color>
+</resources>

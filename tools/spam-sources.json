@@ -1,0 +1,18 @@
+[
+  {
+    "authors": "Ferdila Rahmi and Yudi Wibisono",
+    "title": "SMS Spam Bahasa Indonesia v1 (2018 release of 2016 research)",
+    "url": "https://yudiwbs.wordpress.com/2018/08/05/dataset-klasifikasi-bahasa-indonesia-sms-spam-klasifikasi-teks-dengan-scikit-learn/",
+    "download": "https://drive.google.com/uc?export=download&id=1-stKadfTgJLtYsHWqXhGO3nTjKVFxm_Q",
+    "zip_sha256": "8f666e86de36fc840f53303414c45399099c17358b30b4531c46a434d31f1f18",
+    "license": "CC-BY-SA-4.0"
+  },
+  {
+    "authors": "Tiago Almeida and Jos Hidalgo",
+    "title": "SMS Spam Collection (2011)",
+    "url": "https://doi.org/10.24432/C5CC84",
+    "download": "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip",
+    "zip_sha256": "1587ea43e58e82b14ff1f5425c88e17f8496bfcdb67a583dbff9eefaf9963ce3",
+    "license": "CC-BY-4.0"
+  }
+]

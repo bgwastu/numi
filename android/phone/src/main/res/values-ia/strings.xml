@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="numi_phone_default_phone_app_prompt">Facer que iste application sia le application predefinite de telephono</string>
+    <string name="numi_phone_clear_history_confirmation">Es tu secur que tu vole deler toto del chronologia de appellos?</string>
+    <string name="numi_phone_show_grouped_calls">Monstrar le appellos gruppate</string>
+    <string name="numi_phone_call_number">Numero de appello</string>
+    <string name="numi_phone_ongoing_call">Appello in curso</string>
+    <string name="numi_phone_resume_call">Resumer le appello</string>
+    <string name="numi_phone_select_sim">Selige un carta SIM pro iste appello</string>
+    <string name="numi_phone_app_launcher_name">Numi</string>
+    <string name="numi_phone_no_previous_calls">Necun appellos previe ha essite trovate</string>
+    <string name="numi_phone_could_not_access_the_call_history">Non poteva acceder al chronologia de appellos</string>
+    <string name="numi_phone_request_access">Requestar accesso</string>
+    <string name="numi_phone_remove_confirmation">Es tu secur que tu vole remover le elementos seligite del chronologia de appellos?</string>
+    <string name="numi_phone_clear_call_history">Rader le chronologia de appellos</string>
+    <string name="numi_phone_show_call_details">Monstrar le detalios del appello</string>
+    <string name="numi_phone_asterisk">Asterisco</string>
+    <string name="numi_phone_hashtag">Signo numeric</string>
+    <string name="numi_phone_accept">Acceptar</string>
+    <string name="numi_phone_accept_call">Acceptar le appello</string>
+    <string name="numi_phone_decline">Declinar</string>
+    <string name="numi_phone_decline_call">Declinar le appello</string>
+    <string name="numi_phone_unknown_caller">Numero incognite</string>
+    <string name="numi_phone_is_calling">es appellante…</string>
+    <string name="numi_phone_dialing">Telephonante…</string>
+    <string name="numi_phone_call_ended">Appello finite</string>
+    <string name="numi_phone_always_use_this_sim">Sempre usar iste carta SIM pro iste numero</string>
+    <string name="numi_phone_unset_default_sim">Disactivar le SIM predeterminate</string>
+    <string name="numi_phone_calls">Appellos</string>
+    <string name="numi_phone_turn_microphone_on">Activar le microphono</string>
+    <string name="numi_phone_turn_microphone_off">Disactivar le microphono</string>
+    <string name="numi_phone_turn_speaker_on">Activar le altoparlator</string>
+    <string name="numi_phone_turn_speaker_off">Disactivar le altoparlator</string>
+    <string name="numi_phone_end_call">Finir le appello</string>
+    <string name="numi_phone_call_swap">Excambiar le appellos</string>
+    <string name="numi_phone_call_add">Adder un appello</string>
+    <string name="numi_phone_audio_route_speaker">Altoparlator</string>
+    <string name="numi_phone_audio_route_earpiece">Auricular</string>
+    <string name="numi_phone_audio_route_bluetooth">Bluetooth</string>
+</resources>

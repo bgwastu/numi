@@ -1,0 +1,4 @@
+<resources>
+    <string name="numi_phone_package_name">org.fossify.phone</string>
+    <string name="numi_phone_app_name">Fossify Phone</string>
+</resources>

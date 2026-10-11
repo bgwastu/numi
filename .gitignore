@@ -5,6 +5,12 @@
 /android/.gradle
 /android/app/build
 /android/build
+/android/.kotlin/
+/android/contracts/build/
+/android/messages/build/
+/android/phone/build/
+__pycache__/
+*.pyc
 
 # IDE files
 .idea
@@ -25,3 +31,10 @@ Thumbs.db
 *.json
 !/android/gradle/libs.versions.toml
 !/android/app/src/main/assets/
+!/android/app/src/main/assets/spam/provenance.json
+!/android/messages/upstream.json
+!/android/phone/upstream.json
+!/android/messages/schemas/**/*.json
+!/tools/release.json
+!/tools/spam-sources.json
+!/docs/evidence/gemma-*.json

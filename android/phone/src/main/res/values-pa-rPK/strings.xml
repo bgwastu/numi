@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="numi_phone_default_phone_app_prompt">سیٹنگاں وچ ایہہ اَیپ مول فون چاہدی</string>
+    <string name="numi_phone_could_not_access_contacts">تہاڈے فون‌بوک پہنچ نہیں سکے</string>
+    <string name="numi_phone_no_previous_calls">کوئی پچھلیا کالاں نہیں لبھیاں</string>
+    <string name="numi_phone_clear_call_history">کال دی تریخ ہٹاؤ</string>
+    <string name="numi_phone_dialpad">فون کیبورڈ</string>
+    <string name="numi_phone_asterisk">ایسٹرسک</string>
+    <string name="numi_phone_hashtag">ہیش‌ٹیگ</string>
+    <string name="numi_phone_call_number">کال دا نمبر</string>
+    <string name="numi_phone_dialer">فون دائک</string>
+</resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="numi_phone_default_phone_app_prompt">Gjør denne appen til standard telefonapp</string>
+    <string name="numi_phone_could_not_access_contacts">Kunne ikke få tilgang til kontaktene dine</string>
+    <string name="numi_phone_no_previous_calls">Ingen tidligere anrop er funnet</string>
+    <string name="numi_phone_could_not_access_the_call_history">Fikk ikke tilgang til anropsloggen</string>
+    <string name="numi_phone_request_access">Be om tilgang</string>
+    <string name="numi_phone_remove_confirmation">Er du sikker på at du vil fjerne de valgte elementene fra anropsloggen\?</string>
+    <string name="numi_phone_clear_history_confirmation">Er du sikker på at du vil fjerne alt fra anropsloggen\?</string>
+    <string name="numi_phone_show_grouped_calls">Vis grupperte anrop</string>
+    <string name="numi_phone_clear_call_history">Tøm anropsloggen</string>
+    <string name="numi_phone_show_call_details">Vis samtaledetaljer</string>
+    <string name="numi_phone_dialpad">Tastatur</string>
+    <string name="numi_phone_hashtag">Emneknagg</string>
+    <string name="numi_phone_call_number">Ring nummer</string>
+    <string name="numi_phone_dialer">Oppringer</string>
+    <string name="numi_phone_accept">Godta</string>
+    <string name="numi_phone_accept_call">Godta samtalen</string>
+    <string name="numi_phone_decline">Avslå</string>
+    <string name="numi_phone_decline_call">Avslå samtalen</string>
+    <string name="numi_phone_unknown_caller">Ukjent innringer</string>
+    <string name="numi_phone_is_calling">Ringer…</string>
+    <string name="numi_phone_dialing">Ringer opp…</string>
+    <string name="numi_phone_call_ended">Anrop avsluttet</string>
+    <string name="numi_phone_call_ending">Samtaleslutt</string>
+    <string name="numi_phone_ongoing_call">Pågående samtale</string>
+    <string name="numi_phone_select_sim">Velg et SIM-kort for denne samtalen</string>
+    <string name="numi_phone_always_use_this_sim">Bruk alltid dette SIM-kortet for dette nummeret</string>
+    <string name="numi_phone_unset_default_sim">Deaktiver standard SIM</string>
+    <string name="numi_phone_calls">Samtaler</string>
+    <string name="numi_phone_turn_microphone_on">Slå på mikrofonen</string>
+    <string name="numi_phone_turn_microphone_off">Slå av mikrofonen</string>
+    <string name="numi_phone_turn_speaker_on">Slå på høyttaleren</string>
+    <string name="numi_phone_turn_speaker_off">Slå av høyttaleren</string>
+    <string name="numi_phone_show_dialpad">Vis tastaturet</string>
+    <string name="numi_phone_hide_dialpad">Skjul tastaturet</string>
+    <string name="numi_phone_end_call">Avslutt samtale</string>
+    <string name="numi_phone_speed_dial">Hurtigvalg</string>
+    <string name="numi_phone_manage_speed_dial">Administrer hurtigvalg</string>
+    <string name="numi_phone_speed_dial_label">Klikk på et nummer for å tilordne en kontakt til det. Du kan deretter raskt ringe den oppgitte kontakten ved å trykke lenge på det gitte nummeret på oppringeren.</string>
+    <string name="numi_phone_group_subsequent_calls">Grupper påfølgende anrop med samme nummer i anropsloggen</string>
+    <string name="numi_phone_open_dialpad_by_default">Åpne talltastaturet som standard når appen åpnes</string>
+    <string name="numi_phone_disable_proximity_sensor">Deaktiver nærhetssensor under samtaler</string>
+    <string name="numi_phone_disable_swipe_to_answer">Erstatt sveiping ved å svare på innkommende anrop med å klikke</string>
+</resources>

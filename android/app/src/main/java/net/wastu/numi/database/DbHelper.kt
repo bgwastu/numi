@@ -10,7 +10,7 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
 
     companion object {
         private const val DATABASE_NAME = "numi.db"
-        private const val DATABASE_VERSION = 5
+        private const val DATABASE_VERSION = 8
 
         // Table Messages
         const val TABLE_OUTBOX = "message_outbox"
@@ -107,6 +107,8 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         """.trimIndent())
         db.execSQL("CREATE INDEX idx_outbox_conversation ON $TABLE_OUTBOX($COL_CONVERSATION_KEY)")
         db.execSQL("CREATE INDEX idx_inbox_conversation ON $TABLE_INBOX($COL_CONVERSATION_KEY)")
+        installMessagingSchema(db)
+        net.wastu.numi.spam.SpamStore.install(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -136,6 +138,29 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         if (oldVersion < 5) {
             db.execSQL("ALTER TABLE $TABLE_OUTBOX ADD COLUMN $COL_TELEGRAM_LAST_MESSAGE_ID INTEGER")
         }
+        if (oldVersion < 6) installMessagingSchema(db)
+        if (oldVersion == 6) installReceiptSchema(db)
+        if (oldVersion < 8) net.wastu.numi.spam.SpamStore.install(db)
+    }
+
+    private fun installMessagingSchema(db: SQLiteDatabase) {
+        db.execSQL("ALTER TABLE $TABLE_OUTBOX ADD COLUMN provider_id INTEGER")
+        db.execSQL("ALTER TABLE $TABLE_OUTBOX ADD COLUMN part_count INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE $TABLE_OUTBOX ADD COLUMN updated_at INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE $TABLE_OUTBOX ADD COLUMN delivered INTEGER NOT NULL DEFAULT 0")
+        db.execSQL("ALTER TABLE $TABLE_OUTBOX ADD COLUMN event_json TEXT")
+        db.execSQL("ALTER TABLE $TABLE_INBOX ADD COLUMN provider_id INTEGER")
+        db.execSQL("CREATE TABLE sms_parts (outbox_id INTEGER NOT NULL, part_index INTEGER NOT NULL, phase TEXT NOT NULL, result INTEGER NOT NULL, PRIMARY KEY(outbox_id, part_index, phase))")
+        db.execSQL("CREATE TABLE telegram_topics (chat_id TEXT NOT NULL, address_key TEXT NOT NULL, address TEXT NOT NULL, subscription_id INTEGER NOT NULL, thread_id INTEGER NOT NULL, PRIMARY KEY(chat_id, address_key, subscription_id))")
+        db.execSQL("CREATE TABLE telegram_targets (chat_id TEXT NOT NULL, message_id INTEGER NOT NULL, address TEXT NOT NULL, subscription_id INTEGER, PRIMARY KEY(chat_id, message_id))")
+        db.execSQL("CREATE INDEX idx_outbox_due ON $TABLE_OUTBOX($COL_TYPE, $COL_STATUS, $COL_NEXT_ATTEMPT)")
+        installReceiptSchema(db)
+    }
+
+    private fun installReceiptSchema(db: SQLiteDatabase) {
+        db.execSQL("""CREATE TABLE IF NOT EXISTS telegram_receipts (
+            chat_id TEXT NOT NULL, event_key TEXT NOT NULL, message_id INTEGER NOT NULL,
+            thread_id INTEGER, PRIMARY KEY(chat_id,event_key))""")
     }
 
     // Helper to insert message

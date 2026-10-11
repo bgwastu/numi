@@ -1,0 +1,5 @@
+EmbeddingGemma 2 Text 270M
+Copyright Google LLC. Licensed under the Apache License, Version 2.0.
+https://huggingface.co/litert-community/embeddinggemma-2-text-270m-litert-lm
+Model SHA256: 2d079ee2f6f066b1f368e8d7c819f55214eaef1d0513b312321901f30ab286fb
+The model is downloaded separately and checked before local use.

@@ -1,19 +1,78 @@
-import java.io.RandomAccessFile
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import com.android.build.api.instrumentation.AsmClassVisitorFactory
+import com.android.build.api.instrumentation.ClassContext
+import com.android.build.api.instrumentation.ClassData
+import com.android.build.api.instrumentation.InstrumentationParameters
+import com.android.build.api.instrumentation.InstrumentationScope
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.Opcodes
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
 }
 
-val releaseVersionCode = providers.environmentVariable("GITHUB_RUN_NUMBER")
-    .orNull?.toIntOrNull()?.coerceAtLeast(1) ?: 1
+// Commons 7.1.3 assumes every derivative uses an org.fossify package. Numi keeps
+// its original Android identity for data-preserving upgrades. Remove only the
+// incorrect package-name warning and route calls to this APK rather than the
+// hard-coded upstream package. Retain the upstream activities and attribution.
+abstract class NumiForkCompatibility : AsmClassVisitorFactory<InstrumentationParameters.None> {
+    override fun isInstrumentable(classData: ClassData) =
+        classData.className in setOf("org.fossify.commons.activities.BaseSimpleActivity", "org.fossify.commons.extensions.ActivityKt")
+
+    override fun createClassVisitor(classContext: ClassContext, nextClassVisitor: ClassVisitor): ClassVisitor =
+        object : ClassVisitor(Opcodes.ASM9, nextClassVisitor) {
+            override fun visitMethod(access: Int, name: String, descriptor: String, signature: String?, exceptions: Array<out String>?): MethodVisitor {
+                val next = super.visitMethod(access, name, descriptor, signature, exceptions)
+                if (name.startsWith("launchCallIntent\$lambda") && descriptor ==
+                    "(Ljava/lang/String;Landroid/telecom/PhoneAccountHandle;Lorg/fossify/commons/activities/BaseSimpleActivity;Z)Lkotlin/Unit;") {
+                    return object : MethodVisitor(Opcodes.ASM9, next) {
+                        private var routed = 0
+                        override fun visitLdcInsn(value: Any?) {
+                            if (value == "org.fossify.phone" || value == "org.fossify.phone.debug") {
+                                super.visitVarInsn(Opcodes.ALOAD, 2)
+                                super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "android/content/Context", "getPackageName", "()Ljava/lang/String;", false)
+                                routed++
+                            } else super.visitLdcInsn(value)
+                        }
+                        override fun visitEnd() {
+                            check(routed == 2) { "Commons call routing changed; review the Numi fork compatibility patch" }
+                            super.visitEnd()
+                        }
+                    }
+                }
+                if (name != "onCreate" || descriptor != "(Landroid/os/Bundle;)V") return next
+                return object : MethodVisitor(Opcodes.ASM9, next) {
+                    private var removed = 0
+                    override fun visitMethodInsn(opcode: Int, owner: String, name: String, descriptor: String, isInterface: Boolean) {
+                        if (opcode == Opcodes.INVOKESTATIC && owner == "org/fossify/commons/extensions/ActivityKt" &&
+                            name == "showModdedAppWarning" && descriptor == "(Lorg/fossify/commons/activities/BaseSimpleActivity;)V") {
+                            super.visitInsn(Opcodes.POP)
+                            removed++
+                        } else super.visitMethodInsn(opcode, owner, name, descriptor, isInterface)
+                    }
+                    override fun visitEnd() {
+                        check(removed == 1) { "Commons package warning changed; review the Numi fork compatibility patch" }
+                        super.visitEnd()
+                    }
+                }
+            }
+        }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.instrumentation.transformClassesWith(NumiForkCompatibility::class.java, InstrumentationScope.ALL) {}
+    }
+}
+
+val releaseVersionCode = rootProject.extra["numi.versionCode"] as Int
+val releaseVersionName = rootProject.extra["numi.versionName"] as String
 val releaseStoreFile = providers.environmentVariable("ANDROID_KEYSTORE_FILE").orNull
 val releaseStorePassword = providers.environmentVariable("ANDROID_KEYSTORE_PASSWORD").orNull
 val releaseKeyAlias = providers.environmentVariable("ANDROID_KEYSTORE_ALIAS").orNull
 val releaseKeyPassword = providers.environmentVariable("ANDROID_KEYSTORE_KEY_PASSWORD").orNull
+    ?.takeIf { it.isNotBlank() }
     ?: releaseStorePassword
 
 android {
@@ -21,11 +80,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "net.wastu.numi"
+        applicationId = providers.gradleProperty("numi.applicationId").orElse("net.wastu.numi").get()
         minSdk = 26
         targetSdk = 34
         versionCode = releaseVersionCode
-        versionName = "2.0.$releaseVersionCode"
+        versionName = releaseVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -60,57 +119,14 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
-        jniLibs {
-            useLegacyPackaging = true
-            keepDebugSymbols += "**/liblitertlm_jni.so"
-        }
     }
-}
-
-// Fix 16 KB ELF LOAD segment alignment on arm64 native libs
-// Rewrites p_align of PT_LOAD segments to 16384 (16 KB) in each .so
-tasks.matching { name.startsWith("merge") && name.endsWith("NativeLibs") }.configureEach {
-    val variant = name.removePrefix("merge").removeSuffix("NativeLibs").lowercase()
-    doLast {
-        val nativeDir = project.layout.buildDirectory
-            .dir("intermediates/merged_native_libs/$variant/out/lib/arm64-v8a")
-            .get().asFile
-        if (!nativeDir.exists()) return@doLast
-        nativeDir.listFiles { file -> file.name.endsWith(".so") }?.forEach { so ->
-            try {
-                RandomAccessFile(so, "rw").use { raf ->
-                    val bytes = ByteArray(raf.length().toInt())
-                    raf.readFully(bytes)
-                    val buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
-                    if (buffer.getInt(0) != 0x464c457f) return@forEach
-                    val programHeaderOffset = buffer.getLong(32).toInt()
-                    val entrySize = buffer.getShort(54).toInt() and 0xFFFF
-                    val entryCount = buffer.getShort(56).toInt() and 0xFFFF
-                    var modified = false
-                    for (index in 0 until entryCount) {
-                        val headerOffset = programHeaderOffset + index * entrySize
-                        if (buffer.getInt(headerOffset) != 1) continue
-                        val alignmentOffset = headerOffset + 48
-                        if (buffer.getLong(alignmentOffset) < 16384) {
-                            buffer.putLong(alignmentOffset, 16384)
-                            modified = true
-                        }
-                    }
-                    if (modified) {
-                        raf.seek(0)
-                        raf.write(buffer.array())
-                    }
-                }
-            } catch (exception: Exception) {
-                throw GradleException("Could not align native library ${so.name} to 16 KB pages", exception)
-            }
-        }
-    }
+    sourceSets.getByName("test").resources.srcDir("src/main/assets")
 }
 
 tasks.register("validateReleaseSigning") {
@@ -136,6 +152,10 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":contracts"))
+    implementation(project(":messages"))
+    implementation(project(":phone"))
+    implementation("org.fossify:commons:7.1.3")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -144,17 +164,12 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.litertlm.android)
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    // Ktor Client
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.okhttp)
+    implementation(libs.litertlm)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -1,0 +1,4 @@
+<resources>
+    <integer name="numi_phone_default_font_size">2</integer>
+    <integer name="numi_phone_default_sorting">65536</integer>
+</resources>

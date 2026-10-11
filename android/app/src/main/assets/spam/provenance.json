@@ -1,0 +1,137 @@
+{
+  "architecture": "EmbeddingGemma 2 Text 270M INT4, 768d normalized chunk pooling, linear decision head C=64",
+  "raw": 6717,
+  "unique": 6231,
+  "conflicting_normalized_labels_removed": 0,
+  "split_counts": {
+    "train": 4445,
+    "validation": 891,
+    "test": 895
+  },
+  "threshold": 0.74,
+  "group_similarity_threshold": 0.9,
+  "frozen_training_split": true,
+  "private_sms_used_for_training": false,
+  "random_seed": 719,
+  "license": "CC-BY-SA-4.0",
+  "sources": [
+    {
+      "authors": "Ferdila Rahmi and Yudi Wibisono",
+      "title": "SMS Spam Bahasa Indonesia v1 (2018 release of 2016 research)",
+      "url": "https://yudiwbs.wordpress.com/2018/08/05/dataset-klasifikasi-bahasa-indonesia-sms-spam-klasifikasi-teks-dengan-scikit-learn/",
+      "download": "https://drive.google.com/uc?export=download&id=1-stKadfTgJLtYsHWqXhGO3nTjKVFxm_Q",
+      "zip_sha256": "8f666e86de36fc840f53303414c45399099c17358b30b4531c46a434d31f1f18",
+      "license": "CC-BY-SA-4.0"
+    },
+    {
+      "authors": "Tiago Almeida and Jos Hidalgo",
+      "title": "SMS Spam Collection (2011)",
+      "url": "https://doi.org/10.24432/C5CC84",
+      "download": "https://archive.ics.uci.edu/static/public/228/sms+spam+collection.zip",
+      "zip_sha256": "1587ea43e58e82b14ff1f5425c88e17f8496bfcdb67a583dbff9eefaf9963ce3",
+      "license": "CC-BY-4.0"
+    }
+  ],
+  "gemma_sha256": "2d079ee2f6f066b1f368e8d7c819f55214eaef1d0513b312321901f30ab286fb",
+  "runtime": "LiteRT-LM 0.18.0",
+  "input_sha256": "aca28b20ef21edd6ba6831a4cd42043fcd8fc9db7155f1623668395861dc96ce",
+  "embeddings_sha256": "30ed344e6805afec1a4e81af167a3b85c9b5391a661d41e741c8a715e0699787",
+  "preprocessing": "GemmaTextInput.java: classification query prefix, 96-byte UTF-8 chunks, 3000 code point cap, 128 tokens, 768d L2-normalized sum",
+  "validation": {
+    "all": {
+      "count": 891,
+      "matrix": [
+        [
+          733,
+          1
+        ],
+        [
+          10,
+          147
+        ]
+      ],
+      "precision": 0.9932432432432432,
+      "recall": 0.9363057324840764
+    },
+    "id": {
+      "count": 165,
+      "matrix": [
+        [
+          82,
+          1
+        ],
+        [
+          6,
+          76
+        ]
+      ],
+      "precision": 0.987012987012987,
+      "recall": 0.926829268292683
+    },
+    "en": {
+      "count": 726,
+      "matrix": [
+        [
+          651,
+          0
+        ],
+        [
+          4,
+          71
+        ]
+      ],
+      "precision": 1.0,
+      "recall": 0.9466666666666667
+    }
+  },
+  "test": {
+    "all": {
+      "count": 895,
+      "matrix": [
+        [
+          730,
+          2
+        ],
+        [
+          9,
+          154
+        ]
+      ],
+      "precision": 0.9871794871794872,
+      "recall": 0.9447852760736196
+    },
+    "id": {
+      "count": 164,
+      "matrix": [
+        [
+          79,
+          2
+        ],
+        [
+          6,
+          77
+        ]
+      ],
+      "precision": 0.9746835443037974,
+      "recall": 0.927710843373494
+    },
+    "en": {
+      "count": 731,
+      "matrix": [
+        [
+          651,
+          0
+        ],
+        [
+          3,
+          77
+        ]
+      ],
+      "precision": 1.0,
+      "recall": 0.9625
+    }
+  },
+  "asset_sha256": "bc163438b6f325163f97acf345993050ebada95e95fa380fa17774a2831e4c6f",
+  "bytes": 6172,
+  "evaluation_scope": "Raw Gemma classifier before contact, allowlist, OTP and local protection rules"
+}
