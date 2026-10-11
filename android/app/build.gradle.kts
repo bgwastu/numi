@@ -18,12 +18,32 @@ plugins {
 // route calls to this APK. Retain the upstream activities and attribution.
 abstract class NumiForkCompatibility : AsmClassVisitorFactory<InstrumentationParameters.None> {
     override fun isInstrumentable(classData: ClassData) =
-        classData.className in setOf("org.fossify.commons.activities.BaseSimpleActivity", "org.fossify.commons.extensions.ActivityKt")
+        classData.className in setOf(
+            "org.fossify.commons.activities.BaseSimpleActivity",
+            "org.fossify.commons.extensions.ActivityKt",
+            "org.fossify.commons.compose.extensions.ActivityExtensionsKt"
+        )
 
     override fun createClassVisitor(classContext: ClassContext, nextClassVisitor: ClassVisitor): ClassVisitor =
         object : ClassVisitor(Opcodes.ASM9, nextClassVisitor) {
             override fun visitMethod(access: Int, name: String, descriptor: String, signature: String?, exceptions: Array<out String>?): MethodVisitor {
                 val next = super.visitMethod(access, name, descriptor, signature, exceptions)
+                if (name == "fakeVersionCheck" && descriptor == "(Landroid/content/Context;Lkotlin/jvm/functions/Function0;)V") {
+                    return object : MethodVisitor(Opcodes.ASM9, next) {
+                        private var adapted = 0
+                        override fun visitLdcInsn(value: Any?) {
+                            if (value == "org.fossify.") {
+                                super.visitVarInsn(Opcodes.ALOAD, 0)
+                                super.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "android/content/Context", "getPackageName", "()Ljava/lang/String;", false)
+                                adapted++
+                            } else super.visitLdcInsn(value)
+                        }
+                        override fun visitEnd() {
+                            check(adapted == 1) { "Commons Compose package guard changed; review the Numi compatibility patch" }
+                            super.visitEnd()
+                        }
+                    }
+                }
                 if (name.startsWith("launchCallIntent\$lambda") && descriptor ==
                     "(Ljava/lang/String;Landroid/telecom/PhoneAccountHandle;Lorg/fossify/commons/activities/BaseSimpleActivity;Z)Lkotlin/Unit;") {
                     return object : MethodVisitor(Opcodes.ASM9, next) {
