@@ -67,7 +67,7 @@ class OutboxService : Service() {
         super.onCreate()
         store = AppStore(this)
         getSystemService(NotificationManager::class.java).createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, "Telegram connection", NotificationManager.IMPORTANCE_LOW))
+            NotificationChannel(CHANNEL_ID, "Telegram connection", NotificationManager.IMPORTANCE_NONE))
         val openSettings = PendingIntent.getActivity(this, 2002, Intent(this, ConnectorSettingsActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val notification = Notification.Builder(this, CHANNEL_ID).setSmallIcon(R.drawable.ic_stat_numi)
             .setContentTitle("Numi").setContentText("SMS delivery and Telegram connection")
